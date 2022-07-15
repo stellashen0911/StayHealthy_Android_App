@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">StayHealthy_android_app</string>
+    <string name="username_hint">123@gmail.com</string>
 </resources>

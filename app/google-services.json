@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "850358891794",
+    "project_id": "stayhealthy-app",
+    "storage_bucket": "stayhealthy-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:850358891794:android:7ae4cd4b68e87f7725efcb",
+        "android_client_info": {
+          "package_name": "com.example.stayhealthy_android_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "850358891794-nah3fjchiq2rqtjj1ek0a4jqa8d129qi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOTDZYxbgFDSGbqjVi-V6wt-07vXHWJfk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "850358891794-nah3fjchiq2rqtjj1ek0a4jqa8d129qi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

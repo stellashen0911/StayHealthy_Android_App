@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <item
+        android:id="@+id/award_icon"
+        android:title="Award"
+        android:icon="@drawable/ic_award_foreground"/>
+    <item
+        android:id="@+id/health_record_icon"
+        android:title="Health Record"
+        android:icon="@drawable/ic_launcher_healthrecord_logo_foreground"/>
+    <item
+        android:id="@+id/journey_icon"
+        android:title="Journey"
+        android:icon="@drawable/ic_journey2_foreground"/>
 </menu>

@@ -17,7 +17,7 @@ public class HealthRecordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_health_record);
 
         // Initialize and assign variable
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
 
         // Set Home selected
         bottomNavigationView.setSelectedItemId(R.id.health_record_icon);

@@ -17,7 +17,7 @@ public class JourneyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_journey);
 
         // Initialize and assign variable
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
 
         // Set Home selected
         bottomNavigationView.setSelectedItemId(R.id.journey_icon);

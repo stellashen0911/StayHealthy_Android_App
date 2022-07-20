@@ -23,24 +23,22 @@ public class JourneyActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.journey_icon);
 
         // Perform item selected listener
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch(item.getItemId())
-                {
-                    case R.id.award_icon:
-                        startActivity(new Intent(getApplicationContext(), AwardActivity.class));
-                        overridePendingTransition(0,0);
-                        return true;
-                    case R.id.health_record_icon:
-                        startActivity(new Intent(getApplicationContext(), HealthRecordActivity.class));
-                        overridePendingTransition(0,0);
-                        return true;
-                    case R.id.journey_icon:
-                        return true;
-                }
-                return false;
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int selectedId = item.getItemId();
+            boolean isItemSelected = false;
+            if(selectedId == R.id.award_icon) {
+                startActivity(new Intent(getApplicationContext(), AwardActivity.class));
+                overridePendingTransition(0,0);
+                isItemSelected = true;
+            } else if (selectedId == R.id.health_record_icon) {
+                startActivity(new Intent(getApplicationContext(), HealthRecordActivity.class));
+                overridePendingTransition(0, 0);
+                isItemSelected = true;
+            } else if (selectedId == R.id.journey_icon) {
+                isItemSelected = true;
             }
+
+            return isItemSelected;
         });
     }
 }

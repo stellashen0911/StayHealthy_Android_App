@@ -12,7 +12,9 @@
         <entry key="app/src/main/res/layout/activity_health_record.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/activity_journey.xml" value="0.10677083333333333" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/activity_period.xml" value="0.5302408854166667" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.4036458333333333" />
+        <entry key="app/src/main/res/layout/item_calender_cell.xml" value="0.39166666666666666" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.40260416666666665" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_award.xml" value="0.118" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_award_round.xml" value="0.118" />

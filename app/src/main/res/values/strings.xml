@@ -1,4 +1,34 @@
 <resources>
     <string name="app_name">StayHealthy_android_app</string>
     <string name="username_hint">123@gmail.com</string>
+    <string name="period_string">Period</string>
+    <string name="water_string">Water</string>
+    <string name="diet_string">Diet</string>
+    <string name="workout_string">Workout</string>
+    <string name="previous_button_string">\u003c-</string>
+    <string name="next_button_string">-\u003e</string>
+    <string name="month_year_string">July 2022</string>
+    <string name="date_string">Wednesday, July 20, 2022</string>
+    <string name="monday_string">Mon</string>
+    <string name="tuesday_string">Tue</string>
+    <string name="wednesday_string">Wed</string>
+    <string name="thursday_string">Thu</string>
+    <string name="friday_string">Fri</string>
+    <string name="saturday_string">Sat</string>
+    <string name="sunday_string">Sun</string>
+    <string name="day_cell_string">1</string>
+    <string name="add_period_string">Add Period</string>
+    <string name="add_symptoms_string">Add Symptoms</string>
+    <string name="add_mood_string">Add Mood</string>
+    <string name="symptoms_string">Symptoms</string>
+    <string name="mood_string">Mood</string>
+    <string name="period_prediction_title_string">Period Prediction</string>
+    <string name="period_prediction_string">Your period is likely to start on or around</string>
+    <string name="period_recent_cycle_string">Recent Cycle: Jun 29 - July 5</string>
+    <string name="angry_face_emoji">😠</string>
+    <string name="neutral_face_emoji">😐</string>
+    <string name="crying_face_emoji">😭</string>
+    <string name="disgust_emoji">🤮</string>
+    <string name="happy_face_emoji">😃</string>
+    <string name="prediction_date_string">July 25</string>
 </resources>

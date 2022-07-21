@@ -17,6 +17,9 @@
             android:name=".JourneyActivity"
             android:exported="false" />
         <activity
+            android:name=".WaterActivity"
+            android:exported="false" />
+        <activity
             android:name=".AwardActivity"
             android:exported="false" />
         <activity

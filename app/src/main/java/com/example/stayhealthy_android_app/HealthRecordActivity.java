@@ -1,13 +1,12 @@
 package com.example.stayhealthy_android_app;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 
+import com.example.stayhealthy_android_app.Period.PeriodActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HealthRecordActivity extends AppCompatActivity {

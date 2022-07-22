@@ -14,7 +14,7 @@
         android:theme="@style/Theme.StayHealthy_android_app"
         tools:targetApi="31">
         <activity
-            android:name=".PeriodActivity"
+            android:name=".Period.PeriodActivity"
             android:exported="false" />
         <activity
             android:name=".JourneyActivity"

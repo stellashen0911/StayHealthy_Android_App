@@ -1,4 +1,4 @@
-package com.example.stayhealthy_android_app;
+package com.example.stayhealthy_android_app.Period;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,9 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.stayhealthy_android_app.AwardActivity;
+import com.example.stayhealthy_android_app.JourneyActivity;
+import com.example.stayhealthy_android_app.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class PeriodActivity extends AppCompatActivity {
@@ -38,5 +41,8 @@ public class PeriodActivity extends AppCompatActivity {
 
             return isItemSelected;
         });
+
+        //
+
     }
 }

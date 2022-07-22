@@ -132,10 +132,10 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     }
 
     @Override
-    public void onItemClick(int position, String dayText) {
-        if (!dayText.equals("")) {
+    public void onItemClick(int position, TextView dateTV) {
+        if (!dateTV.getText().equals("")) {
             selectedDate = selectedDate.plusDays(
-                    Integer.parseInt(dayText) - selectedDate.getDayOfMonth());
+                    Integer.parseInt((String)dateTV.getText()) - selectedDate.getDayOfMonth());
             setDateView();
         }
     }

@@ -3,6 +3,7 @@ package com.example.stayhealthy_android_app.Period.Calendar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,6 +42,6 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
     }
 
     public interface OnItemListener {
-        void onItemClick(int position, String dayText);
+        void onItemClick(int position, TextView dateTV);
     }
 }

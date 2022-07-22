@@ -11,6 +11,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/calendarTitleLL"
+        app:layout_constraintTop_toTopOf="parent"
         android:text="@string/period_string"
         android:textSize="20sp"
         android:textStyle="bold"/>
@@ -119,231 +120,218 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/calendarRV"
         android:layout_width="match_parent"
-        android:layout_height="156dp"
+        android:layout_height="140dp"
         app:layout_constraintTop_toBottomOf="@+id/daysOfWeekLL"
-        app:layout_constraintBottom_toTopOf="@id/periodContentSV"/>
+        app:layout_constraintBottom_toTopOf="@id/dateTV"/>
 
-    <ScrollView
-        android:id="@+id/periodContentSV"
+    <TextView
+        android:id="@+id/dateTV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/vertical_margin"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="@dimen/horizontal_margin"
+        android:text="@string/date_string"
+        app:layout_constraintBottom_toTopOf="@id/periodDateCV"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/calendarRV">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/calendarRV" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/periodDateCV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/vertical_margin"
+        app:layout_constraintTop_toBottomOf="@id/dateTV"
+        app:layout_constraintBottom_toTopOf="@id/periodSymptomsCV"
+        app:cardElevation="1dp">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/dateTV"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/horizontal_margin"
-                android:layout_marginEnd="@dimen/horizontal_margin"
-                android:text="@string/date_string"
-                app:layout_constraintBottom_toTopOf="@id/periodDateCV"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/periodDateCV"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/vertical_margin"
-                app:layout_constraintTop_toBottomOf="@id/dateTV"
-                app:cardElevation="8dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/periodDateTV"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/period_string"
-                            android:textAppearance="?attr/textAppearanceHeadline6" />
-
-                        <TextView
-                            android:id="@+id/periodDateDetailsTV"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/period_recent_cycle_string"
-                            android:textAppearance="?attr/textAppearanceBody2" />
-
-                    </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/addPeriodDateBTN"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:icon="@drawable/ic_add_entry"
-                        app:iconSize="20dp"
-                        app:iconGravity="textEnd"
-                        android:contentDescription="@string/add_period_string"/>
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/periodSymptomsCV"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/vertical_margin"
-                app:layout_constraintTop_toBottomOf="@id/periodDateCV"
-                android:elevation="8dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/symptomsTV"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/symptoms_string"
-                            android:textAppearance="?attr/textAppearanceHeadline6" />
-
-                        <TextView
-                            android:id="@+id/symptomsDetailsTV"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/symptoms_string"
-                            android:textAppearance="?attr/textAppearanceBody2"/>
-
-                    </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/addSymptomsBTN"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:icon="@drawable/ic_add_entry"
-                        app:iconSize="20dp"
-                        app:iconGravity="textEnd"
-                        android:contentDescription="@string/add_symptoms_string"/>
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/periodMoodCV"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/vertical_margin"
-                app:layout_constraintTop_toBottomOf="@id/periodSymptomsCV"
-                android:elevation="8dp">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/moodTV"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/mood_string"
-                        android:textAppearance="?attr/textAppearanceHeadline6" />
-
-                    <androidx.emoji2.widget.EmojiTextView
-                        android:id="@+id/moodEmoji"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/happy_face_emoji"
-                        android:textColor="@color/emoji_color"/>
-
-                </LinearLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/addMoodBTN"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:icon="@drawable/ic_add_entry"
-                    app:iconSize="20dp"
-                    app:iconGravity="textEnd"
-                    android:contentDescription="@string/add_mood_string" />
-
-            </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/periodPredictionCV"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/vertical_margin"
-                app:layout_constraintTop_toBottomOf="@id/periodMoodCV"
-                app:cardElevation="8dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/periodPredictionTV"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/period_prediction_title_string"
-                    android:textAppearance="?attr/textAppearanceHeadline6"/>
-
-                <LinearLayout
+                    android:id="@+id/periodDateTV"
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:orientation="horizontal" >
+                    android:layout_height="wrap_content"
+                    android:text="@string/period_string"
+                    android:textAppearance="?attr/textAppearanceHeadline6" />
 
-                    <TextView
-                        android:id="@+id/periodPredictionDescriptionTV"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/period_prediction_string"
-                        android:textAppearance="?attr/textAppearanceBody2"/>
-
-                    <TextView
-                        android:id="@+id/periodPredictionDateTV"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/horizontal_margin"
-                        android:text="@string/prediction_date_string"
-                        android:textAppearance="?attr/textAppearanceBody2" />
-
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/periodDateDetailsTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/period_recent_cycle_string"
+                    android:textAppearance="?attr/textAppearanceBody2" />
 
             </LinearLayout>
 
-            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/addPeriodDateBTN"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_add_entry"
+                app:iconSize="20dp"
+                app:iconGravity="textEnd"
+                android:contentDescription="@string/add_period_string"/>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/periodSymptomsCV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/vertical_margin"
+        app:layout_constraintTop_toBottomOf="@id/periodDateCV"
+        app:layout_constraintBottom_toTopOf="@id/periodMoodCV"
+        android:elevation="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/symptomsTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/symptoms_string"
+                    android:textAppearance="?attr/textAppearanceHeadline6" />
+
+                <TextView
+                    android:id="@+id/symptomsDetailsTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/symptoms_string"
+                    android:textAppearance="?attr/textAppearanceBody2"/>
+
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/addSymptomsBTN"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_add_entry"
+                app:iconSize="20dp"
+                app:iconGravity="textEnd"
+                android:contentDescription="@string/add_symptoms_string"/>
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/periodMoodCV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/vertical_margin"
+        app:layout_constraintTop_toBottomOf="@id/periodSymptomsCV"
+        app:layout_constraintBottom_toTopOf="@id/periodPredictionCV"
+        android:elevation="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/moodTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mood_string"
+                    android:textAppearance="?attr/textAppearanceHeadline6" />
+
+                <androidx.emoji2.widget.EmojiTextView
+                    android:id="@+id/moodEmoji"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/happy_face_emoji"
+                    android:textColor="@color/emoji_color"/>
+
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/addMoodBTN"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_add_entry"
+                app:iconSize="20dp"
+                app:iconGravity="textEnd"
+                android:contentDescription="@string/add_mood_string" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/periodPredictionCV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/vertical_margin"
+        app:layout_constraintTop_toBottomOf="@id/periodMoodCV"
+        app:layout_constraintBottom_toTopOf="@id/guideline1"
+        app:cardElevation="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/periodPredictionTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/period_prediction_title_string"
+                android:textAppearance="?attr/textAppearanceHeadline6" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/periodPredictionDescriptionTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/period_prediction_string"
+                    android:textAppearance="?attr/textAppearanceBody2"/>
+
+                <TextView
+                    android:id="@+id/periodPredictionDateTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/horizontal_margin"
+                    android:text="@string/prediction_date_string"
+                    android:textAppearance="?attr/textAppearanceBody2" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
@@ -354,6 +342,13 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_nav_menu" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.9" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

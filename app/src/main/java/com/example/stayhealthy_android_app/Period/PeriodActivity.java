@@ -88,7 +88,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         LocalDate firstOfMonth = selectedDate.withDayOfMonth(1);
         int dayOfWeek = firstOfMonth.getDayOfWeek().getValue();
 
-        for(int i = 1; i <= 32; i ++) {
+        for(int i = 1; i <= 42; i ++) {
             if (i <= dayOfWeek || i > daysInMonth + dayOfWeek) {
                 daysOfMonthArray.add("");
             } else {

@@ -23,9 +23,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class PeriodActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener{
+    private final static String DATE_LONG_FORMAT = "EEEE, MMMM d, yyyy";
+    private final static String MONTH_YEAR_FORMAT = "MMMM yyyy";
     private TextView monthYearTV;
     private RecyclerView calendarRV;
     private LocalDate selectedDate;
+    private TextView dateTV;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,13 +63,24 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         initWidgets();
         selectedDate = LocalDate.now();
         setMonthView();
+        setDateView();
 
     }
 
     private void initWidgets() {
         monthYearTV = findViewById(R.id.monthYearTV);
         calendarRV = findViewById(R.id.calendarRV);
+        dateTV = findViewById(R.id.dateTV);
 
+    }
+
+    private void setDateView() {
+        dateTV.setText(dateFromDate(selectedDate));
+    }
+
+    private String dateFromDate(LocalDate date) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_LONG_FORMAT);
+        return date.format(dateTimeFormatter);
     }
 
     private void setMonthView() {
@@ -99,7 +113,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     }
 
     private String monthYearFromDate(LocalDate date) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MMMM yyyy");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT);
         return date.format(dateTimeFormatter);
     }
 
@@ -107,19 +121,22 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     public void previousMonthAction(View view) {
         selectedDate = selectedDate.minusMonths(1);
         setMonthView();
+        setDateView();
     }
 
     // nextBTN onClickListener
     public void nextMonthAction(View view) {
         selectedDate = selectedDate.plusMonths(1);
         setMonthView();
+        setDateView();
     }
 
     @Override
     public void onItemClick(int position, String dayText) {
         if (!dayText.equals("")) {
-            String message = "Selected Date" + dayText + " " + monthYearFromDate(selectedDate);
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            selectedDate = selectedDate.plusDays(
+                    Integer.parseInt(dayText) - selectedDate.getDayOfMonth());
+            setDateView();
         }
     }
 }

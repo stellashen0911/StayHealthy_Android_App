@@ -31,4 +31,9 @@
     <string name="disgust_emoji">🤮</string>
     <string name="happy_face_emoji">😃</string>
     <string name="prediction_date_string">July 25</string>
+    <string name="health_record_string">Health Record</string>
+    <string name="add_water_string">Add Water</string>
+    <string name="add_diet_string">Add Diet</string>
+    <string name="add_workout_string">Add Workout</string>
+
 </resources>

@@ -39,11 +39,9 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:30.2.0')
     implementation 'com.google.firebase:firebase-analytics'
 
-    dependencies {
-        def emoji2_version = "1.2.0-beta01"
-
-        implementation "androidx.emoji2:emoji2:$emoji2_version"
-        implementation "androidx.emoji2:emoji2-views:$emoji2_version"
-        implementation "androidx.emoji2:emoji2-views-helper:$emoji2_version"
-    }
+    // import emoji2 library
+    def emoji2_version = "1.2.0-beta01"
+    implementation "androidx.emoji2:emoji2:$emoji2_version"
+    implementation "androidx.emoji2:emoji2-views:$emoji2_version"
+    implementation "androidx.emoji2:emoji2-views-helper:$emoji2_version"
 }

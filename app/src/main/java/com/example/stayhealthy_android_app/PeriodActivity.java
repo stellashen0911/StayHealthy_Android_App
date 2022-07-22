@@ -1,21 +1,18 @@
 package com.example.stayhealthy_android_app;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class HealthRecordActivity extends AppCompatActivity {
-
+public class PeriodActivity extends AppCompatActivity {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_health_record);
+        setContentView(R.layout.activity_period);
 
         // Initialize and assign variable
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
@@ -41,15 +38,5 @@ public class HealthRecordActivity extends AppCompatActivity {
 
             return isItemSelected;
         });
-    }
-
-    public void openPeriodActivity(View view) {
-        Intent intent = new Intent(this, PeriodActivity.class);
-        startActivity(intent);
-    }
-
-    public void openWaterActivity(View view) {
-        Intent intent = new Intent(this, WaterActivity.class);
-        startActivity(intent);
     }
 }

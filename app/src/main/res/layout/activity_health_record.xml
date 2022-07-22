@@ -10,7 +10,7 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Health Record"
+        android:text="@string/health_record_string"
         android:textSize="50sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,22 +36,22 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
+            android:onClick="openPeriodActivity"
             android:background="@drawable/m_customer_border_drawable">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:textSize="36sp"
-                android:text="Period"
+                android:text="@string/period_string"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:textAlignment="center"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
-                />
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -62,8 +62,10 @@
                 android:layout_marginEnd="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
-               />
+                android:contentDescription="@string/add_period_string"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -78,16 +80,15 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:textSize="36sp"
-                android:text="Water"
+                android:text="@string/water_string"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:textAlignment="center"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
-                />
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -98,8 +99,10 @@
                 android:layout_marginEnd="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
-                />
+                android:contentDescription="@string/add_water_string"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -113,15 +116,15 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
             android:textSize="36sp"
-            android:text="Diet"
+            android:text="@string/diet_string"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             android:textAlignment="center"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            />
+            app:layout_constraintStart_toStartOf="parent" />
+
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -132,8 +135,10 @@
             android:layout_marginEnd="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
-            />
+            android:contentDescription="@string/add_diet_string"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -146,16 +151,15 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:textSize="36sp"
-                android:text="Workout"
+                android:text="@string/workout_string"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:textAlignment="center"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
-                />
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -166,7 +170,8 @@
                 android:layout_marginEnd="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
-                />
+                android:contentDescription="@string/add_workout_string"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.appcompat.widget.LinearLayoutCompat>

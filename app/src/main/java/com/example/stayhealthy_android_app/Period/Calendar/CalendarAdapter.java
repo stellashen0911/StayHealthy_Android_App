@@ -1,5 +1,6 @@
 package com.example.stayhealthy_android_app.Period.Calendar;
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +16,17 @@ import java.util.ArrayList;
 public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
     private final ArrayList<String> daysOfMonth;
     private final OnItemListener onItemListener;
+    private final int selectedDay;
+    private final int selectedDayColor;
+    private final Drawable selectedDayBackground;
 
-    public CalendarAdapter(ArrayList<String> daysOfMonth, OnItemListener onItemListener) {
+    public CalendarAdapter(ArrayList<String> daysOfMonth, OnItemListener onItemListener,
+                           int selectedDay, int selectedDayColor, Drawable selectedDayBackground) {
         this.daysOfMonth = daysOfMonth;
         this.onItemListener = onItemListener;
+        this.selectedDay = selectedDay;
+        this.selectedDayColor = selectedDayColor;
+        this.selectedDayBackground = selectedDayBackground;
     }
 
     @NonNull
@@ -34,6 +42,15 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull CalendarViewHolder holder, int position) {
         holder.getDaysOfMonth().setText(daysOfMonth.get(position));
+
+        if(!daysOfMonth.get(position).equals("")) {
+            int day = Integer.parseInt(daysOfMonth.get(position));
+            if (day == selectedDay) {
+                holder.getDaysOfMonth().setTextColor(selectedDayColor);
+                holder.getDaysOfMonth().setBackground(selectedDayBackground);
+            }
+        }
+
     }
 
     @Override

@@ -1,12 +1,14 @@
 package com.example.stayhealthy_android_app.Period;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -102,9 +104,16 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         monthYearTV.setText(monthYearFromDate(selectedDate));
         ArrayList<String> daysOfMonth = daysOfMonthArray(selectedDate);
 
+        // Set the LayoutManager for recyclerView
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 7);
         calendarRV.setLayoutManager(layoutManager);
-        CalendarAdapter calendarAdapter = new CalendarAdapter(daysOfMonth, this);
+
+        // Set the Adapter for recyclerView
+        int selectedDayColor = getColor(R.color.white);
+        Drawable selectedDayBackground = ResourcesCompat.getDrawable(getResources(),
+                R.drawable.m_customer_circle_red_drawable, null);
+        CalendarAdapter calendarAdapter = new CalendarAdapter(daysOfMonth, this,
+                selectedDate.getDayOfMonth(), selectedDayColor, selectedDayBackground);
         calendarRV.setAdapter(calendarAdapter);
     }
 
@@ -151,6 +160,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         if (!dateTV.getText().equals("")) {
             selectedDate = selectedDate.plusDays(
                     Integer.parseInt((String)dateTV.getText()) - selectedDate.getDayOfMonth());
+            setDaysOfMonthView();
             setDateView();
         }
     }

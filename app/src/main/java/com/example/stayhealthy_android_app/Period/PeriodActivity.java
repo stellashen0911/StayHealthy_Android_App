@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,8 +22,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class PeriodActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener{
+    private final static String TAG = "PeriodActivity";
     private final static String DATE_LONG_FORMAT = "EEEE, MMMM d, yyyy";
     private final static String MONTH_YEAR_FORMAT = "MMMM yyyy";
+    private BottomNavigationView bottomNavigationView;
     private TextView monthYearTV;
     private RecyclerView calendarRV;
     private LocalDate selectedDate;
@@ -35,8 +36,28 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_period);
 
+        // Initialize the selected date as today
+        selectedDate = LocalDate.now();
+
+        initWidgets();
+        setBottomNavigationView();
+        // Set the days of month on the calendar recycler view
+        setDaysOfMonthView();
+        // Set the selected date view
+        setDateView();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Set home selected when going back to this activity from other activities
+        bottomNavigationView.setSelectedItemId(R.id.health_record_icon);
+    }
+
+    private void setBottomNavigationView() {
         // Initialize and assign variable
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
 
         // Set Home selected
         bottomNavigationView.setSelectedItemId(R.id.health_record_icon);
@@ -59,12 +80,6 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
 
             return isItemSelected;
         });
-
-        initWidgets();
-        selectedDate = LocalDate.now();
-        setMonthView();
-        setDateView();
-
     }
 
     private void initWidgets() {
@@ -83,7 +98,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         return date.format(dateTimeFormatter);
     }
 
-    private void setMonthView() {
+    private void setDaysOfMonthView() {
         monthYearTV.setText(monthYearFromDate(selectedDate));
         ArrayList<String> daysOfMonth = daysOfMonthArray(selectedDate);
 
@@ -120,14 +135,14 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     // previousBTN onClickListener
     public void previousMonthAction(View view) {
         selectedDate = selectedDate.minusMonths(1);
-        setMonthView();
+        setDaysOfMonthView();
         setDateView();
     }
 
     // nextBTN onClickListener
     public void nextMonthAction(View view) {
         selectedDate = selectedDate.plusMonths(1);
-        setMonthView();
+        setDaysOfMonthView();
         setDateView();
     }
 

@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class JourneyActivity extends AppCompatActivity {
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,8 +18,23 @@ public class JourneyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_journey);
 
         // Initialize and assign variable
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+        initWidgets();
 
+        setBottomNavigationView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Set home selected when going back to this activity from other activities
+        bottomNavigationView.setSelectedItemId(R.id.journey_icon);
+    }
+
+    private void initWidgets() {
+        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+    }
+
+    private void setBottomNavigationView() {
         // Set Home selected
         bottomNavigationView.setSelectedItemId(R.id.journey_icon);
 

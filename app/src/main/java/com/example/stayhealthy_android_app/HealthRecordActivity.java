@@ -10,6 +10,7 @@ import com.example.stayhealthy_android_app.Period.PeriodActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HealthRecordActivity extends AppCompatActivity {
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,8 +18,33 @@ public class HealthRecordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_health_record);
 
         // Initialize and assign variable
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+        initWidgets();
 
+        setBottomNavigationView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Set home selected when going back to this activity from other activities
+        bottomNavigationView.setSelectedItemId(R.id.health_record_icon);
+    }
+
+    public void openPeriodActivity(View view) {
+        Intent intent = new Intent(this, PeriodActivity.class);
+        startActivity(intent);
+    }
+
+    public void openWaterActivity(View view) {
+        Intent intent = new Intent(this, WaterActivity.class);
+        startActivity(intent);
+    }
+
+    private void initWidgets() {
+        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+    }
+
+    private void setBottomNavigationView() {
         // Set Home selected
         bottomNavigationView.setSelectedItemId(R.id.health_record_icon);
 
@@ -40,15 +66,5 @@ public class HealthRecordActivity extends AppCompatActivity {
 
             return isItemSelected;
         });
-    }
-
-    public void openPeriodActivity(View view) {
-        Intent intent = new Intent(this, PeriodActivity.class);
-        startActivity(intent);
-    }
-
-    public void openWaterActivity(View view) {
-        Intent intent = new Intent(this, WaterActivity.class);
-        startActivity(intent);
     }
 }

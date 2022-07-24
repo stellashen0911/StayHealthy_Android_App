@@ -39,5 +39,8 @@
     <string name="add_water_string">Add Water</string>
     <string name="add_diet_string">Add Diet</string>
     <string name="add_workout_string">Add Workout</string>
+    <string name="ok_string">OK</string>
+    <string name="cancel_string">Cancel</string>
+    <string name="select_month_year_string">Select Month and Year</string>
 
 </resources>

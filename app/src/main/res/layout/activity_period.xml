@@ -48,14 +48,16 @@
                     android:textStyle="bold"
                     android:onClick="previousMonthAction"/>
 
-                <TextView
-                    android:id="@+id/monthYearTV"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/monthYearBTN"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="@string/month_year_string"
                     android:textAlignment="center"
-                    android:textColor="@color/black"/>
+                    android:textAllCaps="false"
+                    android:onClick="showMonthYearPickerDialog"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/nextBTN"

@@ -145,6 +145,7 @@
             android:orientation="horizontal"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
+            android:onClick="openWorkoutActivity"
             android:background="@drawable/m_customer_border_drawable">
             <TextView
                 android:layout_width="wrap_content"

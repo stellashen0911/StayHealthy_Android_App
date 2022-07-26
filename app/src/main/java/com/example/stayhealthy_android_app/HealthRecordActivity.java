@@ -19,8 +19,8 @@ public class HealthRecordActivity extends AppCompatActivity {
 
         // Initialize and assign variable
         initWidgets();
-
         setBottomNavigationView();
+
     }
 
     @Override
@@ -39,6 +39,12 @@ public class HealthRecordActivity extends AppCompatActivity {
         Intent intent = new Intent(this, WaterActivity.class);
         startActivity(intent);
     }
+
+    public void openWorkoutActivity(View view) {
+        Intent intent = new Intent(this, WorkoutActivity.class);
+        startActivity(intent);
+    }
+
 
     private void initWidgets() {
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
@@ -63,7 +69,6 @@ public class HealthRecordActivity extends AppCompatActivity {
                 overridePendingTransition(0, 0);
                 isItemSelected = true;
             }
-
             return isItemSelected;
         });
     }

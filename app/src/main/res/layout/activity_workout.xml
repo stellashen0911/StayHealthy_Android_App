@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".WorkoutActivity">
+
+
+    <ScrollView
+        android:id="@+id/workoutContentSV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/workoutTitleTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:minHeight="40dp"
+                android:text="@string/workout_title_str"
+                android:textAppearance="?attr/textAppearanceHeadline5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/todayDateWorkout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:text="date"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/workoutTitleTV" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:layout_marginTop="8dp"
+                android:indeterminateOnly="false"
+                android:progressDrawable="@drawable/circle_progressbar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/GoalFinishedLabel"
+                tools:progress="70" />
+
+            <TextView
+                android:id="@+id/progressBar_percentage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="75dp"
+                android:text="70%"
+                android:textColor="@color/design_default_color_primary"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/progressBar" />
+
+            <TextView
+                android:id="@+id/DailyGoal_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Today's Workout Goal is:"
+                android:textSize="15dp"
+                app:layout_constraintEnd_toStartOf="@+id/CaloriesGoal"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/todayDateWorkout" />
+
+            <TextView
+                android:id="@+id/CaloriesGoal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="500"
+                android:textColor="@color/black"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/CaloriesLabel"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/DailyGoal_label"
+                app:layout_constraintTop_toBottomOf="@+id/todayDateWorkout" />
+
+            <TextView
+                android:id="@+id/CaloriesLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/calories_label"
+                android:textSize="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/CaloriesGoal"
+                app:layout_constraintTop_toBottomOf="@+id/todayDateWorkout" />
+
+            <TextView
+                android:id="@+id/caloriesLabel_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/calories_label"
+                android:textSize="15dp"
+                app:layout_constraintStart_toStartOf="@+id/CaloriesLabel"
+                app:layout_constraintTop_toBottomOf="@+id/CaloriesLabel" />
+
+            <TextView
+                android:id="@+id/GoalFinishedLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="You still need to workout "
+                android:textSize="15dp"
+                app:layout_constraintStart_toStartOf="@+id/DailyGoal_label"
+                app:layout_constraintTop_toBottomOf="@+id/DailyGoal_label" />
+
+            <TextView
+                android:id="@+id/GoalFinishedNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="250"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/CaloriesGoal"
+                app:layout_constraintTop_toBottomOf="@+id/CaloriesGoal" />
+
+            <Button
+                android:id="@+id/button_edit_goal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="@string/edit_goal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/progressBar" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation_view"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

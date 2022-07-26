@@ -44,4 +44,5 @@
     <string name="select_month_year_string">Select Month and Year</string>
     <string name="workout_title_str">WorkOut</string>
     <string name="calories_label">Cal</string>
+    <string name="edit_goal">Edit Workout Goal</string>
 </resources>

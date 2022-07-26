@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -17,27 +18,56 @@ import java.util.Locale;
 public class WorkoutActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     private TextView dateInfoLabel;
-    private LocalDate today;
+    private TextView goal_calories_TX;
+    private TextView completed_calories_TX;
+    private TextView show_percentage;
+    private ProgressBar progressBar;
+    int goal_calories;
+    int completed_calories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workout);
 
+        System.out.println("here 1");
+
         //setup the bottom nav bar
         initWidgets();
         setBottomNavigationView();
-
+        System.out.println("here 2");
         //initialize the date and the goal without setting
-        initDateAndGoal();
+        initDate();
+        update_goal();
+        System.out.println("here 3");
     }
 
-    private void initDateAndGoal() {
+    private void initDate() {
+        //Initialize today's date
         dateInfoLabel = findViewById(R.id.todayDateWorkout);
         LocalDate localDate = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
         String formattedString = localDate.format(formatter);
         dateInfoLabel.setText(formattedString);
+    }
+
+    private void update_goal() {
+        //initiate the progress bar
+        System.out.println("here");
+        goal_calories_TX = findViewById(R.id.CaloriesGoal);
+        completed_calories_TX = findViewById(R.id.GoalFinishedNumber);
+        show_percentage = findViewById(R.id.progressBar_percentage);
+        progressBar = findViewById(R.id.progressBar);
+
+        goal_calories = Integer.parseInt(goal_calories_TX.getText().toString());
+        System.out.println("goal calorie is " + goal_calories);
+        completed_calories = Integer.parseInt(completed_calories_TX.getText().toString());
+        int progress = completed_calories / goal_calories;
+        System.out.println("complete calorie is " + completed_calories);
+        System.out.println("the progress is " + progress);
+        progressBar.setProgress(90);
+        String progress_str = String.valueOf(90);
+        show_percentage.setText(progress_str + "%");
     }
 
     private void initWidgets() {

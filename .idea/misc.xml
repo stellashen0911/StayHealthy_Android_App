@@ -3,25 +3,18 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="../../../../layout/custom_preview.xml" value="0.30935251798561153" />
-        <entry key="app/src/main/res/drawable/ic_award_foreground.xml" value="0.4005" />
         <entry key="app/src/main/res/drawable/ic_journey2_foreground.xml" value="0.118" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.117" />
         <entry key="app/src/main/res/drawable/ic_launcher_healthrecord_logo_foreground.xml" value="0.118" />
         <entry key="app/src/main/res/drawable/ic_sharp_add_24.xml" value="0.2755" />
         <entry key="app/src/main/res/drawable/m_customer_border_drawable.xml" value="0.117" />
-        <entry key="app/src/main/res/drawable/m_customer_circle_drawable.xml" value="0.3995" />
-        <entry key="app/src/main/res/drawable/m_customer_circle_gray_drawable.xml" value="0.3805" />
-        <entry key="app/src/main/res/drawable/m_customer_circle_red_drawable.xml" value="0.4005" />
-        <entry key="app/src/main/res/drawable/text_circle_background.xml" value="0.3995" />
         <entry key="app/src/main/res/layout/activity_award.xml" value="0.10677083333333333" />
         <entry key="app/src/main/res/layout/activity_health_record.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/activity_journey.xml" value="0.10677083333333333" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/activity_period.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/activity_period.xml" value="0.38632246376811596" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.4036458333333333" />
-        <entry key="app/src/main/res/layout/item_calender_cell.xml" value="0.67" />
-        <entry key="app/src/main/res/layout/month_year_picker.xml" value="0.43703703703703706" />
+        <entry key="app/src/main/res/layout/activity_workout.xml" value="0.38632246376811596" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.40260416666666665" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_award.xml" value="0.118" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_award_round.xml" value="0.118" />
@@ -33,5 +26,12 @@
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
+  </component>
+  <component name="VisualizationToolProject">
+    <option name="state">
+      <ProjectState>
+        <option name="scale" value="0.38632246376811596" />
+      </ProjectState>
+    </option>
   </component>
 </project>

@@ -3,48 +3,42 @@ package com.example.stayhealthy_android_app;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
-import android.view.View;
+import android.widget.TextView;
 
-import com.example.stayhealthy_android_app.Period.PeriodActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class HealthRecordActivity extends AppCompatActivity {
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Locale;
+
+public class WorkoutActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
+    private TextView dateInfoLabel;
+    private LocalDate today;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_health_record);
+        setContentView(R.layout.activity_workout);
 
-        // Initialize and assign variable
+        //setup the bottom nav bar
         initWidgets();
         setBottomNavigationView();
 
+        //initialize the date and the goal without setting
+        initDateAndGoal();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Set home selected when going back to this activity from other activities
-        bottomNavigationView.setSelectedItemId(R.id.health_record_icon);
+    private void initDateAndGoal() {
+        dateInfoLabel = findViewById(R.id.todayDateWorkout);
+        LocalDate localDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
+        String formattedString = localDate.format(formatter);
+        dateInfoLabel.setText(formattedString);
     }
-
-    public void openPeriodActivity(View view) {
-        Intent intent = new Intent(this, PeriodActivity.class);
-        startActivity(intent);
-    }
-
-    public void openWaterActivity(View view) {
-        Intent intent = new Intent(this, WaterActivity.class);
-        startActivity(intent);
-    }
-
-    public void openWorkoutActivity(View view) {
-        Intent intent = new Intent(this, WorkoutActivity.class);
-        startActivity(intent);
-    }
-
 
     private void initWidgets() {
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);

@@ -43,6 +43,7 @@
     <string name="cancel_string">Cancel</string>
     <string name="select_month_year_string">Select Month and Year</string>
     <string name="workout_title_str">WorkOut</string>
+    <string name="editWorkout_title_str">Edit WorkOut Goal</string>
     <string name="calories_label">Cal</string>
     <string name="edit_goal">Edit Workout Goal</string>
     <string name="title_activity_breakfast">BreakfastActivity</string>
@@ -54,4 +55,7 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="total_time_editGoal_LB">Total Workout Time: </string>
+    <string name="total_calories_editGoal_LB">Total Workout Calories: </string>
+    <string name="min_LB">min</string>
 </resources>

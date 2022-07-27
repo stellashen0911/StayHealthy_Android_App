@@ -16,6 +16,7 @@
         <activity
             android:name=".Diet.DietActivity"
             android:exported="false" />
+
         <activity
             android:name=".Diet.SnackActivity"
             android:exported="false" />
@@ -27,6 +28,9 @@
             android:exported="false" />
         <activity
             android:name=".Diet.BreakfastActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditWorkoutGoalActivity"
             android:exported="false" />
         <activity
             android:name=".WorkoutActivity"

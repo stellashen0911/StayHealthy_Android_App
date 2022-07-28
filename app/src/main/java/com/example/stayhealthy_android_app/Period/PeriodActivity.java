@@ -1,5 +1,7 @@
 package com.example.stayhealthy_android_app.Period;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -8,8 +10,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.util.Pair;
+import androidx.emoji2.widget.EmojiTextView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,11 +24,19 @@ import com.example.stayhealthy_android_app.JourneyActivity;
 import com.example.stayhealthy_android_app.Period.Calendar.CalendarAdapter;
 import com.example.stayhealthy_android_app.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 public class PeriodActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener{
     private final static String TAG = "PeriodActivity";
@@ -33,6 +47,10 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     private RecyclerView calendarRV;
     private LocalDate selectedDate;
     private TextView dateTV;
+    private TextView periodDateDetailsTV;
+    private TextView periodFlowDetailsTV;
+    private TextView symptomsDetailsTV;
+    private EmojiTextView moodEmojiTV;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,10 +62,10 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
 
         initWidgets();
         setBottomNavigationView();
-        // Set the days of month on the calendar recycler view
-        setDaysOfMonthRecyclerView();
-        // Set the selected date view
-        setDateView();
+
+        // Update UI with the current selected Date. The information displayed on the screen depends
+        // on the selected date.
+        updateUI();
 
     }
 
@@ -58,18 +76,107 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         bottomNavigationView.setSelectedItemId(R.id.health_record_icon);
     }
 
+    // addPeriodDateBTN onClickListener. A datePicker shown when clicked. User can choose a date or
+    // date range through this picker.
+    public void addPeriodDate(View view) {
+        final MaterialDatePicker<Pair<Long, Long>> materialDatePicker = MaterialDatePicker.Builder.dateRangePicker()
+                .setTitleText("Select Period Range")
+                .setSelection(new Pair<>(MaterialDatePicker.todayInUtcMilliseconds(), MaterialDatePicker.todayInUtcMilliseconds()))
+                .build();
+        materialDatePicker.show(getSupportFragmentManager(), "PeriodDateRangePicker");
+
+        materialDatePicker.addOnPositiveButtonClickListener(
+                (MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>) selection
+                        -> periodDateDetailsTV.setText(materialDatePicker.getHeaderText()));
+    }
+
+    // addPeriodFlowBTN onClickListener. A alert dialog is shown where user can choose a flow level.
+    public void addFlowLevel(View view) {
+        String[] flowLevelOptions = getResources().getStringArray(R.array.flow_level_array);
+        Integer[] checkedFlowLevel = {0};
+        for (int i = 0; i < flowLevelOptions.length; i++) {
+            if (periodFlowDetailsTV.getText().equals(flowLevelOptions[i])) {
+                checkedFlowLevel[0] = i;
+                break;
+            }
+        }
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.choose_flow_level_string)
+                .setSingleChoiceItems(flowLevelOptions, checkedFlowLevel[0], (dialog, which)
+                        -> checkedFlowLevel[0] = which)
+                .setPositiveButton(R.string.ok_string, (dialog, which)
+                        -> periodFlowDetailsTV.setText(flowLevelOptions[checkedFlowLevel[0]]))
+                .setNegativeButton(R.string.cancel_string, null)
+                .create()
+                .show();
+    }
+
+    // addSymptomsBTN onClickListener. A alert dialog is shown where user can choose one or more
+    // symptoms.
+    public void addSymptoms(View view) {
+        String[] symptomsOptions = getResources().getStringArray(R.array.symptoms_array);
+        boolean[] checkedSymptoms = new boolean[symptomsOptions.length];
+        ArrayList<String> symptomsList = new ArrayList<>(Arrays.asList(symptomsDetailsTV.getText().toString().split(", ")));
+        for (int i = 0; i < symptomsOptions.length; i++) {
+            if (symptomsList.contains(symptomsOptions[i])) {
+                checkedSymptoms[i] = true;
+            }
+        }
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.choose_symptoms_string)
+                .setMultiChoiceItems(symptomsOptions, checkedSymptoms, (dialog, i, isChecked)
+                        -> checkedSymptoms[i] = isChecked)
+                .setPositiveButton(R.string.ok_string, (dialog, which) -> {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String prefix = "";
+                    for(int i = 0; i < checkedSymptoms.length; i++) {
+                        if (checkedSymptoms[i]) {
+                            stringBuilder.append(prefix);
+                            prefix = ", ";
+                            stringBuilder.append(symptomsOptions[i]);
+                        }
+                    }
+                    symptomsDetailsTV.setText(stringBuilder);})
+                .setNegativeButton(R.string.cancel_string, null)
+                .create()
+                .show();
+    }
+
+    // addMood onClickListener. A alert dialog is shown where user can choose a mood.
+    public void addMood(View view) {
+        String[] moodOptions = getResources().getStringArray(R.array.mood_array);
+        Integer[] checkedMood = {0};
+        for (int i = 0; i < moodOptions.length; i++) {
+            if (moodEmojiTV.getText().equals(moodOptions[i])) {
+                checkedMood[0] = i;
+                break;
+            }
+        }
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.choose_mood_string)
+                .setSingleChoiceItems( moodOptions, checkedMood[0], (dialog, which)
+                        -> checkedMood[0] = which)
+                .setPositiveButton(R.string.ok_string, (dialog, which) -> {
+                    moodEmojiTV.setText(moodOptions[checkedMood[0]]);
+                    moodEmojiTV.setTextColor(ContextCompat.getColor(this, R.color.emoji_color));})
+                .setNegativeButton(R.string.cancel_string, null)
+                .create()
+                .show();
+    }
+
     // previousBTN onClickListener
     public void previousMonthAction(View view) {
         selectedDate = selectedDate.minusMonths(1);
-        setDaysOfMonthRecyclerView();
-        setDateView();
+        updateUI();
     }
 
     // nextBTN onClickListener
     public void nextMonthAction(View view) {
         selectedDate = selectedDate.plusMonths(1);
-        setDaysOfMonthRecyclerView();
-        setDateView();
+        updateUI();
     }
 
     // monthYearBTN onClickListener. Shows a MonthYearPickerDialog where user can select a month
@@ -89,8 +196,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         // Listening to the user's choice
         monthYearPickerDialog.setListener((view, year, monthOfYear, dayOfMonth) -> {
             setSelectedDate(year, monthOfYear, dayOfMonth);
-            setDaysOfMonthRecyclerView();
-            setDateView();
+            updateUI();
         });
 
         monthYearPickerDialog.show(getSupportFragmentManager(), "MonthYearPickerDialog");
@@ -103,8 +209,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         if (!dateTV.getText().equals("")) {
             selectedDate = selectedDate.plusDays(
                     Integer.parseInt((String)dateTV.getText()) - selectedDate.getDayOfMonth());
-            setDaysOfMonthRecyclerView();
-            setDateView();
+            updateUI();
         }
     }
 
@@ -113,6 +218,17 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         monthYearBTN = findViewById(R.id.monthYearBTN);
         calendarRV = findViewById(R.id.calendarRV);
         dateTV = findViewById(R.id.dateTV);
+        periodDateDetailsTV = findViewById(R.id.periodDateDetailsTV);
+        periodFlowDetailsTV = findViewById(R.id.periodFlowDetailsTV);
+        symptomsDetailsTV = findViewById((R.id.symptomsDetailsTV));
+        moodEmojiTV = findViewById(R.id.moodEmojiTV);
+    }
+
+    private void updateUI() {
+        // Set the days of month on the calendar recycler view
+        setDaysOfMonthRecyclerView();
+        // Set the selected date view
+        setDateView();
     }
 
     // Display the user selected date.
@@ -121,7 +237,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     }
 
     // Display the days of month array on the calendar recycler view.
-    public void setDaysOfMonthRecyclerView() {
+    private void setDaysOfMonthRecyclerView() {
         monthYearBTN.setText(monthYearFromDate(selectedDate));
         ArrayList<String> daysOfMonth = daysOfMonthArray(selectedDate);
 

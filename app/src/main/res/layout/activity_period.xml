@@ -85,6 +85,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/sunday_string"
+                    android:textColor="@color/black"
                     android:textAlignment="center"/>
 
                 <TextView
@@ -92,6 +93,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/monday_string"
+                    android:textColor="@color/black"
                     android:textAlignment="center"/>
 
                 <TextView
@@ -99,6 +101,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/tuesday_string"
+                    android:textColor="@color/black"
                     android:textAlignment="center"/>
 
                 <TextView
@@ -106,6 +109,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/wednesday_string"
+                    android:textColor="@color/black"
                     android:textAlignment="center"/>
 
                 <TextView
@@ -113,6 +117,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/thursday_string"
+                    android:textColor="@color/black"
                     android:textAlignment="center"/>
 
                 <TextView
@@ -120,6 +125,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/friday_string"
+                    android:textColor="@color/black"
                     android:textAlignment="center"/>
 
                 <TextView
@@ -127,6 +133,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/saturday_string"
+                    android:textColor="@color/black"
                     android:textAlignment="center"/>
 
             </LinearLayout>
@@ -144,13 +151,14 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/horizontal_margin"
                 android:text="@string/date_string"
-                app:layout_constraintBottom_toTopOf="@id/periodDateCV"
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toTopOf="@id/periodRangeCV"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/calendarRV" />
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/periodDateCV"
+                android:id="@+id/periodRangeCV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
@@ -176,7 +184,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/period_string"
+                            android:text="@string/period_recent_string"
                             android:textAppearance="?attr/textAppearanceHeadline6" />
 
                         <TextView
@@ -184,7 +192,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/period_recent_cycle_string"
+                            android:text="@string/no_record_string"
                             android:textAppearance="?attr/textAppearanceBody2" />
 
                     </LinearLayout>
@@ -197,7 +205,8 @@
                         app:icon="@drawable/ic_add_entry"
                         app:iconSize="20dp"
                         app:iconGravity="textEnd"
-                        android:contentDescription="@string/add_period_string"/>
+                        android:contentDescription="@string/add_period_string"
+                        android:onClick="addPeriodDate"/>
 
                 </LinearLayout>
 
@@ -208,7 +217,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
-                app:layout_constraintTop_toBottomOf="@id/periodDateCV"
+                app:layout_constraintTop_toBottomOf="@id/periodRangeCV"
                 app:layout_constraintBottom_toTopOf="@id/periodSymptomsCV"
                 app:cardElevation="4dp"
                 app:cardCornerRadius="4dp"
@@ -238,7 +247,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/flow_light_string"
+                            android:text="@string/no_record_string"
                             android:textAppearance="?attr/textAppearanceBody2" />
 
                     </LinearLayout>
@@ -251,7 +260,8 @@
                         app:icon="@drawable/ic_add_entry"
                         app:iconSize="20dp"
                         app:iconGravity="textEnd"
-                        android:contentDescription="@string/add_flow_string"/>
+                        android:contentDescription="@string/add_flow_string"
+                        android:onClick="addFlowLevel"/>
 
                 </LinearLayout>
 
@@ -293,7 +303,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/symptoms_options_string"
+                            android:text="@string/no_record_string"
                             android:textAppearance="?attr/textAppearanceBody2"/>
 
                     </LinearLayout>
@@ -306,7 +316,8 @@
                         app:icon="@drawable/ic_add_entry"
                         app:iconSize="20dp"
                         app:iconGravity="textEnd"
-                        android:contentDescription="@string/add_symptoms_string"/>
+                        android:contentDescription="@string/add_symptoms_string"
+                        android:onClick="addSymptoms"/>
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -317,7 +328,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
                 app:layout_constraintTop_toBottomOf="@id/periodSymptomsCV"
-                app:layout_constraintBottom_toTopOf="@id/periodPredictionCV"
+                app:layout_constraintBottom_toTopOf="@id/periodCycleHistoryCV"
                 app:cardElevation="4dp"
                 app:cardCornerRadius="4dp"
                 android:clickable="true">
@@ -342,12 +353,12 @@
                             android:textAppearance="?attr/textAppearanceHeadline6" />
 
                         <androidx.emoji2.widget.EmojiTextView
-                            android:id="@+id/moodEmoji"
+                            android:id="@+id/moodEmojiTV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/happy_face_emoji"
-                            android:textColor="@color/emoji_color"/>
+                            android:text="@string/no_record_string"
+                            android:textColor="@color/black"/>
 
                     </LinearLayout>
 
@@ -359,7 +370,62 @@
                         app:icon="@drawable/ic_add_entry"
                         app:iconSize="20dp"
                         app:iconGravity="textEnd"
-                        android:contentDescription="@string/add_mood_string" />
+                        android:contentDescription="@string/add_mood_string"
+                        android:onClick="addMood"/>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/periodCycleHistoryCV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/vertical_margin"
+                android:minHeight="48dp"
+                app:layout_constraintTop_toBottomOf="@id/periodMoodCV"
+                app:layout_constraintBottom_toTopOf="@id/periodPredictionCV"
+                app:cardElevation="4dp"
+                app:cardCornerRadius="4dp"
+                android:clickable="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/periodCycleHistoryTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/horizontal_margin"
+                        android:text="@string/period_cycle_history_string"
+                        android:textAppearance="?attr/textAppearanceHeadline6" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/periodCurrentCycleTV"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/horizontal_margin"
+                            android:text="@string/period_range_string"
+                            android:textAppearance="?attr/textAppearanceBody2" />
+
+                        <TextView
+                            android:id="@+id/periodCycleTotalDaysTV"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/horizontal_margin"
+                            android:text="@string/days_string"
+                            android:textAppearance="?attr/textAppearanceBody2" />
+
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -370,7 +436,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
-                app:layout_constraintTop_toBottomOf="@id/periodMoodCV"
+                android:minHeight="48dp"
+                app:layout_constraintTop_toBottomOf="@id/periodCycleHistoryCV"
                 app:layout_constraintBottom_toTopOf="@id/guideline1"
                 app:cardElevation="4dp"
                 app:cardCornerRadius="4dp"

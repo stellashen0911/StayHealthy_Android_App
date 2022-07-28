@@ -38,9 +38,11 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation platform('com.google.firebase:firebase-bom:30.2.0')
     implementation 'com.google.firebase:firebase-analytics'
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-database'
 
     // import emoji2 library
-    def emoji2_version = "1.2.0-beta01"
+    def emoji2_version = "1.2.0-rc01"
     implementation "androidx.emoji2:emoji2:$emoji2_version"
     implementation "androidx.emoji2:emoji2-views:$emoji2_version"
     implementation "androidx.emoji2:emoji2-views-helper:$emoji2_version"

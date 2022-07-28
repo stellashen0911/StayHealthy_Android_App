@@ -26,7 +26,9 @@
     <string name="mood_string">Mood</string>
     <string name="period_prediction_title_string">Period Prediction</string>
     <string name="period_prediction_string">Your period is likely to start on</string>
-    <string name="period_recent_cycle_string">Recent Cycle: Jun 29 - July 5</string>
+    <string name="period_cycle_history_string">Cycle History</string>
+    <string name="period_recent_string">Recent Period</string>
+    <string name="period_range_string">June 29 - July 5</string>
     <string name="symptoms_options_string">Stomachache, Headache, Chilling</string>
     <string name="flow_light_string">Light</string>
     <string name="angry_face_emoji">😠</string>
@@ -49,4 +51,27 @@
     <string name="total_time_editGoal_LB">Total Workout Time: </string>
     <string name="total_calories_editGoal_LB">Total Workout Calories: </string>
     <string name="min_LB">min</string>
+    <string name="no_record_string">No Record</string>
+    <string name="days_string">28 Days</string>
+    <string-array name="flow_level_array">
+        <item>Light</item>
+        <item>Medium</item>
+        <item>Heavy</item>
+    </string-array>
+    <string-array name="symptoms_array">
+        <item>Stomachache</item>
+        <item>Headache</item>
+        <item>Chilling</item>
+    </string-array>
+    <string-array name="mood_array">
+        <item>😠</item>
+        <item>😐</item>
+        <item>😭</item>
+        <item>🤮</item>
+        <item>😃</item>
+    </string-array>
+    <string name="choose_flow_level_string">Choose Flow Level</string>
+    <string name="choose_symptoms_string">Choose Symptoms</string>
+    <string name="choose_mood_string">Choose Mood</string>
+
 </resources>

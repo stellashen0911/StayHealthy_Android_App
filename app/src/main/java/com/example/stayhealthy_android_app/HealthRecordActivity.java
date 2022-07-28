@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import com.example.stayhealthy_android_app.Diet.DietActivity;
 import com.example.stayhealthy_android_app.Period.PeriodActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -38,11 +37,6 @@ public class HealthRecordActivity extends AppCompatActivity {
 
     public void openWaterActivity(View view) {
         Intent intent = new Intent(this, WaterActivity.class);
-        startActivity(intent);
-    }
-
-    public void openDietActivity(View view) {
-        Intent intent = new Intent(this, DietActivity.class);
         startActivity(intent);
     }
 

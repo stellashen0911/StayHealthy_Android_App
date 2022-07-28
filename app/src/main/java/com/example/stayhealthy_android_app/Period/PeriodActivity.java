@@ -1,12 +1,19 @@
 package com.example.stayhealthy_android_app.Period;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -90,7 +97,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                         -> periodDateDetailsTV.setText(materialDatePicker.getHeaderText()));
     }
 
-    // addPeriodFlowBTN onClickListener. A alert dialog is shown where user can choose a flow level.
+    // addPeriodFlowBTN onClickListener. An alert dialog is shown where user can choose a flow level.
     public void addFlowLevel(View view) {
         String[] flowLevelOptions = getResources().getStringArray(R.array.flow_level_array);
         Integer[] checkedFlowLevel = {0};
@@ -112,7 +119,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                 .show();
     }
 
-    // addSymptomsBTN onClickListener. A alert dialog is shown where user can choose one or more
+    // addSymptomsBTN onClickListener. An alert dialog is shown where user can choose one or more
     // symptoms.
     public void addSymptoms(View view) {
         String[] symptomsOptions = getResources().getStringArray(R.array.symptoms_array);
@@ -144,10 +151,13 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                 .show();
     }
 
-    // addMood onClickListener. A alert dialog is shown where user can choose a mood.
+    // addMood onClickListener. An alert dialog is shown where user can choose a mood.
     public void addMood(View view) {
+        // Create mood options string.
         String[] moodOptions = getResources().getStringArray(R.array.mood_array);
+        // Set default checked item position as the index 0.
         Integer[] checkedMood = {0};
+        // Set the checked item as the one shown on the moodEmojiTV.
         for (int i = 0; i < moodOptions.length; i++) {
             if (moodEmojiTV.getText().equals(moodOptions[i])) {
                 checkedMood[0] = i;
@@ -155,14 +165,45 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
             }
         }
 
+        // Create an arrayAdapter to place moodOptions and Set the checked item as gray in the background.
+        ArrayAdapter<CharSequence> arrayAdapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_gallery_item, moodOptions) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                int color = ContextCompat.getColor(PeriodActivity.this, R.color.transparent); // Transparent
+                if (position == checkedMood[0]) {
+                    color = ContextCompat.getColor(PeriodActivity.this, R.color.gray); // Opaque Blue
+                }
+                view.setBackgroundColor(color);
+                return view;
+            }
+        };
+
+        // Create a grid View to place the mood options.
+        GridView gridView = new GridView(this);
+        gridView.setAdapter(arrayAdapter);
+        gridView.setNumColumns(3);
+        gridView.setGravity(Gravity.CENTER);
+        gridView.setOnItemClickListener((parent, view1, position, id) -> {
+            checkedMood[0] = position;
+            for (int i = 0; i < moodOptions.length; i++) {
+                if (i != position) {
+                    View other = gridView.getChildAt(i);
+                    other.setBackgroundColor(ContextCompat.getColor(PeriodActivity.this, R.color.transparent));
+                } else {
+                    view1.setBackgroundColor(ContextCompat.getColor(PeriodActivity.this, R.color.gray));
+                }
+            }});
+
+        // Create the choose mood dialog, its content is the customized gridView
         new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.choose_mood_string)
-                .setSingleChoiceItems( moodOptions, checkedMood[0], (dialog, which)
-                        -> checkedMood[0] = which)
                 .setPositiveButton(R.string.ok_string, (dialog, which) -> {
-                    moodEmojiTV.setText(moodOptions[checkedMood[0]]);
-                    moodEmojiTV.setTextColor(ContextCompat.getColor(this, R.color.emoji_color));})
+                        moodEmojiTV.setText(moodOptions[checkedMood[0]]);
+                        moodEmojiTV.setTextColor(ContextCompat.getColor(this, R.color.emoji_color));})
                 .setNegativeButton(R.string.cancel_string, null)
+                .setView(gridView)
                 .create()
                 .show();
     }

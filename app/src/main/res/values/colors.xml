@@ -10,4 +10,5 @@
     <color name="emoji_color">#8D6E63</color>
     <color name="red">#e54304</color>
     <color name="gray">#E0E0E0</color>
+    <color name="transparent">#00FFFFFF</color>
 </resources>

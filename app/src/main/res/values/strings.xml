@@ -64,11 +64,12 @@
         <item>Chilling</item>
     </string-array>
     <string-array name="mood_array">
-        <item>😠</item>
+        <item>😃</item>
+        <item>😉</item>
         <item>😐</item>
         <item>😭</item>
         <item>🤮</item>
-        <item>😃</item>
+        <item>😠</item>
     </string-array>
     <string name="choose_flow_level_string">Choose Flow Level</string>
     <string name="choose_symptoms_string">Choose Symptoms</string>

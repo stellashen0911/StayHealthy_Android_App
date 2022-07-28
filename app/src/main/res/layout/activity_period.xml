@@ -85,6 +85,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/sunday_string"
+                    android:textColor="@color/black"
                     android:textAlignment="center"/>
 
                 <TextView
@@ -92,6 +93,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/monday_string"
+                    android:textColor="@color/black"
                     android:textAlignment="center"/>
 
                 <TextView
@@ -99,6 +101,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/tuesday_string"
+                    android:textColor="@color/black"
                     android:textAlignment="center"/>
 
                 <TextView
@@ -106,6 +109,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/wednesday_string"
+                    android:textColor="@color/black"
                     android:textAlignment="center"/>
 
                 <TextView
@@ -113,6 +117,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/thursday_string"
+                    android:textColor="@color/black"
                     android:textAlignment="center"/>
 
                 <TextView
@@ -120,6 +125,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/friday_string"
+                    android:textColor="@color/black"
                     android:textAlignment="center"/>
 
                 <TextView
@@ -127,6 +133,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/saturday_string"
+                    android:textColor="@color/black"
                     android:textAlignment="center"/>
 
             </LinearLayout>
@@ -144,6 +151,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/horizontal_margin"
                 android:text="@string/date_string"
+                android:textColor="@color/black"
                 app:layout_constraintBottom_toTopOf="@id/periodRangeCV"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

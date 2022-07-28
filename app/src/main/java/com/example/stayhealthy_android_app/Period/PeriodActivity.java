@@ -1,7 +1,5 @@
 package com.example.stayhealthy_android_app.Period;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -10,7 +8,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -28,20 +25,18 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 public class PeriodActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener{
     private final static String TAG = "PeriodActivity";
     private final static String DATE_LONG_FORMAT = "EEEE, MMMM d, yyyy";
     private final static String MONTH_YEAR_FORMAT = "MMMM yyyy";
+    private final static int DAY_TO_MILLISECONDS = 86400000; // that is: 24 * 60 * 60 * 1000
     private BottomNavigationView bottomNavigationView;
     private Button monthYearBTN;
     private RecyclerView calendarRV;
@@ -77,11 +72,16 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     }
 
     // addPeriodDateBTN onClickListener. A datePicker shown when clicked. User can choose a date or
-    // date range through this picker.
+    // a range of dates through this picker.
     public void addPeriodDate(View view) {
+        // Set default selection range as 2 days ago to today. StartDate is 4 days ago before the
+        // end date. TODO: This number of days ago can be set as the specific user period range. Typical period lasts for 5 days
+        int daysAgo = 4;
+        Long endDateInMilliseconds = selectedDateInMilliseconds();
+        Long startDateInMilliseconds = daysAgoInMilliseconds(endDateInMilliseconds, daysAgo);
         final MaterialDatePicker<Pair<Long, Long>> materialDatePicker = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText("Select Period Range")
-                .setSelection(new Pair<>(MaterialDatePicker.todayInUtcMilliseconds(), MaterialDatePicker.todayInUtcMilliseconds()))
+                .setSelection(new Pair<>(startDateInMilliseconds, endDateInMilliseconds))
                 .build();
         materialDatePicker.show(getSupportFragmentManager(), "PeriodDateRangePicker");
 
@@ -320,5 +320,15 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         selectedDate = selectedDate.plusDays(day - selectedDate.getDayOfMonth());
         selectedDate = selectedDate.plusMonths(month - (selectedDate.getMonthValue()));
         selectedDate = selectedDate.plusYears(year - selectedDate.getYear());
+    }
+
+    // Get the milliseconds of selectedDate. Zone is set as system default.
+    private Long selectedDateInMilliseconds() {
+        return selectedDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
+
+    // Get 2 days ago in milliseconds. `today` is in milliseconds format.
+    private Long daysAgoInMilliseconds(Long today, int daysAgo) {
+        return today - (long) daysAgo * DAY_TO_MILLISECONDS;
     }
 }

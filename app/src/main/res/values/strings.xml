@@ -26,7 +26,9 @@
     <string name="mood_string">Mood</string>
     <string name="period_prediction_title_string">Period Prediction</string>
     <string name="period_prediction_string">Your period is likely to start on</string>
-    <string name="period_recent_cycle_string">Recent Cycle: Jun 29 - July 5</string>
+    <string name="period_cycle_history_string">Cycle History</string>
+    <string name="period_recent_string">Recent Period</string>
+    <string name="period_range_string">Jun 29 - July 5</string>
     <string name="symptoms_options_string">Stomachache, Headache, Chilling</string>
     <string name="flow_light_string">Light</string>
     <string name="angry_face_emoji">😠</string>
@@ -42,5 +44,7 @@
     <string name="ok_string">OK</string>
     <string name="cancel_string">Cancel</string>
     <string name="select_month_year_string">Select Month and Year</string>
+    <string name="no_record_string">No Record</string>
+    <string name="days_string">28 Days</string>
 
 </resources>

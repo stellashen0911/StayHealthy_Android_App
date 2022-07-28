@@ -44,10 +44,10 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
 
         initWidgets();
         setBottomNavigationView();
-        // Set the days of month on the calendar recycler view
-        setDaysOfMonthRecyclerView();
-        // Set the selected date view
-        setDateView();
+
+        // Update UI with the current selected Date. The information displayed on the screen depends
+        // on the selected date.
+        updateUI();
 
     }
 
@@ -61,15 +61,13 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     // previousBTN onClickListener
     public void previousMonthAction(View view) {
         selectedDate = selectedDate.minusMonths(1);
-        setDaysOfMonthRecyclerView();
-        setDateView();
+        updateUI();
     }
 
     // nextBTN onClickListener
     public void nextMonthAction(View view) {
         selectedDate = selectedDate.plusMonths(1);
-        setDaysOfMonthRecyclerView();
-        setDateView();
+        updateUI();
     }
 
     // monthYearBTN onClickListener. Shows a MonthYearPickerDialog where user can select a month
@@ -89,8 +87,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         // Listening to the user's choice
         monthYearPickerDialog.setListener((view, year, monthOfYear, dayOfMonth) -> {
             setSelectedDate(year, monthOfYear, dayOfMonth);
-            setDaysOfMonthRecyclerView();
-            setDateView();
+            updateUI();
         });
 
         monthYearPickerDialog.show(getSupportFragmentManager(), "MonthYearPickerDialog");
@@ -103,8 +100,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         if (!dateTV.getText().equals("")) {
             selectedDate = selectedDate.plusDays(
                     Integer.parseInt((String)dateTV.getText()) - selectedDate.getDayOfMonth());
-            setDaysOfMonthRecyclerView();
-            setDateView();
+            updateUI();
         }
     }
 
@@ -115,13 +111,20 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         dateTV = findViewById(R.id.dateTV);
     }
 
+    private void updateUI() {
+        // Set the days of month on the calendar recycler view
+        setDaysOfMonthRecyclerView();
+        // Set the selected date view
+        setDateView();
+    }
+
     // Display the user selected date.
     private void setDateView() {
         dateTV.setText(convertLocalDateToLongFormatStringDate(selectedDate));
     }
 
     // Display the days of month array on the calendar recycler view.
-    public void setDaysOfMonthRecyclerView() {
+    private void setDaysOfMonthRecyclerView() {
         monthYearBTN.setText(monthYearFromDate(selectedDate));
         ArrayList<String> daysOfMonth = daysOfMonthArray(selectedDate);
 

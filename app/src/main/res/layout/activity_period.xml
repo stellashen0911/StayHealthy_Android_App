@@ -144,13 +144,13 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/horizontal_margin"
                 android:text="@string/date_string"
-                app:layout_constraintBottom_toTopOf="@id/periodDateCV"
+                app:layout_constraintBottom_toTopOf="@id/periodRangeCV"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/calendarRV" />
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/periodDateCV"
+                android:id="@+id/periodRangeCV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
@@ -176,7 +176,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/period_string"
+                            android:text="@string/period_recent_string"
                             android:textAppearance="?attr/textAppearanceHeadline6" />
 
                         <TextView
@@ -184,7 +184,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/period_recent_cycle_string"
+                            android:text="@string/period_range_string"
                             android:textAppearance="?attr/textAppearanceBody2" />
 
                     </LinearLayout>
@@ -208,7 +208,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
-                app:layout_constraintTop_toBottomOf="@id/periodDateCV"
+                app:layout_constraintTop_toBottomOf="@id/periodRangeCV"
                 app:layout_constraintBottom_toTopOf="@id/periodSymptomsCV"
                 app:cardElevation="4dp"
                 app:cardCornerRadius="4dp"
@@ -317,7 +317,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
                 app:layout_constraintTop_toBottomOf="@id/periodSymptomsCV"
-                app:layout_constraintBottom_toTopOf="@id/periodPredictionCV"
+                app:layout_constraintBottom_toTopOf="@id/periodCycleHistoryCV"
                 app:cardElevation="4dp"
                 app:cardCornerRadius="4dp"
                 android:clickable="true">
@@ -366,11 +366,66 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/periodCycleHistoryCV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/vertical_margin"
+                android:minHeight="48dp"
+                app:layout_constraintTop_toBottomOf="@id/periodMoodCV"
+                app:layout_constraintBottom_toTopOf="@id/periodPredictionCV"
+                app:cardElevation="4dp"
+                app:cardCornerRadius="4dp"
+                android:clickable="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/periodCycleHistoryTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/horizontal_margin"
+                        android:text="@string/period_cycle_history_string"
+                        android:textAppearance="?attr/textAppearanceHeadline6" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/periodCurrentCycleTV"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/horizontal_margin"
+                            android:text="@string/period_range_string"
+                            android:textAppearance="?attr/textAppearanceBody2" />
+
+                        <TextView
+                            android:id="@+id/periodCycleTotalDaysTV"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/horizontal_margin"
+                            android:text="@string/days_string"
+                            android:textAppearance="?attr/textAppearanceBody2" />
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/periodPredictionCV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
-                app:layout_constraintTop_toBottomOf="@id/periodMoodCV"
+                android:minHeight="48dp"
+                app:layout_constraintTop_toBottomOf="@id/periodCycleHistoryCV"
                 app:layout_constraintBottom_toTopOf="@id/guideline1"
                 app:cardElevation="4dp"
                 app:cardCornerRadius="4dp"

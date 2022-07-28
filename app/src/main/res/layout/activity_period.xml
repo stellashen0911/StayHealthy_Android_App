@@ -192,7 +192,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/period_range_string"
+                            android:text="@string/no_record_string"
                             android:textAppearance="?attr/textAppearanceBody2" />
 
                     </LinearLayout>
@@ -205,7 +205,8 @@
                         app:icon="@drawable/ic_add_entry"
                         app:iconSize="20dp"
                         app:iconGravity="textEnd"
-                        android:contentDescription="@string/add_period_string"/>
+                        android:contentDescription="@string/add_period_string"
+                        android:onClick="addPeriodDate"/>
 
                 </LinearLayout>
 
@@ -246,7 +247,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/flow_light_string"
+                            android:text="@string/no_record_string"
                             android:textAppearance="?attr/textAppearanceBody2" />
 
                     </LinearLayout>
@@ -259,7 +260,8 @@
                         app:icon="@drawable/ic_add_entry"
                         app:iconSize="20dp"
                         app:iconGravity="textEnd"
-                        android:contentDescription="@string/add_flow_string"/>
+                        android:contentDescription="@string/add_flow_string"
+                        android:onClick="addFlowLevel"/>
 
                 </LinearLayout>
 
@@ -301,7 +303,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/symptoms_options_string"
+                            android:text="@string/no_record_string"
                             android:textAppearance="?attr/textAppearanceBody2"/>
 
                     </LinearLayout>
@@ -314,7 +316,8 @@
                         app:icon="@drawable/ic_add_entry"
                         app:iconSize="20dp"
                         app:iconGravity="textEnd"
-                        android:contentDescription="@string/add_symptoms_string"/>
+                        android:contentDescription="@string/add_symptoms_string"
+                        android:onClick="addSymptoms"/>
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -350,12 +353,12 @@
                             android:textAppearance="?attr/textAppearanceHeadline6" />
 
                         <androidx.emoji2.widget.EmojiTextView
-                            android:id="@+id/moodEmoji"
+                            android:id="@+id/moodEmojiTV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/happy_face_emoji"
-                            android:textColor="@color/emoji_color"/>
+                            android:text="@string/no_record_string"
+                            android:textColor="@color/black"/>
 
                     </LinearLayout>
 
@@ -367,7 +370,8 @@
                         app:icon="@drawable/ic_add_entry"
                         app:iconSize="20dp"
                         app:iconGravity="textEnd"
-                        android:contentDescription="@string/add_mood_string" />
+                        android:contentDescription="@string/add_mood_string"
+                        android:onClick="addMood"/>
 
                 </LinearLayout>
 

@@ -32,6 +32,10 @@ public class WaterActivity  extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
     }
 
+    public void onWaterButtonPressed(int waterOZ) {
+        // submit water oz to database.
+    }
+
     private void setBottomNavigationView() {
         // Set Home selected
         bottomNavigationView.setSelectedItemId(R.id.health_record_icon);

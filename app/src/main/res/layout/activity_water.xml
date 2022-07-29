@@ -88,7 +88,28 @@
                     android:adjustViewBounds="true"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
+            <TextView
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="Today"/>
+            <TextView
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
+                android:id="@+id/today_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="0 oz of your 80 oz goal"/>
+            <View
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#c0c0c0"/>
+            
         </androidx.appcompat.widget.LinearLayoutCompat>
 
 

@@ -8,13 +8,14 @@
         android:id="@+id/periodContentSV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/periodTitleTV"
@@ -34,8 +35,8 @@
                 android:id="@+id/calendarTitleLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:gravity="center"
+                android:orientation="horizontal"
                 app:layout_constraintTop_toBottomOf="@id/periodTitleTV">
 
                 <com.google.android.material.button.MaterialButton
@@ -44,9 +45,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:onClick="previousMonthAction"
                     android:text="@string/previous_button_string"
-                    android:textStyle="bold"
-                    android:onClick="previousMonthAction"/>
+                    android:textStyle="bold" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/monthYearBTN"
@@ -54,10 +55,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
+                    android:onClick="showMonthYearPickerDialog"
                     android:text="@string/month_year_string"
                     android:textAlignment="center"
-                    android:textAllCaps="false"
-                    android:onClick="showMonthYearPickerDialog"/>
+                    android:textAllCaps="false" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/nextBTN"
@@ -65,9 +66,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:onClick="nextMonthAction"
                     android:text="@string/next_button_string"
-                    android:textStyle="bold"
-                    android:onClick="nextMonthAction"/>
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -75,66 +76,66 @@
                 android:id="@+id/daysOfWeekLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:gravity="center"
-                app:layout_constraintTop_toBottomOf="@id/calendarTitleLL"
-                app:layout_constraintBottom_toTopOf="@id/calendarRV">
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@id/calendarRV"
+                app:layout_constraintTop_toBottomOf="@id/calendarTitleLL">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/sunday_string"
-                    android:textColor="@color/black"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:textColor="@color/black" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/monday_string"
-                    android:textColor="@color/black"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:textColor="@color/black" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/tuesday_string"
-                    android:textColor="@color/black"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:textColor="@color/black" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/wednesday_string"
-                    android:textColor="@color/black"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:textColor="@color/black" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/thursday_string"
-                    android:textColor="@color/black"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:textColor="@color/black" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/friday_string"
-                    android:textColor="@color/black"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:textColor="@color/black" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/saturday_string"
-                    android:textColor="@color/black"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:textColor="@color/black" />
 
             </LinearLayout>
 
@@ -142,8 +143,8 @@
                 android:id="@+id/calendarRV"
                 android:layout_width="match_parent"
                 android:layout_height="140dp"
-                app:layout_constraintTop_toBottomOf="@+id/daysOfWeekLL"
-                app:layout_constraintBottom_toTopOf="@id/dateTV"/>
+                app:layout_constraintBottom_toTopOf="@id/dateTV"
+                app:layout_constraintTop_toBottomOf="@+id/daysOfWeekLL" />
 
             <TextView
                 android:id="@+id/dateTV"
@@ -162,16 +163,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
-                app:layout_constraintTop_toBottomOf="@id/dateTV"
-                app:layout_constraintBottom_toTopOf="@id/periodFlowCV"
-                app:cardElevation="4dp"
+                android:clickable="true"
                 app:cardCornerRadius="4dp"
-                android:clickable="true">
+                app:cardElevation="4dp"
+                app:layout_constraintBottom_toTopOf="@id/periodConditionRG"
+                app:layout_constraintTop_toBottomOf="@id/dateTV">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -202,31 +203,56 @@
                         style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:icon="@drawable/ic_add_entry"
-                        app:iconSize="20dp"
-                        app:iconGravity="textEnd"
                         android:contentDescription="@string/add_period_string"
-                        android:onClick="addPeriodDate"/>
+                        android:onClick="addPeriodDate"
+                        app:icon="@drawable/ic_add_entry"
+                        app:iconGravity="textEnd"
+                        app:iconSize="20dp" />
 
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
+
+            <RadioGroup
+                android:id="@+id/periodConditionRG"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/horizontal_margin"
+                android:layout_marginEnd="@dimen/horizontal_margin"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@id/periodFlowCV"
+                app:layout_constraintTop_toBottomOf="@id/periodRangeCV">
+
+                <RadioButton
+                    android:id="@+id/hadFlowRB"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/had_flow_string" />
+
+                <RadioButton
+                    android:id="@+id/noFlowRB"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/no_flow_string" />
+
+            </RadioGroup>
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/periodFlowCV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
-                app:layout_constraintTop_toBottomOf="@id/periodRangeCV"
-                app:layout_constraintBottom_toTopOf="@id/periodSymptomsCV"
-                app:cardElevation="4dp"
+                android:clickable="true"
                 app:cardCornerRadius="4dp"
-                android:clickable="true">
+                app:cardElevation="4dp"
+                app:layout_constraintBottom_toTopOf="@id/periodSymptomsCV"
+                app:layout_constraintTop_toBottomOf="@id/periodConditionRG">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -257,11 +283,11 @@
                         style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:icon="@drawable/ic_add_entry"
-                        app:iconSize="20dp"
-                        app:iconGravity="textEnd"
                         android:contentDescription="@string/add_flow_string"
-                        android:onClick="addFlowLevel"/>
+                        android:onClick="addFlowLevel"
+                        app:icon="@drawable/ic_add_entry"
+                        app:iconGravity="textEnd"
+                        app:iconSize="20dp" />
 
                 </LinearLayout>
 
@@ -273,11 +299,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
-                app:layout_constraintTop_toBottomOf="@id/periodFlowCV"
-                app:layout_constraintBottom_toTopOf="@id/periodMoodCV"
-                app:cardElevation="4dp"
+                android:clickable="true"
                 app:cardCornerRadius="4dp"
-                android:clickable="true">
+                app:cardElevation="4dp"
+                app:layout_constraintBottom_toTopOf="@id/periodMoodCV"
+                app:layout_constraintTop_toBottomOf="@id/periodFlowCV">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -304,7 +330,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
                             android:text="@string/no_record_string"
-                            android:textAppearance="?attr/textAppearanceBody2"/>
+                            android:textAppearance="?attr/textAppearanceBody2" />
 
                     </LinearLayout>
 
@@ -313,11 +339,11 @@
                         style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:icon="@drawable/ic_add_entry"
-                        app:iconSize="20dp"
-                        app:iconGravity="textEnd"
                         android:contentDescription="@string/add_symptoms_string"
-                        android:onClick="addSymptoms"/>
+                        android:onClick="addSymptoms"
+                        app:icon="@drawable/ic_add_entry"
+                        app:iconGravity="textEnd"
+                        app:iconSize="20dp" />
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -327,16 +353,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
-                app:layout_constraintTop_toBottomOf="@id/periodSymptomsCV"
-                app:layout_constraintBottom_toTopOf="@id/periodCycleHistoryCV"
-                app:cardElevation="4dp"
+                android:clickable="true"
                 app:cardCornerRadius="4dp"
-                android:clickable="true">
+                app:cardElevation="4dp"
+                app:layout_constraintBottom_toTopOf="@id/periodCycleHistoryCV"
+                app:layout_constraintTop_toBottomOf="@id/periodSymptomsCV">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -358,7 +384,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
                             android:text="@string/no_record_string"
-                            android:textColor="@color/black"/>
+                            android:textColor="@color/black" />
 
                     </LinearLayout>
 
@@ -367,11 +393,11 @@
                         style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:icon="@drawable/ic_add_entry"
-                        app:iconSize="20dp"
-                        app:iconGravity="textEnd"
                         android:contentDescription="@string/add_mood_string"
-                        android:onClick="addMood"/>
+                        android:onClick="addMood"
+                        app:icon="@drawable/ic_add_entry"
+                        app:iconGravity="textEnd"
+                        app:iconSize="20dp" />
 
                 </LinearLayout>
 
@@ -382,17 +408,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
+                android:clickable="true"
                 android:minHeight="48dp"
-                app:layout_constraintTop_toBottomOf="@id/periodMoodCV"
-                app:layout_constraintBottom_toTopOf="@id/periodPredictionCV"
-                app:cardElevation="4dp"
                 app:cardCornerRadius="4dp"
-                android:clickable="true">
+                app:cardElevation="4dp"
+                app:layout_constraintBottom_toTopOf="@id/periodPredictionCV"
+                app:layout_constraintTop_toBottomOf="@id/periodMoodCV">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" >
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/periodCycleHistoryTV"
@@ -406,7 +432,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:orientation="horizontal" >
+                        android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/periodCurrentCycleTV"
@@ -436,17 +462,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
+                android:clickable="true"
                 android:minHeight="48dp"
-                app:layout_constraintTop_toBottomOf="@id/periodCycleHistoryCV"
-                app:layout_constraintBottom_toTopOf="@id/guideline1"
-                app:cardElevation="4dp"
                 app:cardCornerRadius="4dp"
-                android:clickable="true">
+                app:cardElevation="4dp"
+                app:layout_constraintBottom_toTopOf="@id/guideline1"
+                app:layout_constraintTop_toBottomOf="@id/periodCycleHistoryCV">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" >
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/periodPredictionTV"
@@ -460,7 +486,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:orientation="horizontal" >
+                        android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/periodPredictionDescriptionTV"
@@ -468,7 +494,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
                             android:text="@string/period_prediction_string"
-                            android:textAppearance="?attr/textAppearanceBody2"/>
+                            android:textAppearance="?attr/textAppearanceBody2" />
 
                         <TextView
                             android:id="@+id/periodPredictionDateTV"

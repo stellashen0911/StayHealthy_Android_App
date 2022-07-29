@@ -1,16 +1,16 @@
 package com.example.stayhealthy_android_app.Period;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,24 +26,43 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.stayhealthy_android_app.AwardActivity;
 import com.example.stayhealthy_android_app.JourneyActivity;
 import com.example.stayhealthy_android_app.Period.Calendar.CalendarAdapter;
+import com.example.stayhealthy_android_app.Period.Model.PeriodData;
 import com.example.stayhealthy_android_app.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class PeriodActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener{
     private final static String TAG = "PeriodActivity";
-    private final static String DATE_LONG_FORMAT = "EEEE, MMMM d, yyyy";
+    private final static String DATE_FULL_FORMAT = "EEEE, MMMM d, yyyy";
     private final static String MONTH_YEAR_FORMAT = "MMMM yyyy";
+    private final static String DATE_LONG_FORMAT = "MMMM dd yyyy";
+    private final static String DATE_SHORT_FORMAT = "MM-dd-yyyy";
     private final static int DAY_TO_MILLISECONDS = 86400000; // that is: 24 * 60 * 60 * 1000
+    private DatabaseReference mDataBase;
+    private FirebaseUser user;
     private BottomNavigationView bottomNavigationView;
     private Button monthYearBTN;
     private RecyclerView calendarRV;
@@ -53,11 +72,22 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     private TextView periodFlowDetailsTV;
     private TextView symptomsDetailsTV;
     private EmojiTextView moodEmojiTV;
+    private TextView periodCurrentCycleTV;
+    private TextView periodCycleTotalDaysTV;
+    private TextView periodPredictionDateTV;
+    private RadioButton hadFlowRB;
+    private RadioButton noFlowRB;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_period);
+
+        // Get the current user from firebase authentication.
+        user = FirebaseAuth.getInstance().getCurrentUser();
+
+        // Set up the firebase Database reference.
+        mDataBase = FirebaseDatabase.getInstance().getReference(user.getUid());
 
         // Initialize the selected date as today
         selectedDate = LocalDate.now();
@@ -65,8 +95,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         initWidgets();
         setBottomNavigationView();
 
-        // Update UI with the current selected Date. The information displayed on the screen depends
-        // on the selected date.
+        // Update UI with the current selected Date and the user.
         updateUI();
 
     }
@@ -84,18 +113,73 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         // Set default selection range as 2 days ago to today. StartDate is 4 days ago before the
         // end date. TODO: This number of days ago can be set as the specific user period range. Typical period lasts for 5 days
         int daysAgo = 4;
-        Long endDateInMilliseconds = selectedDateInMilliseconds();
-        Long startDateInMilliseconds = daysAgoInMilliseconds(endDateInMilliseconds, daysAgo);
+        Long defaultEndDateInMilliseconds = selectedDateInMilliseconds();
+        Long defaultStartDateInMilliseconds = daysAgoInMilliseconds(defaultEndDateInMilliseconds, daysAgo);
         final MaterialDatePicker<Pair<Long, Long>> materialDatePicker = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText("Select Period Range")
-                .setSelection(new Pair<>(startDateInMilliseconds, endDateInMilliseconds))
+                .setSelection(new Pair<>(defaultStartDateInMilliseconds, defaultEndDateInMilliseconds))
                 .build();
         materialDatePicker.show(getSupportFragmentManager(), "PeriodDateRangePicker");
 
         materialDatePicker.addOnPositiveButtonClickListener(
                 (MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>) selection
-                        -> periodDateDetailsTV.setText(materialDatePicker.getHeaderText()));
+                        -> {
+                    Long startDateInMilliseconds = selection.first;
+                    Long endDateInMilliseconds = selection.second;
+                    String startDate = convertUtcMillisecondsToDate(startDateInMilliseconds, DATE_SHORT_FORMAT);
+                    String[] startDateSplit = startDate.split("-");
+                    int month = Integer.parseInt(startDateSplit[0]);
+                    int day = Integer.parseInt(startDateSplit[1]);
+                    int year = Integer.parseInt(startDateSplit[2]);
+                    setSelectedDate(year, month, day);
+                    updateUI();
+                    savePeriodRangeToFirebaseDataBase(startDateInMilliseconds, endDateInMilliseconds);
+                });
+
     }
+
+    // Convert milliseconds in UTC time to date in string
+    private String convertUtcMillisecondsToDate(Long milliseconds, String dateFormat) {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        calendar.setTimeInMillis(milliseconds);
+        SimpleDateFormat format = new SimpleDateFormat(dateFormat, Locale.US);
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return format.format(calendar.getTime());
+    }
+
+    private void saveOnePeriodDateToFirebaseDataBase(Long date, Long startDate) {
+        String dateInStr = convertUtcMillisecondsToDate(date, DATE_SHORT_FORMAT);
+        String startDateInStr = convertUtcMillisecondsToDate(startDate, DATE_SHORT_FORMAT);
+        PeriodData periodData = new PeriodData(dateInStr, startDateInStr, true);
+        Log.v(TAG, periodData.toString());
+//        mDataBase.child("users").child(user.getUid()).child("period").child(dateInStr).setValue(periodData)
+//                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void unused) {
+//                        Log.v(TAG, "write one period date to database is successful");
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                });
+    }
+
+    private void savePeriodRangeToFirebaseDataBase(Long startDate, Long endDate) {
+        saveOnePeriodDateToFirebaseDataBase(startDate, startDate);
+        Long date = startDate;
+        while (!date.equals(endDate)) {
+            date = daysAfterInMilliseconds(date, 1);
+            saveOnePeriodDateToFirebaseDataBase(date, startDate);
+        }
+    }
+
+    private int monthValueFromMonthName(String name) {
+        return Month.valueOf(name.toUpperCase()).getValue();
+    }
+
 
     // addPeriodFlowBTN onClickListener. An alert dialog is shown where user can choose a flow level.
     public void addFlowLevel(View view) {
@@ -263,18 +347,50 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         periodFlowDetailsTV = findViewById(R.id.periodFlowDetailsTV);
         symptomsDetailsTV = findViewById((R.id.symptomsDetailsTV));
         moodEmojiTV = findViewById(R.id.moodEmojiTV);
+        periodCurrentCycleTV = findViewById(R.id.periodCurrentCycleTV);
+        periodCycleTotalDaysTV = findViewById(R.id.periodCycleTotalDaysTV);
+        periodPredictionDateTV = findViewById(R.id.periodPredictionTV);
+        hadFlowRB = findViewById(R.id.hadFlowRB);
+        noFlowRB = findViewById(R.id.noFlowRB);
     }
 
     private void updateUI() {
-        // Set the days of month on the calendar recycler view
+        // Set the days of month on the calendar recycler view.
         setDaysOfMonthRecyclerView();
-        // Set the selected date view
+        // Set the selected date view.
         setDateView();
+
     }
+
+
+    private void setRecentPeriodView() {
+
+    };
+    private void setFlowCondition() {
+
+    };
+    private void setFlowLevelView() {
+
+    };
+    private void setSymptomsView() {
+
+    };
+    private void setMoodView() {
+
+    };
+    private void setCycleHistoryRangeView() {
+
+    };
+    private void setTotalCycleDaysView() {
+
+    };
+    private void SetPeriodPredictionDate() {
+
+    };
 
     // Display the user selected date.
     private void setDateView() {
-        dateTV.setText(convertLocalDateToLongFormatStringDate(selectedDate));
+        dateTV.setText(convertLocalDateToStringDate(selectedDate, DATE_FULL_FORMAT));
     }
 
     // Display the days of month array on the calendar recycler view.
@@ -316,9 +432,9 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         return daysOfMonthArray;
     }
 
-    // Convert LocalDate to date in long format string.
-    private String convertLocalDateToLongFormatStringDate(LocalDate date) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_LONG_FORMAT);
+    // Convert LocalDate to date in string.
+    private String convertLocalDateToStringDate(LocalDate date, String dateFormat) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dateFormat);
         return date.format(dateTimeFormatter);
     }
 
@@ -368,8 +484,13 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         return selectedDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
-    // Get 2 days ago in milliseconds. `today` is in milliseconds format.
+    // Get number of days ago in milliseconds. `today` is in milliseconds format.
     private Long daysAgoInMilliseconds(Long today, int daysAgo) {
         return today - (long) daysAgo * DAY_TO_MILLISECONDS;
+    }
+
+    // Get number of days after in milliseconds. `today` is in milliseconds format.
+    private Long daysAfterInMilliseconds(Long today, int daysAfter) {
+        return today + (long) daysAfter * DAY_TO_MILLISECONDS;
     }
 }

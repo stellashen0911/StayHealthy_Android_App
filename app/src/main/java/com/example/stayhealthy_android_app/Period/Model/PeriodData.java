@@ -1,24 +1,43 @@
 package com.example.stayhealthy_android_app.Period.Model;
 
+import androidx.annotation.NonNull;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 // Period data stored on firebase realtime database.
 
 public class PeriodData implements Comparable<PeriodData>{
-    private final String date; // format "mm-dd-yyyy"
-    private final String startDate; // format "mm-dd-yyyy"
-    private final int hadFlow; // "1", "0"
-    private final String flowLevel;
-    private final String symptoms;
-    private final int mood;
+    private String date; // format "mm-dd-yyyy"
+    private String startDate; // format "mm-dd-yyyy"
+    private boolean hadFlow;
+    private String flowLevel;
+    private String symptoms;
+    private int mood;
 
-    public PeriodData(String date, String startDate, int hadFlow, String flowLevel, String symptoms, int mood) {
+    public PeriodData() {
+    }
+
+    public PeriodData(String date, String startDate, boolean hadFlow, String flowLevel, String symptoms, int mood) {
         this.date = date;
         this.startDate = startDate;
         this.hadFlow = hadFlow;
         this.flowLevel = flowLevel;
         this.symptoms = symptoms;
         this.mood = mood;
+    }
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("date", date);
+        result.put("startDate", startDate);
+        result.put("hadFlow", hadFlow);
+        result.put("flowLevel", flowLevel);
+        result.put("symptoms", symptoms);
+        result.put("mood", mood);
+
+        return result;
     }
 
     public String getDate() {
@@ -29,7 +48,7 @@ public class PeriodData implements Comparable<PeriodData>{
         return startDate;
     }
 
-    public int getHadFlow() {
+    public boolean getHadFlow() {
         return hadFlow;
     }
 
@@ -66,5 +85,12 @@ public class PeriodData implements Comparable<PeriodData>{
     @Override
     public int hashCode() {
         return Objects.hash(getDate(), getStartDate(), getHadFlow(), getFlowLevel(), getSymptoms(), getMood());
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Date: " + getDate() + " StartDate: " + getStartDate() + " Had Flow: " + getHadFlow()
+                + " Flow Level: " + getFlowLevel() + " Symptoms: " + getSymptoms() + " Mood: " + getMood();
     }
 }

@@ -12,6 +12,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
     private Button Login_btn;
@@ -19,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText login_email;
     private EditText login_password;
     public FirebaseAuth mAuth;
+    public DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         login_email = findViewById(R.id.editTextTextEmailAddress);
         login_password = findViewById(R.id.editTextTextPassword);
         mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         //click the login button
         Login_btn.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +83,10 @@ public class MainActivity extends AppCompatActivity {
         //validate the password and username in the firebase authentication
         mAuth.signInWithEmailAndPassword(email_str,password_str).addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user != null) {
+                    mDatabase.child("users").child(user.getUid()).child("email").setValue(user.getEmail());
+                }
                 startActivity(new Intent(this, HealthRecordActivity.class));
             } else {
                 Toast.makeText(this,

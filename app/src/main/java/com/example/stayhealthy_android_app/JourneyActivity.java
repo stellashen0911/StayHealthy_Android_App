@@ -47,7 +47,7 @@ public class JourneyActivity extends AppCompatActivity {
         myDataBase = FirebaseDatabase.getInstance().getReference();
         Calendar cal = Calendar.getInstance();
         String userDBName = user.getEmail().replace('.','_');
-        // demo code remove
+        // demo code store data to cloud db
         myDataBase.child("user").child(userDBName).child(POST_DB_NAME).removeValue();
         myDataBase.child("user").child(userDBName).child(POST_DB_NAME).child(String.valueOf(cal.getTimeInMillis())).setValue(new JourneyPost("this is a post"));
        // end of demo code

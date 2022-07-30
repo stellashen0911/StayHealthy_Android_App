@@ -2,6 +2,8 @@ package com.example.stayhealthy_android_app.Period.Model;
 
 import androidx.annotation.NonNull;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 // Period data stored on firebase realtime database.
@@ -17,15 +19,6 @@ public class PeriodData implements Comparable<PeriodData>{
     public PeriodData() {
     }
 
-    public PeriodData(String date, String startDate, boolean hadFlow) {
-        this.date = date;
-        this.startDate = startDate;
-        this.hadFlow = hadFlow;
-        this.flowLevel = "";
-        this.symptoms = "";
-        this.mood = -1;
-    }
-
     public PeriodData(String date, String startDate, boolean hadFlow, String flowLevel, String symptoms, int mood) {
         this.date = date;
         this.startDate = startDate;
@@ -33,6 +26,18 @@ public class PeriodData implements Comparable<PeriodData>{
         this.flowLevel = flowLevel;
         this.symptoms = symptoms;
         this.mood = mood;
+    }
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("date", date);
+        result.put("startDate", startDate);
+        result.put("hadFlow", hadFlow);
+        result.put("flowLevel", flowLevel);
+        result.put("symptoms", symptoms);
+        result.put("mood", mood);
+
+        return result;
     }
 
     public String getDate() {

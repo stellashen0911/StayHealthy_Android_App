@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.stayhealthy_android_app.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
     private final ArrayList<String> daysOfMonth;
@@ -19,14 +20,21 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
     private final int selectedDay;
     private final int selectedDayColor;
     private final Drawable selectedDayBackground;
+    private final List<Integer> periodDates;
+    private final int periodDatesColor;
+    private final Drawable periodDatesBackground;
 
     public CalendarAdapter(ArrayList<String> daysOfMonth, OnItemListener onItemListener,
-                           int selectedDay, int selectedDayColor, Drawable selectedDayBackground) {
+                           int selectedDay, int selectedDayColor, Drawable selectedDayBackground,
+                           List<Integer> periodDates, int periodDatesColor, Drawable periodDatesBackground) {
         this.daysOfMonth = daysOfMonth;
         this.onItemListener = onItemListener;
         this.selectedDay = selectedDay;
         this.selectedDayColor = selectedDayColor;
         this.selectedDayBackground = selectedDayBackground;
+        this.periodDates = periodDates;
+        this.periodDatesColor = periodDatesColor;
+        this.periodDatesBackground = periodDatesBackground;
     }
 
     @NonNull
@@ -48,6 +56,10 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
             if (day == selectedDay) {
                 holder.getDaysOfMonth().setTextColor(selectedDayColor);
                 holder.getDaysOfMonth().setBackground(selectedDayBackground);
+            }
+            if (periodDates.contains(day)) {
+                holder.getDaysOfMonth().setTextColor(periodDatesColor);
+                holder.getDaysOfMonth().setBackground(periodDatesBackground);
             }
         }
 

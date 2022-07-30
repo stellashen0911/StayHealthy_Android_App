@@ -233,7 +233,6 @@
                     android:id="@+id/noFlowRB"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
                     android:text="@string/no_flow_string" />
 
             </RadioGroup>
@@ -439,7 +438,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/period_range_string"
+                            android:text="@string/no_record_string"
                             android:textAppearance="?attr/textAppearanceBody2" />
 
                         <TextView
@@ -447,7 +446,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/days_string"
+                            android:text="@string/no_record_string"
                             android:textAppearance="?attr/textAppearanceBody2" />
 
 
@@ -501,7 +500,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/prediction_date_string"
+                            android:text="@string/no_record_string"
                             android:textAppearance="?attr/textAppearanceBody2" />
 
                     </LinearLayout>

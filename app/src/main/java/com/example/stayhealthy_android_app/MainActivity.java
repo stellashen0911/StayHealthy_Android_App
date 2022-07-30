@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText login_email;
     private EditText login_password;
     public FirebaseAuth mAuth;
-    public DatabaseReference mDataBase;
+    public DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         login_email = findViewById(R.id.editTextTextEmailAddress);
         login_password = findViewById(R.id.editTextTextPassword);
         mAuth = FirebaseAuth.getInstance();
-        mDataBase = FirebaseDatabase.getInstance().getReference();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         //click the login button
         Login_btn.setOnClickListener(new View.OnClickListener() {
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
             if(task.isSuccessful()) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user != null) {
-                    mDataBase.child("users").child(user.getUid()).child("email").setValue(user.getEmail());
+                    mDatabase.child("users").child(user.getUid()).child("email").setValue(user.getEmail());
                 }
                 startActivity(new Intent(this, HealthRecordActivity.class));
             } else {

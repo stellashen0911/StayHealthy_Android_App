@@ -14,6 +14,21 @@
         android:theme="@style/Theme.StayHealthy_android_app"
         tools:targetApi="31">
         <activity
+            android:name=".Diet.SnackActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Diet.DinnerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Diet.LunchActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Diet.BreakfastActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Diet.DietActivity"
+            android:exported="false" />
+        <activity
             android:name=".EditWorkoutGoalActivity"
             android:exported="false" />
         <activity

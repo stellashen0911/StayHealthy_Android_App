@@ -1,12 +1,16 @@
 package com.example.stayhealthy_android_app.Diet;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.widget.TextView;
 
 import com.example.stayhealthy_android_app.R;
+
+import java.util.ArrayList;
 
 public class LunchActivity extends AppCompatActivity {
     private int protein;
@@ -18,6 +22,9 @@ public class LunchActivity extends AppCompatActivity {
     private TextView carbsView;
     private TextView netCalView;
 
+    private ArrayList<FoodItem> foods = new ArrayList<>();
+    private FoodAdapter foodAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +32,24 @@ public class LunchActivity extends AppCompatActivity {
         loadValues();
         initTextViews();
         fillValues();
+
+        createRecyclerView();
+    }
+
+    private void createRecyclerView() {
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        RecyclerView recyclerView = findViewById(R.id.lunch_recycler_review);
+        recyclerView.setHasFixedSize(true);
+
+        foodAdapter = new FoodAdapter(foods);
+        FoodClickListener listener = position -> {
+            foods.get(position).onLinkClicked(position);
+            foodAdapter.notifyItemChanged(position);
+        };
+
+        foodAdapter.setFoodClickListener(listener);
+        recyclerView.setAdapter(foodAdapter);
+        recyclerView.setLayoutManager(layoutManager);
     }
 
     @Override
@@ -39,6 +64,11 @@ public class LunchActivity extends AppCompatActivity {
         fat = 72;
         carbs = 73;
         netCal = 74;
+
+        foods = new ArrayList<>();
+        foods.add(new FoodItem("egg", "protein: 70 Cal; fat: 75 Cal; carbs: 70 Cal"));
+        foods.add(new FoodItem("milk", "protein: 71 Cal; fat: 76 Cal; carbs: 71 Cal"));
+        foods.add(new FoodItem("bread", "protein: 72 Cal; fat: 75 Cal; carbs: 70 Cal"));
     }
 
     private void initTextViews() {

@@ -24,6 +24,7 @@
         android:text="oz"/>
 
     <ImageView
+        android:id="@+id/star"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         app:layout_constraintStart_toEndOf="@+id/oz_const"

@@ -20,10 +20,10 @@ public class WaterIntakViewHolder   extends RecyclerView.ViewHolder {
         star = itemView.findViewById(R.id.star);
     }
 
-   public void bindWaterIntake(WaterIntakModel waterIntake) {
-        waterOz.setText(waterIntake.getWaterOz());
+   public void bindWaterIntake(WaterIntakeModel waterIntake) {
+        waterOz.setText(String.valueOf(waterIntake.getWaterOz()));
         date.setText(waterIntake.getDate());
-        if(waterIntake.getWaterOz() >= WaterIntakModel.DAILY_WATER_TARGET_OZ) {
+        if(waterIntake.getWaterOz() >= WaterIntakeModel.DAILY_WATER_TARGET_OZ) {
             star.setVisibility(View.VISIBLE);
         }
 

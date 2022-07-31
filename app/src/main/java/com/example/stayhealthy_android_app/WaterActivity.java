@@ -2,22 +2,58 @@ package com.example.stayhealthy_android_app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.stayhealthy_android_app.Journey.JourneyPost;
+import com.example.stayhealthy_android_app.Water.WaterIntakeModel;
+import com.example.stayhealthy_android_app.Water.WaterIntakeAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 public class WaterActivity  extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
+    RecyclerView waterListRecyclerView;
+    ImageButton addGlassWaterButton;
+    ImageButton addBottleWaterButton;
+    ImageButton addLargeBottleWaterButton;
+    private List<WaterIntakeModel> waterIntakesList;
+    private DatabaseReference myDataBase;
+    private static final String WATER_INTAKE_DB_NAME = "water_intake";
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_water);
+        waterIntakesList = new ArrayList<>();
+        waterListRecyclerView = findViewById(R.id.water_intake_recycler_view);
+        waterListRecyclerView.setHasFixedSize(false);
+        WaterIntakeAdapter waterIntakeAdapter = new WaterIntakeAdapter(waterIntakesList,this);
+        waterListRecyclerView.setAdapter(waterIntakeAdapter);
+        waterListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        addGlassWaterButton = findViewById(R.id.glass_water);
+        addBottleWaterButton = findViewById(R.id.bottle_water);
+        addLargeBottleWaterButton = findViewById(R.id.large_bottle_water);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        myDataBase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+        produceFakeData ();
+        readWaterData (30,  waterIntakeAdapter );
         // Initialize and assign variable
         initWidgets();
-
         setBottomNavigationView();
     }
 
@@ -34,6 +70,23 @@ public class WaterActivity  extends AppCompatActivity {
 
     public void onWaterButtonPressed(int waterOZ) {
         // submit water oz to database.
+    }
+
+    public void readWaterData (int numDays, WaterIntakeAdapter waterIntakeAdapter ) {
+        waterIntakesList = new ArrayList<>();
+        DatabaseReference waterDbRef = myDataBase.child(WATER_INTAKE_DB_NAME);
+        Query waterIntakeQueryLastMonth = waterDbRef.orderByChild("date").limitToFirst(numDays);
+        waterIntakeQueryLastMonth.get().addOnCompleteListener((task -> {
+            HashMap<String, HashMap> tempMap = (HashMap) task.getResult().getValue();
+            List<String> dates = new ArrayList<>(tempMap.keySet());
+            dates.sort(Comparator.naturalOrder());
+            for (int i = 0; i < dates.size(); i++) {
+                Long waterOz =(long)tempMap.get(dates.get(i)).get("waterOz");
+                String date  = (String)tempMap.get(dates.get(i)).get("date");
+                waterIntakesList.add(new WaterIntakeModel(waterOz,date));
+                waterIntakeAdapter.notifyDataSetChanged();
+            }
+        }));
     }
 
     private void setBottomNavigationView() {
@@ -58,5 +111,14 @@ public class WaterActivity  extends AppCompatActivity {
 
             return isItemSelected;
         });
+    }
+
+    private void produceFakeData () {
+        DatabaseReference waterDbRef = myDataBase.child(WATER_INTAKE_DB_NAME);
+        waterDbRef.removeValue();
+        for (int i = 1 ; i<= 31; i++) {
+            String dateStr = "2022-01-"+i;
+            waterDbRef.child(dateStr).setValue(new WaterIntakeModel(40,dateStr));
+        }
     }
 }

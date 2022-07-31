@@ -8,17 +8,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import com.example.stayhealthy_android_app.Journey.JourneyPostViewHolder;
 import com.example.stayhealthy_android_app.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 public class WaterIntakeAdapter extends RecyclerView.Adapter<WaterIntakViewHolder> {
-    private final List<WaterIntakModel> waterIntakes;
+    private final List<WaterIntakeModel> waterIntakes;
     private final Context context;
-    public WaterIntakeAdapter ( List<WaterIntakModel> waterIntakes, Context context) {
+    public WaterIntakeAdapter (List<WaterIntakeModel> waterIntakes, Context context) {
         this.waterIntakes = waterIntakes;
         this.context = context;
     }

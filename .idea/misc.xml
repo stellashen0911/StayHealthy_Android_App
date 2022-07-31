@@ -22,8 +22,9 @@
         <entry key="app/src/main/res/layout/activity_period.xml" value="0.38632246376811596" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/activity_snack.xml" value="0.26197916666666665" />
-        <entry key="app/src/main/res/layout/activity_water.xml" value="0.10572916666666667" />
+        <entry key="app/src/main/res/layout/activity_water.xml" value="0.335" />
         <entry key="app/src/main/res/layout/activity_workout.xml" value="0.38632246376811596" />
+        <entry key="app/src/main/res/layout/food.xml" value="0.2609375" />
         <entry key="app/src/main/res/layout/item_calender_cell.xml" value="0.67" />
         <entry key="app/src/main/res/layout/post_item.xml" value="0.10572916666666667" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.40260416666666665" />

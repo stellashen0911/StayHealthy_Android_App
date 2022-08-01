@@ -151,9 +151,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/horizontal_margin"
+                android:background="@color/gray"
                 android:text="@string/date_string"
                 android:textColor="@color/black"
-                android:background="@color/gray"
                 app:layout_constraintBottom_toTopOf="@id/periodRangeCV"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -164,7 +164,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
-                android:clickable="true"
+                android:clickable="false"
                 app:cardCornerRadius="4dp"
                 app:cardElevation="4dp"
                 app:layout_constraintBottom_toTopOf="@id/periodConditionRG"
@@ -243,7 +243,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
-                android:clickable="true"
+                android:clickable="false"
                 app:cardCornerRadius="4dp"
                 app:cardElevation="4dp"
                 app:layout_constraintBottom_toTopOf="@id/periodSymptomsCV"
@@ -299,7 +299,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
-                android:clickable="true"
+                android:clickable="false"
                 app:cardCornerRadius="4dp"
                 app:cardElevation="4dp"
                 app:layout_constraintBottom_toTopOf="@id/periodMoodCV"
@@ -353,10 +353,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
-                android:clickable="true"
+                android:clickable="false"
                 app:cardCornerRadius="4dp"
                 app:cardElevation="4dp"
-                app:layout_constraintBottom_toTopOf="@id/periodCycleHistoryCV"
+                app:layout_constraintBottom_toTopOf="@id/periodPredictionCV"
                 app:layout_constraintTop_toBottomOf="@id/periodSymptomsCV">
 
                 <LinearLayout
@@ -412,8 +412,8 @@
                 android:minHeight="48dp"
                 app:cardCornerRadius="4dp"
                 app:cardElevation="4dp"
-                app:layout_constraintBottom_toTopOf="@id/periodPredictionCV"
-                app:layout_constraintTop_toBottomOf="@id/periodMoodCV">
+                app:layout_constraintBottom_toTopOf="@id/guideline1"
+                app:layout_constraintTop_toBottomOf="@id/periodPredictionCV">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -435,7 +435,23 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/periodCurrentCycleStartTV"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/horizontal_margin"
+                            android:text="@string/no_record_string"
+                            android:textAppearance="?attr/textAppearanceBody2" />
+
+                        <TextView
                             android:id="@+id/periodCurrentCycleTV"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/horizontal_margin"
+                            android:text="-"
+                            android:textAppearance="?attr/textAppearanceBody2" />
+
+                        <TextView
+                            android:id="@+id/periodCurrentCycleEndTV"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/horizontal_margin"
@@ -462,12 +478,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
-                android:clickable="true"
+                android:clickable="false"
                 android:minHeight="48dp"
                 app:cardCornerRadius="4dp"
                 app:cardElevation="4dp"
-                app:layout_constraintBottom_toTopOf="@id/guideline1"
-                app:layout_constraintTop_toBottomOf="@id/periodCycleHistoryCV">
+                app:layout_constraintBottom_toTopOf="@id/periodCycleHistoryCV"
+                app:layout_constraintTop_toBottomOf="@id/periodMoodCV">
 
                 <LinearLayout
                     android:layout_width="match_parent"

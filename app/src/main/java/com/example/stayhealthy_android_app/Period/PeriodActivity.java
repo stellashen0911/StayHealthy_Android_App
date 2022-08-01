@@ -47,6 +47,7 @@ import java.time.Month;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -72,7 +73,8 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     private TextView periodFlowDetailsTV;
     private TextView symptomsDetailsTV;
     private EmojiTextView moodEmojiTV;
-    private TextView periodCurrentCycleTV;
+    private TextView periodCurrentCycleStartTV;
+    private TextView periodCurrentCycleEndTV;
     private TextView periodCycleTotalDaysTV;
     private TextView periodPredictionDateTV;
     private RadioGroup periodConditionRG;
@@ -153,11 +155,13 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         setFlowLevelView();
         setSymptomsView();
         setMoodView();
+        setPeriodPredictionDate();
+        setCycleHistoryEndView();
     }
 
-    private void setRecentPeriodView() {
+
+    private void setPeriodPredictionDate() {
         String selectedDateInStr = convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT);
-        Log.v(TAG, selectedDateInStr);
         DatabaseReference periodRef = mDatabase.child("period");
         Query periodMonthQuery = periodRef.orderByChild("date").endAt(selectedDateInStr).limitToLast(1);
 
@@ -168,7 +172,35 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                 for (DataSnapshot ds : task.getResult().getChildren()) {
                     PeriodData periodData = ds.getValue(PeriodData.class);
                     if (periodData != null) {
-                        Log.v(TAG, periodData.toString());
+                        LocalDate date = LocalDate.parse(periodData.getStartDate());
+                        // Add 28 days to her last period start day
+                        String predictedDate = convertLocalDateToStringDate(date.plusDays(28), DATE_LONG_FORMAT);
+                        // If the predicted date is on the same year as selected date, only display MMMM dd.
+                        if (Integer.parseInt(predictedDate.substring(predictedDate.length() - 4)) == selectedDate.getYear()) {
+                            periodPredictionDateTV.setText(predictedDate.substring(0, predictedDate.length() - 4));
+                        } else {
+                            periodPredictionDateTV.setText(predictedDate);
+                        }
+                        return;
+                    }
+                }
+                periodPredictionDateTV.setText(R.string.no_record_string);
+            }
+        });
+    }
+
+    private void setRecentPeriodView() {
+        String selectedDateInStr = convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT);
+        DatabaseReference periodRef = mDatabase.child("period");
+        Query periodMonthQuery = periodRef.orderByChild("date").endAt(selectedDateInStr).limitToLast(1);
+
+        periodMonthQuery.get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.v(TAG, "Error getting data", task.getException());
+            } else {
+                for (DataSnapshot ds : task.getResult().getChildren()) {
+                    PeriodData periodData = ds.getValue(PeriodData.class);
+                    if (periodData != null) {
                         String startDate = dateShortToLongFormat(periodData.getStartDate());
                         String endDate = dateShortToLongFormat(periodData.getEndDate());
                         String startDateSub = startDate.substring(0, startDate.length() - 4);
@@ -189,13 +221,71 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         });
     }
 
-    private String dateShortToLongFormat(String date) {
-        String[] dateSplit = date.split("-");
-        String year = dateSplit[0];
-        String month = monthValueToMonthName(Integer.parseInt(dateSplit[1]));
-        String day = dateSplit[2];
+    private void setCycleHistoryEndView() {
+        String selectedDateInStr = convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT);
+        DatabaseReference periodRef = mDatabase.child("period");
+        Query periodMonthQuery = periodRef.orderByChild("date").startAt(selectedDateInStr).limitToFirst(1);
 
-        return month + " " + day + " " + year;
+        periodMonthQuery.get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.v(TAG, "Error getting data", task.getException());
+            } else {
+                for (DataSnapshot ds : task.getResult().getChildren()) {
+                    PeriodData periodData = ds.getValue(PeriodData.class);
+                    if (periodData != null) {
+                        String endDate = periodData.getDate().equals(selectedDateInStr) ? selectedDateInStr : periodData.getStartDate();
+                        setCycleHistoryStartView(endDate);
+                        return;
+                    }
+                }
+                setCycleHistoryStartView(selectedDateInStr);
+            }
+        });
+    }
+
+    private void setCycleHistoryStartView(String endDate) {
+        DatabaseReference periodRef = mDatabase.child("period");
+        Query periodMonthQuery = periodRef.orderByChild("date").endBefore(endDate).limitToLast(1);
+
+        periodMonthQuery.get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.v(TAG, "Error getting data", task.getException());
+            } else {
+                String startDate = endDate;
+                for (DataSnapshot ds : task.getResult().getChildren()) {
+                    PeriodData periodData = ds.getValue(PeriodData.class);
+                    if (periodData != null) {
+                        startDate = periodData.getStartDate();
+                    }
+                }
+                setTotalCycleDaysView(startDate, endDate);
+            }
+        });
+    }
+
+    private void setTotalCycleDaysView(String startDate, String endDate) {
+        LocalDate dateBefore = LocalDate.parse(startDate);
+        LocalDate dateAfter = LocalDate.parse(endDate);
+
+        //calculating number of days in between
+        long noOfDaysBetween = ChronoUnit.DAYS.between(dateBefore, dateAfter);
+
+        if (noOfDaysBetween <= 0) {
+            periodCurrentCycleStartTV.setText(R.string.no_record_string);
+            periodCurrentCycleEndTV.setText(R.string.no_record_string);
+            periodCycleTotalDaysTV.setText(R.string.no_record_string);
+        } else {
+            String start = dateShortToLongFormat(startDate);
+            String end = dateShortToLongFormat(endDate);
+            if (start.substring(startDate.length() - 4).equals(endDate.substring(endDate.length() - 4))) {
+                start = start.substring(0, startDate.length() - 4);
+                end = endDate.substring(0, endDate.length() - 4);
+            }
+            periodCurrentCycleStartTV.setText(start);
+            periodCurrentCycleEndTV.setText(end);
+            String totalDays = noOfDaysBetween + " days";
+            periodCycleTotalDaysTV.setText(totalDays);
+        }
     }
 
     // If checked button is changed in the radio group, save changes to firebase database.
@@ -540,7 +630,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
 
     // nextBTN onClickListener
     public void nextMonthAction(View view) {
-        selectedDate = selectedDate.plusMonths(1);
+        selectedDate = selectedDate.plusMonths(1).withDayOfMonth(1);
         updateUI();
     }
 
@@ -587,9 +677,10 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         periodFlowDetailsTV = (TextView) findViewById(R.id.periodFlowDetailsTV);
         symptomsDetailsTV = (TextView) findViewById((R.id.symptomsDetailsTV));
         moodEmojiTV = (EmojiTextView) findViewById(R.id.moodEmojiTV);
-        periodCurrentCycleTV = (TextView) findViewById(R.id.periodCurrentCycleTV);
+        periodCurrentCycleStartTV = (TextView) findViewById(R.id.periodCurrentCycleStartTV);
+        periodCurrentCycleEndTV = (TextView) findViewById(R.id.periodCurrentCycleEndTV);
         periodCycleTotalDaysTV = (TextView) findViewById(R.id.periodCycleTotalDaysTV);
-        periodPredictionDateTV = (TextView) findViewById(R.id.periodPredictionTV);
+        periodPredictionDateTV = (TextView) findViewById(R.id.periodPredictionDateTV);
         periodConditionRG = (RadioGroup) findViewById(R.id.periodConditionRG);
         hadFlowRB = (RadioButton) findViewById(R.id.hadFlowRB);
         noFlowRB = (RadioButton) findViewById(R.id.noFlowRB);
@@ -773,6 +864,16 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         return daysOfMonthArray;
     }
 
+    // Convert date short format to date long format
+    private String dateShortToLongFormat(String date) {
+        String[] dateSplit = date.split("-");
+        String year = dateSplit[0];
+        String month = monthValueToMonthName(Integer.parseInt(dateSplit[1]));
+        String day = dateSplit[2];
+
+        return month + " " + day + " " + year;
+    }
+
     // Convert LocalDate to date in string.
     private String convertLocalDateToStringDate(LocalDate date, String dateFormat) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dateFormat);
@@ -837,16 +938,5 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
 
     private int monthNameToMonthValue(String name) {
         return Month.valueOf(name.toUpperCase()).getValue();
-    }
-
-    private void setCycleHistoryRangeView() {
-
-    }
-    private void setTotalCycleDaysView() {
-
-    }
-
-    private void SetPeriodPredictionDate() {
-
     }
 }

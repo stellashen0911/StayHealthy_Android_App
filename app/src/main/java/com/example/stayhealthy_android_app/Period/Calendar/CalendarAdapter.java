@@ -1,6 +1,7 @@
 package com.example.stayhealthy_android_app.Period.Calendar;
 
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,11 +54,14 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
 
         if(!daysOfMonth.get(position).equals("")) {
             int day = Integer.parseInt(daysOfMonth.get(position));
-            if (day == selectedDate) {
+            if (day == selectedDate && periodDates.contains(day)) {
+                LayerDrawable combinedDrawable = new LayerDrawable(new Drawable[] {periodDatesBackground, selectedDateBackground});
+                holder.getDaysOfMonth().setTextColor(periodDatesColor);
+                holder.getDaysOfMonth().setBackground(combinedDrawable);
+            } else if (day == selectedDate) {
                 holder.getDaysOfMonth().setTextColor(selectedDateColor);
                 holder.getDaysOfMonth().setBackground(selectedDateBackground);
-            }
-            if (periodDates.contains(day)) {
+            } else if (periodDates.contains(day)) {
                 holder.getDaysOfMonth().setTextColor(periodDatesColor);
                 holder.getDaysOfMonth().setBackground(periodDatesBackground);
             }

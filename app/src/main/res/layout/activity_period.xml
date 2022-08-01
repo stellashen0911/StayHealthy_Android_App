@@ -153,6 +153,7 @@
                 android:layout_margin="@dimen/horizontal_margin"
                 android:text="@string/date_string"
                 android:textColor="@color/black"
+                android:background="@color/gray"
                 app:layout_constraintBottom_toTopOf="@id/periodRangeCV"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

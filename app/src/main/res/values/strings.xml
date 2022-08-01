@@ -59,6 +59,7 @@
         <item>Heavy</item>
     </string-array>
     <string-array name="symptoms_array">
+        <item>Abdominal Cramps</item>
         <item>Stomachache</item>
         <item>Headache</item>
         <item>Chilling</item>
@@ -67,11 +68,14 @@
         <item>😃</item>
         <item>😉</item>
         <item>😐</item>
+        <item>😪</item>
+        <item>😣</item>
+        <item>😫</item>
         <item>😭</item>
         <item>🤮</item>
         <item>😠</item>
     </string-array>
-    <string name="select_Period_range_string">Select Period Range</string>
+    <string name="select_period_range_string">Select Period Range</string>
     <string name="choose_flow_level_string">Select Flow Level</string>
     <string name="choose_symptoms_string">Select Symptoms</string>
     <string name="choose_mood_string">Select Mood</string>

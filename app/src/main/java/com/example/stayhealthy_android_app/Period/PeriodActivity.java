@@ -8,7 +8,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -30,6 +29,7 @@ import com.example.stayhealthy_android_app.Period.Calendar.CalendarAdapter;
 import com.example.stayhealthy_android_app.Period.Model.PeriodData;
 import com.example.stayhealthy_android_app.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -59,10 +59,11 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     private final static String MONTH_YEAR_FORMAT = "MMMM yyyy";
     private final static String DATE_LONG_FORMAT = "MMMM dd yyyy";
     private final static String DATE_SHORT_FORMAT = "yyyy-MM-dd";
+    private final static String SELECT_DATE_KEY = "select_key";
     private final static int DAY_TO_MILLISECONDS = 86400000; // that is: 24 * 60 * 60 * 1000
     private DatabaseReference mDatabase;
     private BottomNavigationView bottomNavigationView;
-    private Button monthYearBTN;
+    private MaterialButton monthYearBTN;
     private RecyclerView calendarRV;
     private LocalDate selectedDate;
     private TextView dateTV;
@@ -78,6 +79,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     private RadioButton noFlowRB;
     private List<String> daysOfMonth;
     private List<Integer> periodDatesInMonth;
+    private int hadFlowFlag;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,24 +99,46 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         // Initialize the days of month array in selectedDate's month.
         daysOfMonth = new ArrayList<>();
 
-        // Initialize the recorded periods dates in selectedDate's month.
+        // Initialize the recorded period dates in selectedDate's month.
         periodDatesInMonth = new ArrayList<>();
 
+        hadFlowFlag = -1;
+
+        // Initialize the widgets on the screen.
         initWidgets();
+
+        // Set bottom navigation view.
+        setBottomNavigationView();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(SELECT_DATE_KEY, selectedDate);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        selectedDate = (LocalDate) savedInstanceState.getSerializable(SELECT_DATE_KEY);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Set home selected when going back to this activity from other activities
+        bottomNavigationView.setSelectedItemId(R.id.health_record_icon);
+
+        // Update UI according to the selected date.
+        updateUI();
+
         // Register flow condition radio group.
         registerFlowConditionRadioGroup();
-
-        // Set bottom navigation view
-        setBottomNavigationView();
-
-        // Read Data from database and update UI.
-        readDataFromDatabaseAndUpdateUI();
-
     }
 
     // Call this method every time the selected date is changed. The information displayed on the
     // screen is based on the selected date.
-    private void readDataFromDatabaseAndUpdateUI() {
+    private void updateUI() {
         // Set the selected date view. no need to read data.
         setDateView();
         // Set the initial calendar recycler view which displays the days of the selected month.
@@ -122,7 +146,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         // Read this month's period dates from database and update the adapter for calendarRV.
         generatePeriodDatesInMonthAndUpdateCalendarRecyclerViewAdapter();
 
-        // Read `hasFlow`, `flowLevel`, `symptoms` and `mood` data from database and update UI.
+        // Read `hadFlow`, `flowLevel`, `symptoms` and `mood` data from database and update UI.
         setFlowConditionRadioGroup();
         setFlowLevelView();
         setSymptomsView();
@@ -132,29 +156,29 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     // If checked button is changed in the radio group, save changes to firebase database.
     private void registerFlowConditionRadioGroup() {
         periodConditionRG.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == -1) {
-                return;
-            }
-            // This will get the radiobutton that has changed in its check state
-            RadioButton checkedRadioButton = (RadioButton) group.findViewById(checkedId);
-            // This puts the value (true/false) into the variable
-            boolean isChecked = checkedRadioButton.isChecked();
-            // If the radiobutton that has changed in check state is now checked...
-            if (isChecked) {
-                // TODO: This date has flow, check the database. If the day behind has flow, then that
-                // date's startDate is today's startDate. If the day behind does not have flow, then
-                // today is the startDate, have to check the days after today, if has flow, update
-                // those days startDate.
-                if (hadFlowRB.isChecked()) {
-                    updateDatabaseHasFlowChecked();
-                } else {
-                    updateDatabaseNoFlowChecked();
+            // If checkedId is -1, no button is checked, there is no data to save.
+            if (checkedId != -1) {
+                // This will get the radiobutton that has changed in its check state
+                RadioButton checkedRadioButton = (RadioButton) group.findViewById(checkedId);
+                // This puts the value (true/false) into the variable
+                boolean isChecked = checkedRadioButton.isChecked();
+                // If the radiobutton that has changed in check state is now checked...
+                if (isChecked) {
+                    // TODO: This date has flow, check the database. If the day behind has flow, then that
+                    // date's startDate is today's startDate. If the day behind does not have flow, then
+                    // today is the startDate, have to check the days after today, if has flow, update
+                    // those days startDate.
+                    if (hadFlowRB.isChecked()) {
+                        updateDatabaseHadFlowChecked();
+                    } else {
+                        updateDatabaseNoFlowChecked();
+                    }
                 }
             }
         });
     }
 
-    private void updateDatabaseHasFlowChecked() {
+    private void updateDatabaseHadFlowChecked() {
         List<PeriodData> periodDataList = new ArrayList<>();
         Long date = selectedDateInMilliseconds();
         // Search range, 1 days before today to 1 days after today.
@@ -221,13 +245,6 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Set home selected when going back to this activity from other activities
-        bottomNavigationView.setSelectedItemId(R.id.health_record_icon);
-    }
-
     // addPeriodDateBTN onClickListener. A datePicker shown when clicked. User can choose a date or
     // a range of dates through this picker.
     public void addPeriodDate(View view) {
@@ -273,7 +290,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         mDatabase.child("period").child(date).setValue(periodData)
                 .addOnSuccessListener(unused -> {
                     Log.v(TAG, "write one period date to database is successful");
-                    readDataFromDatabaseAndUpdateUI();
+                    updateUI();
                 })
                 .addOnFailureListener(Throwable::printStackTrace);
     }
@@ -472,13 +489,13 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     // previousBTN onClickListener
     public void previousMonthAction(View view) {
         selectedDate = selectedDate.minusMonths(1);
-        readDataFromDatabaseAndUpdateUI();
+        updateUI();
     }
 
     // nextBTN onClickListener
     public void nextMonthAction(View view) {
         selectedDate = selectedDate.plusMonths(1);
-        readDataFromDatabaseAndUpdateUI();
+        updateUI();
     }
 
     // monthYearBTN onClickListener. Shows a MonthYearPickerDialog where user can select a month
@@ -498,7 +515,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         // Listening to the user's choice
         monthYearPickerDialog.setListener((view, year, monthOfYear, dayOfMonth) -> {
             setSelectedDate(year, monthOfYear, dayOfMonth);
-            readDataFromDatabaseAndUpdateUI();
+            updateUI();
         });
 
         monthYearPickerDialog.show(getSupportFragmentManager(), "MonthYearPickerDialog");
@@ -511,29 +528,30 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         if (!dateTV.getText().equals("")) {
             selectedDate = selectedDate.plusDays(
                     Integer.parseInt((String)dateTV.getText()) - selectedDate.getDayOfMonth());
-            readDataFromDatabaseAndUpdateUI();
+            updateUI();
         }
     }
 
     // Initialize widgets on the period activity screen.
     private void initWidgets() {
-        monthYearBTN = findViewById(R.id.monthYearBTN);
-        calendarRV = findViewById(R.id.calendarRV);
-        dateTV = findViewById(R.id.dateTV);
-        periodDateDetailsTV = findViewById(R.id.periodDateDetailsTV);
-        periodFlowDetailsTV = findViewById(R.id.periodFlowDetailsTV);
-        symptomsDetailsTV = findViewById((R.id.symptomsDetailsTV));
-        moodEmojiTV = findViewById(R.id.moodEmojiTV);
-        periodCurrentCycleTV = findViewById(R.id.periodCurrentCycleTV);
-        periodCycleTotalDaysTV = findViewById(R.id.periodCycleTotalDaysTV);
-        periodPredictionDateTV = findViewById(R.id.periodPredictionTV);
-        periodConditionRG = findViewById(R.id.periodConditionRG);
-        hadFlowRB = findViewById(R.id.hadFlowRB);
-        noFlowRB = findViewById(R.id.noFlowRB);
+        monthYearBTN = (MaterialButton) findViewById(R.id.monthYearBTN);
+        calendarRV = (RecyclerView) findViewById(R.id.calendarRV);
+        dateTV = (TextView) findViewById(R.id.dateTV);
+        periodDateDetailsTV = (TextView) findViewById(R.id.periodDateDetailsTV);
+        periodFlowDetailsTV = (TextView) findViewById(R.id.periodFlowDetailsTV);
+        symptomsDetailsTV = (TextView) findViewById((R.id.symptomsDetailsTV));
+        moodEmojiTV = (EmojiTextView) findViewById(R.id.moodEmojiTV);
+        periodCurrentCycleTV = (TextView) findViewById(R.id.periodCurrentCycleTV);
+        periodCycleTotalDaysTV = (TextView) findViewById(R.id.periodCycleTotalDaysTV);
+        periodPredictionDateTV = (TextView) findViewById(R.id.periodPredictionTV);
+        periodConditionRG = (RadioGroup) findViewById(R.id.periodConditionRG);
+        hadFlowRB = (RadioButton) findViewById(R.id.hadFlowRB);
+        noFlowRB = (RadioButton) findViewById(R.id.noFlowRB);
     }
 
     private void setFlowConditionRadioGroup() {
-        DatabaseReference flowConditionRef = mDatabase.child("period").child(convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT)).child("hadFlow");
+        DatabaseReference flowConditionRef = mDatabase.child("period")
+                .child(convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT)).child("hadFlow");
         flowConditionRef.get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 Log.e(TAG, "Error getting flow condition data from firebase Database", task.getException());
@@ -543,17 +561,21 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                 // has no flow. If value is null, means there is no record.
                 if(Boolean.TRUE.equals(value)) {
                     periodConditionRG.check(R.id.hadFlowRB);
+                    hadFlowFlag = 1;
                 } else if (Boolean.FALSE.equals(value)) {
                     periodConditionRG.check(R.id.noFlowRB);
+                    hadFlowFlag = 0;
                 } else {
                     periodConditionRG.clearCheck();
+                    hadFlowFlag = -1;
                 }
             }
         });
     }
 
     private void setFlowLevelView() {
-        DatabaseReference flowLevelRef = mDatabase.child("period").child(convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT)).child("flowLevel");
+        DatabaseReference flowLevelRef = mDatabase.child("period")
+                .child(convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT)).child("flowLevel");
         flowLevelRef.get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 Log.e(TAG, "Error getting flow level data from firebase Database", task.getException());
@@ -562,14 +584,15 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                 if (value != null && !value.equals("")) {
                     periodFlowDetailsTV.setText(value);
                 } else {
-                    periodDateDetailsTV.setText(R.string.no_record_string);
+                    periodFlowDetailsTV.setText(R.string.no_record_string);
                 }
             }
         });
     }
 
     private void setSymptomsView() {
-        DatabaseReference symptomsRef = mDatabase.child("period").child(convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT)).child("symptoms");
+        DatabaseReference symptomsRef = mDatabase.child("period")
+                .child(convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT)).child("symptoms");
         symptomsRef.get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 Log.e(TAG, "Error getting symptoms data from firebase Database", task.getException());
@@ -585,7 +608,8 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     }
 
     private void setMoodView() {
-        DatabaseReference moodRef = mDatabase.child("period").child(convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT)).child("mood");
+        DatabaseReference moodRef = mDatabase.child("period")
+                .child(convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT)).child("mood");
         moodRef.get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 Log.e(TAG, "Error getting mood data from firebase Database", task.getException());
@@ -597,6 +621,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                     moodEmojiTV.setTextColor(ContextCompat.getColor(this, R.color.emoji_color));
                 } else {
                     moodEmojiTV.setText(R.string.no_record_string);
+                    moodEmojiTV.setTextColor(ContextCompat.getColor(this, R.color.black));
                 }
             }
         });
@@ -629,7 +654,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         // Set the selected date text color and drawable background.
         int selectedDateColor = getColor(R.color.black);
         Drawable selectedDateBackground = ResourcesCompat.getDrawable(getResources(),
-                R.drawable.m_customer_circle_gray_drawable, null);
+                R.drawable.m_customer_circle_drawable, null);
 
         // Set the period dates text color and drawable background.
         int periodDatesColor = getColor(R.color.white);

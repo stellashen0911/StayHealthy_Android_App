@@ -3,7 +3,7 @@ package com.example.stayhealthy_android_app.Water;
 public class WaterIntakeModel {
     long waterOz;
     String date;
-    public static final int DAILY_WATER_TARGET_OZ = 64;
+    public static final long DAILY_WATER_TARGET_OZ = 64;
 
     public WaterIntakeModel(long waterOz, String date) {
         this.waterOz = waterOz;

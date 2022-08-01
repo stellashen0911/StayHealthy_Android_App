@@ -73,7 +73,6 @@ public class WaterActivity  extends AppCompatActivity {
     }
 
     public void readWaterData (int numDays, WaterIntakeAdapter waterIntakeAdapter ) {
-        waterIntakesList = new ArrayList<>();
         DatabaseReference waterDbRef = myDataBase.child(WATER_INTAKE_DB_NAME);
         Query waterIntakeQueryLastMonth = waterDbRef.orderByChild("date").limitToFirst(numDays);
         waterIntakeQueryLastMonth.get().addOnCompleteListener((task -> {
@@ -116,9 +115,17 @@ public class WaterActivity  extends AppCompatActivity {
     private void produceFakeData () {
         DatabaseReference waterDbRef = myDataBase.child(WATER_INTAKE_DB_NAME);
         waterDbRef.removeValue();
-        for (int i = 1 ; i<= 31; i++) {
-            String dateStr = "2022-01-"+i;
+        for (int i = 1 ; i<=9; i++) {
+            String dateStr = "2022-01-0"+i;
             waterDbRef.child(dateStr).setValue(new WaterIntakeModel(40,dateStr));
+        }
+        for (int i = 10 ; i<=31; i++) {
+            String dateStr = "2022-01-"+i;
+            long waterOz = 40;
+            if( i % 7  == 0 ) {
+                waterOz = WaterIntakeModel.DAILY_WATER_TARGET_OZ;
+            }
+            waterDbRef.child(dateStr).setValue(new WaterIntakeModel(waterOz,dateStr));
         }
     }
 }

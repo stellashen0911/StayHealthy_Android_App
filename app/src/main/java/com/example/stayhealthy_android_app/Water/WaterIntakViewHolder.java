@@ -25,6 +25,8 @@ public class WaterIntakViewHolder   extends RecyclerView.ViewHolder {
         date.setText(waterIntake.getDate());
         if(waterIntake.getWaterOz() >= WaterIntakeModel.DAILY_WATER_TARGET_OZ) {
             star.setVisibility(View.VISIBLE);
+        } else {
+            star.setVisibility(View.GONE);
         }
 
     }

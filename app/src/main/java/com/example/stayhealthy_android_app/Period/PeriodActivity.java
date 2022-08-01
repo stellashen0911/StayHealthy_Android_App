@@ -28,6 +28,8 @@ import com.example.stayhealthy_android_app.JourneyActivity;
 import com.example.stayhealthy_android_app.Period.Calendar.CalendarAdapter;
 import com.example.stayhealthy_android_app.Period.Model.PeriodData;
 import com.example.stayhealthy_android_app.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -36,9 +38,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -164,78 +168,6 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         startActivity(intent);
     }
 
-    // Find all the recorded cycle history
-    private void setCycleHistoryView() {
-
-    }
-
-    private void setCycleHistoryEndView() {
-        String selectedDateInStr = convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT);
-        DatabaseReference periodRef = mDatabase.child("period");
-        Query periodMonthQuery = periodRef.orderByChild("date").startAt(selectedDateInStr).limitToFirst(1);
-
-        periodMonthQuery.get().addOnCompleteListener(task -> {
-            if (!task.isSuccessful()) {
-                Log.v(TAG, "Error getting data", task.getException());
-            } else {
-                for (DataSnapshot ds : task.getResult().getChildren()) {
-                    PeriodData periodData = ds.getValue(PeriodData.class);
-                    if (periodData != null) {
-                        String endDate = periodData.getDate().equals(selectedDateInStr) ? selectedDateInStr : periodData.getStartDate();
-                        setCycleHistoryStartView(endDate);
-                        return;
-                    }
-                }
-                setCycleHistoryStartView(selectedDateInStr);
-            }
-        });
-    }
-
-    private void setCycleHistoryStartView(String endDate) {
-        DatabaseReference periodRef = mDatabase.child("period");
-        Query periodMonthQuery = periodRef.orderByChild("date").endBefore(endDate).limitToLast(1);
-
-        periodMonthQuery.get().addOnCompleteListener(task -> {
-            if (!task.isSuccessful()) {
-                Log.v(TAG, "Error getting data", task.getException());
-            } else {
-                String startDate = endDate;
-                for (DataSnapshot ds : task.getResult().getChildren()) {
-                    PeriodData periodData = ds.getValue(PeriodData.class);
-                    if (periodData != null) {
-                        startDate = periodData.getStartDate();
-                    }
-                }
-                setTotalCycleDaysView(startDate, endDate);
-            }
-        });
-    }
-
-    private void setTotalCycleDaysView(String startDate, String endDate) {
-        LocalDate dateBefore = LocalDate.parse(startDate);
-        LocalDate dateAfter = LocalDate.parse(endDate);
-
-        //calculating number of days in between
-        long noOfDaysBetween = ChronoUnit.DAYS.between(dateBefore, dateAfter);
-
-        if (noOfDaysBetween <= 0) {
-            periodCurrentCycleStartTV.setText(R.string.no_record_string);
-            periodCurrentCycleEndTV.setText(R.string.no_record_string);
-            periodCycleTotalDaysTV.setText(R.string.no_record_string);
-        } else {
-            String start = dateShortToLongFormat(startDate);
-            String end = dateShortToLongFormat(endDate);
-            if (start.substring(startDate.length() - 4).equals(endDate.substring(endDate.length() - 4))) {
-                start = start.substring(0, startDate.length() - 4);
-                end = endDate.substring(0, endDate.length() - 4);
-            }
-            periodCurrentCycleStartTV.setText(start);
-            periodCurrentCycleEndTV.setText(end);
-            String totalDays = noOfDaysBetween + " days";
-            periodCycleTotalDaysTV.setText(totalDays);
-        }
-    }
-
     // If checked button is changed in the radio group, save changes to firebase database.
     private void registerFlowConditionRadioGroup() {
         periodConditionRG.setOnCheckedChangeListener((group, checkedId) -> {
@@ -251,9 +183,9 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                     // date's startDate is today's startDate. If the day behind does not have flow, then
                     // today is the startDate, have to check the days after today, if has flow, update
                     // those days startDate.
-                    if (hadFlowRB.isChecked()) {
+                    if (checkedRadioButton.equals(hadFlowRB)) {
                         updateDatabaseHadFlowChecked();
-                    } else {
+                    } else if (checkedRadioButton.equals(noFlowRB)) {
                         updateDatabaseNoFlowChecked();
                     }
                 }
@@ -325,7 +257,70 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     }
 
     private void updateDatabaseNoFlowChecked() {
+        updateSelectedInDateDatabase();
 
+        updatePreviousDatabase();
+    }
+
+    private void updateSelectedInDateDatabase() {
+        String selectedDateInStr = convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT);
+        DatabaseReference periodRef = mDatabase.child("period");
+
+        periodRef.child(selectedDateInStr).get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.v(TAG, "Error getting data", task.getException());
+            } else {
+                PeriodData periodData = task.getResult().getValue(PeriodData.class);
+                if (periodData != null) {
+                    DatabaseReference toPath = periodRef.child("period").child("noFlow").child(selectedDateInStr);
+                    moveRecord(periodRef.child(selectedDateInStr), toPath);
+                }
+            }
+        });
+
+    }
+
+    private void updatePreviousDatabase() {
+        String selectedDateInStr = convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT);
+        DatabaseReference periodRef = mDatabase.child("period");
+        Query periodMonthQuery = periodRef.orderByChild("date").endBefore(selectedDateInStr).limitToFirst(1);
+
+        periodMonthQuery.get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.v(TAG, "Error getting data", task.getException());
+            } else {
+                for (DataSnapshot ds : task.getResult().getChildren()) {
+                    PeriodData periodData = ds.getValue(PeriodData.class);
+                    if (periodData != null) {
+                        String endDate = periodData.getDate().equals(selectedDateInStr) ? selectedDateInStr : periodData.getStartDate();
+
+                        return;
+                    }
+                }
+            }
+        });
+    }
+
+    private void moveRecord(DatabaseReference fromPath, final DatabaseReference toPath) {
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                toPath.setValue(dataSnapshot.getValue()).addOnCompleteListener(task -> {
+                    if (task.isComplete()) {
+                        Log.d(TAG, "Success!");
+                        fromPath.removeValue();
+                    } else {
+                        Log.d(TAG, "Copy failed!");
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("TAG", databaseError.getMessage()); //Never ignore potential errors!
+            }
+        };
+        fromPath.addListenerForSingleValueEvent(valueEventListener);
     }
 
     // addPeriodDateBTN onClickListener. A datePicker shown when clicked. User can choose a date or
@@ -373,8 +368,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         mDatabase.child("period").child(date).setValue(periodData)
                 .addOnSuccessListener(unused -> {
                     Log.v(TAG, "write one period date to database is successful");
-                    updateUI();
-                })
+                    updateUI();})
                 .addOnFailureListener(Throwable::printStackTrace);
     }
 
@@ -486,8 +480,8 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                             .addOnSuccessListener(unused -> Log.v(TAG, "write one symptoms date to database is successful"))
                             .addOnFailureListener(Throwable::printStackTrace);
                 } else {
-                    Long date = selectedDateInMilliseconds();
-                    saveOnePeriodDateInLongToDatabase(date, date, date, true, "", symptoms, -1);
+                    String selectedDateInStr = convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT);
+                    saveOnePeriodDateInStrToDatabase(selectedDateInStr, "", "", false, "", symptoms, -1);
                 }
             }
         });
@@ -563,8 +557,8 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                             .addOnSuccessListener(unused -> Log.v(TAG, "write mood date to database is successful"))
                             .addOnFailureListener(Throwable::printStackTrace);
                 } else {
-                    Long date = selectedDateInMilliseconds();
-                    saveOnePeriodDateInLongToDatabase(date, date, date,true, "", "", mood);
+                    String selectedDateInStr = convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT);
+                    saveOnePeriodDateInStrToDatabase(selectedDateInStr, "", "", false, "", "", mood);
                 }
             }
         });
@@ -572,13 +566,24 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
 
     // previousBTN onClickListener
     public void previousMonthAction(View view) {
-        selectedDate = selectedDate.minusMonths(1);
+        if (selectedDate.getDayOfMonth() == 1) {
+            selectedDate = selectedDate.minusMonths(1);
+            int lastDay = selectedDate.lengthOfMonth();
+            selectedDate = selectedDate.withDayOfMonth(lastDay);
+        } else {
+            selectedDate = selectedDate.minusMonths(1);
+        }
         updateUI();
     }
 
     // nextBTN onClickListener
     public void nextMonthAction(View view) {
-        selectedDate = selectedDate.plusMonths(1).withDayOfMonth(1);
+        // If currently on the last day of the month ,we go to first day of next month.
+        if (selectedDate.getDayOfMonth() == selectedDate.lengthOfMonth()) {
+            selectedDate = selectedDate.plusMonths(1).withDayOfMonth(1);
+        } else {
+            selectedDate = selectedDate.plusMonths(1);
+        }
         updateUI();
     }
 
@@ -638,15 +643,15 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     private void setRecentPeriodView() {
         String selectedDateInStr = convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT);
         DatabaseReference periodRef = mDatabase.child("period");
-        Query periodMonthQuery = periodRef.orderByChild("date").endAt(selectedDateInStr).limitToLast(1);
+        Query periodQuery = periodRef.orderByChild("flowAndDate").endAt("1-" + selectedDateInStr).limitToLast(1);
 
-        periodMonthQuery.get().addOnCompleteListener(task -> {
+        periodQuery.get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 Log.v(TAG, "Error getting data", task.getException());
             } else {
                 for (DataSnapshot ds : task.getResult().getChildren()) {
                     PeriodData periodData = ds.getValue(PeriodData.class);
-                    if (periodData != null) {
+                    if (periodData != null && periodData.getHadFlow()) {
                         String startDate = dateShortToLongFormat(periodData.getStartDate());
                         String endDate = dateShortToLongFormat(periodData.getEndDate());
                         String startDateSub = startDate.substring(0, startDate.length() - 4);
@@ -767,7 +772,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     private void setPeriodPredictionDate() {
         String selectedDateInStr = convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT);
         DatabaseReference periodRef = mDatabase.child("period");
-        Query periodMonthQuery = periodRef.orderByChild("date").endAt(selectedDateInStr).limitToLast(1);
+        Query periodMonthQuery = periodRef.orderByChild("flowAndDate").endAt("1-" + selectedDateInStr).limitToLast(1);
 
         periodMonthQuery.get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
@@ -775,10 +780,12 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
             } else {
                 for (DataSnapshot ds : task.getResult().getChildren()) {
                     PeriodData periodData = ds.getValue(PeriodData.class);
-                    if (periodData != null) {
+                    if (periodData != null && periodData.getHadFlow()) {
                         LocalDate date = LocalDate.parse(periodData.getStartDate());
                         // Add 28 days to her last period start day
-                        String predictedDate = convertLocalDateToStringDate(date.plusDays(28), DATE_LONG_FORMAT);
+                        long defaultRange = 28;
+                        int times = (int) (calculateDaysBetween(periodData.getStartDate(), selectedDateInStr) / defaultRange + 1);
+                        String predictedDate = convertLocalDateToStringDate(date.plusDays(defaultRange * times), DATE_LONG_FORMAT);
                         // If the predicted date is on the same year as selected date, only display MMMM dd.
                         if (Integer.parseInt(predictedDate.substring(predictedDate.length() - 4)) == selectedDate.getYear()) {
                             periodPredictionDateTV.setText(predictedDate.substring(0, predictedDate.length() - 4));

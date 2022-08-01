@@ -16,6 +16,7 @@ public class PeriodData implements Comparable<PeriodData>{
     private String flowLevel;
     private String symptoms;
     private int mood;
+    private String flowAndDate;
 
     public PeriodData() {
     }
@@ -28,6 +29,17 @@ public class PeriodData implements Comparable<PeriodData>{
         this.flowLevel = flowLevel;
         this.symptoms = symptoms;
         this.mood = mood;
+        this.flowAndDate = generateFlowAndDate();
+    }
+
+    private String generateFlowAndDate() {
+        String flowAndDate;
+        if (hadFlow) {
+            flowAndDate = "1" + "-" + date;
+        } else {
+            flowAndDate = "0" + "-" + date;
+        }
+        return flowAndDate;
     }
 
     public Map<String, Object> toMap() {
@@ -39,6 +51,7 @@ public class PeriodData implements Comparable<PeriodData>{
         result.put("flowLevel", flowLevel);
         result.put("symptoms", symptoms);
         result.put("mood", mood);
+        result.put("flowAndDate", flowAndDate);
 
         return result;
     }
@@ -69,6 +82,14 @@ public class PeriodData implements Comparable<PeriodData>{
 
     public int getMood() {
         return mood;
+    }
+
+    public String getFlowAndDate() {
+        return flowAndDate;
+    }
+
+    public void setFlowAndDate(String flowCondition) {
+        this.flowAndDate = flowCondition + "-" + date;
     }
 
     @Override

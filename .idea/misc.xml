@@ -19,6 +19,7 @@
         <entry key="app/src/main/res/layout/activity_breakfast.xml" value="0.26197916666666665" />
         <entry key="app/src/main/res/layout/activity_diet.xml" value="0.26197916666666665" />
         <entry key="app/src/main/res/layout/activity_dinner.xml" value="0.26197916666666665" />
+        <entry key="app/src/main/res/layout/activity_edit_workout_goal.xml" value="0.23731884057971014" />
         <entry key="app/src/main/res/layout/activity_health_record.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/activity_journey.xml" value="0.10677083333333333" />
         <entry key="app/src/main/res/layout/activity_lunch.xml" value="0.26197916666666665" />
@@ -28,6 +29,7 @@
         <entry key="app/src/main/res/layout/activity_snack.xml" value="0.26197916666666665" />
         <entry key="app/src/main/res/layout/activity_water.xml" value="0.335" />
         <entry key="app/src/main/res/layout/activity_workout.xml" value="0.38632246376811596" />
+        <entry key="app/src/main/res/layout/content_profile_page.xml" value="0.38632246376811596" />
         <entry key="app/src/main/res/layout/food.xml" value="0.2609375" />
         <entry key="app/src/main/res/layout/item_calender_cell.xml" value="0.67" />
         <entry key="app/src/main/res/layout/item_cycle_history.xml" value="0.4615740740740741" />

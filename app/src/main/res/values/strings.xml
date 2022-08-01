@@ -81,5 +81,8 @@
     <string name="choose_mood_string">Select Mood</string>
     <string name="had_flow_string">Had Flow</string>
     <string name="no_flow_string">No Flow</string>
+    <string name="start_date_string">Start Date</string>
+    <string name="end_date_string">End Date</string>
+    <string name="cycle_range_string">Cycle Range</string>
 
 </resources>

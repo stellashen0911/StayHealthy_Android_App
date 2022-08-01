@@ -38,6 +38,9 @@
             android:name=".Period.PeriodActivity"
             android:exported="false" />
         <activity
+            android:name=".Period.CycleHistoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".JourneyActivity"
             android:exported="false" />
         <activity

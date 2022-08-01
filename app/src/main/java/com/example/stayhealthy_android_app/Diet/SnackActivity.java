@@ -9,18 +9,23 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.example.stayhealthy_android_app.R;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SnackActivity extends AppCompatActivity {
-    private int protein;
-    private int fat;
-    private int carbs;
-    private int netCal;
+    private long protein;
+    private long fat;
+    private long carbs;
+    private long netCal;
     private TextView proteinView;
     private TextView fatView;
     private TextView carbsView;
     private TextView netCalView;
+
+    private DatabaseReference myDataBase;
 
     private ArrayList<FoodItem> foods = new ArrayList<>();
     private FoodAdapter foodAdapter;
@@ -29,11 +34,11 @@ public class SnackActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_snack);
-        loadValues();
+        myDataBase = FirebaseDatabase.getInstance().getReference("user").
+                child("test@gmail_com").child("diets").child("20220731").child("snack");
         initTextViews();
-        fillValues();
+        loadValues();
 
-        createRecyclerView();
     }
 
     private void createRecyclerView() {
@@ -56,19 +61,31 @@ public class SnackActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadValues();
-        fillValues();
     }
 
+    @SuppressLint("SetTextI18n")
     private void loadValues() {
-        protein = 81;
-        fat = 82;
-        carbs = 83;
-        netCal = 84;
-
-        foods = new ArrayList<>();
-        foods.add(new FoodItem("egg", "protein: 80 Cal; fat: 85 Cal; carbs: 80 Cal"));
-        foods.add(new FoodItem("milk", "protein: 81 Cal; fat: 86 Cal; carbs: 81 Cal"));
-        foods.add(new FoodItem("bread", "protein: 82 Cal; fat: 85 Cal; carbs: 80 Cal"));
+        myDataBase.get().addOnCompleteListener(task -> {
+            HashMap tempMap = (HashMap) task.getResult().getValue();
+            protein = (long) tempMap.get("protein");
+            fat = (long) tempMap.get("fat");
+            carbs = (long) tempMap.get("carbs");
+            netCal = (long) tempMap.get("net");
+            proteinView.setText("Protein: " + protein + " Cal");
+            fatView.setText("Fat: " + fat + " Cal");
+            carbsView.setText("Carbs: " + carbs + " Cal");
+            netCalView.setText("Net Cal: " + netCal + " Cal");
+            HashMap<String, HashMap<String, Long>> tempFoods = (HashMap) tempMap.get("foods");
+            foods = new ArrayList<>();
+            System.out.println("to process temp foods");
+            for (String foodName : tempFoods.keySet()) {
+                long foodProtein = tempFoods.get(foodName).get("protein");
+                long foodFat = tempFoods.get(foodName).get("fat");
+                long foodCarbs = tempFoods.get(foodName).get("carbs");
+                foods.add(new FoodItem(foodName, "protein: " + foodProtein + " Cal; fat: " + foodFat + " Cal; carbs: " + foodCarbs + " Cal"));
+            }
+            createRecyclerView();
+        });
     }
 
     private void initTextViews() {
@@ -76,13 +93,5 @@ public class SnackActivity extends AppCompatActivity {
         fatView = findViewById(R.id.textView810);
         carbsView = findViewById(R.id.textView817);
         netCalView = findViewById(R.id.textView87);
-    }
-
-    @SuppressLint("SetTextI18n")
-    private void fillValues() {
-        proteinView.setText("Protein: " + protein + " Cal");
-        fatView.setText("Fat: " + fat + " Cal");
-        carbsView.setText("Carbs: " + carbs + " Cal");
-        netCalView.setText("Net Cal: " + netCal + " Cal");
     }
 }

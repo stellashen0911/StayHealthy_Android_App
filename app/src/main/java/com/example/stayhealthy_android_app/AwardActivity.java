@@ -1,7 +1,11 @@
 package com.example.stayhealthy_android_app;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +15,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class AwardActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
+    private DrawerLayout drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,8 +24,16 @@ public class AwardActivity extends AppCompatActivity {
 
         // Initialize and assign variable
         initWidgets();
-
         setBottomNavigationView();
+
+        // Initialize toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
     }
 
     @Override
@@ -28,6 +41,15 @@ public class AwardActivity extends AppCompatActivity {
         super.onResume();
         // Set home selected when going back to this activity from other activities
         bottomNavigationView.setSelectedItemId(R.id.award_icon);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void initWidgets() {

@@ -1,6 +1,7 @@
 package com.example.stayhealthy_android_app.Period.Calendar;
 
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,23 +16,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
-    private final ArrayList<String> daysOfMonth;
+    private final List<String> daysOfMonth;
     private final OnItemListener onItemListener;
-    private final int selectedDay;
-    private final int selectedDayColor;
-    private final Drawable selectedDayBackground;
+    private final int selectedDate;
+    private final int selectedDateColor;
+    private final Drawable selectedDateBackground;
     private final List<Integer> periodDates;
     private final int periodDatesColor;
     private final Drawable periodDatesBackground;
 
-    public CalendarAdapter(ArrayList<String> daysOfMonth, OnItemListener onItemListener,
-                           int selectedDay, int selectedDayColor, Drawable selectedDayBackground,
+    public CalendarAdapter(List<String> daysOfMonth, OnItemListener onItemListener,
+                           int selectedDate, int selectedDateColor, Drawable selectedDateBackground,
                            List<Integer> periodDates, int periodDatesColor, Drawable periodDatesBackground) {
         this.daysOfMonth = daysOfMonth;
         this.onItemListener = onItemListener;
-        this.selectedDay = selectedDay;
-        this.selectedDayColor = selectedDayColor;
-        this.selectedDayBackground = selectedDayBackground;
+        this.selectedDate = selectedDate;
+        this.selectedDateColor = selectedDateColor;
+        this.selectedDateBackground = selectedDateBackground;
         this.periodDates = periodDates;
         this.periodDatesColor = periodDatesColor;
         this.periodDatesBackground = periodDatesBackground;
@@ -53,11 +54,14 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
 
         if(!daysOfMonth.get(position).equals("")) {
             int day = Integer.parseInt(daysOfMonth.get(position));
-            if (day == selectedDay) {
-                holder.getDaysOfMonth().setTextColor(selectedDayColor);
-                holder.getDaysOfMonth().setBackground(selectedDayBackground);
-            }
-            if (periodDates.contains(day)) {
+            if (day == selectedDate && periodDates.contains(day)) {
+                LayerDrawable combinedDrawable = new LayerDrawable(new Drawable[] {periodDatesBackground, selectedDateBackground});
+                holder.getDaysOfMonth().setTextColor(periodDatesColor);
+                holder.getDaysOfMonth().setBackground(combinedDrawable);
+            } else if (day == selectedDate) {
+                holder.getDaysOfMonth().setTextColor(selectedDateColor);
+                holder.getDaysOfMonth().setBackground(selectedDateBackground);
+            } else if (periodDates.contains(day)) {
                 holder.getDaysOfMonth().setTextColor(periodDatesColor);
                 holder.getDaysOfMonth().setBackground(periodDatesBackground);
             }

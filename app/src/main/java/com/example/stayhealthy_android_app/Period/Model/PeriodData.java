@@ -9,33 +9,49 @@ import java.util.Objects;
 // Period data stored on firebase realtime database.
 
 public class PeriodData implements Comparable<PeriodData>{
-    private String date; // format "mm-dd-yyyy"
-    private String startDate; // format "mm-dd-yyyy"
+    private String date; // format "yyyy-mm-dd"
+    private String startDate; // format "yyyy-mm-dd"
+    private String endDate; // format "yyyy-mm-dd"
     private boolean hadFlow;
     private String flowLevel;
     private String symptoms;
     private int mood;
+    private String flowAndDate;
 
     public PeriodData() {
     }
 
-    public PeriodData(String date, String startDate, boolean hadFlow, String flowLevel, String symptoms, int mood) {
+    public PeriodData(String date, String startDate, String endDate, boolean hadFlow, String flowLevel, String symptoms, int mood) {
         this.date = date;
         this.startDate = startDate;
+        this.endDate = endDate;
         this.hadFlow = hadFlow;
         this.flowLevel = flowLevel;
         this.symptoms = symptoms;
         this.mood = mood;
+        this.flowAndDate = generateFlowAndDate();
+    }
+
+    private String generateFlowAndDate() {
+        String flowAndDate;
+        if (hadFlow) {
+            flowAndDate = "1" + "-" + date;
+        } else {
+            flowAndDate = "0" + "-" + date;
+        }
+        return flowAndDate;
     }
 
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("date", date);
         result.put("startDate", startDate);
+        result.put("endDate", endDate);
         result.put("hadFlow", hadFlow);
         result.put("flowLevel", flowLevel);
         result.put("symptoms", symptoms);
         result.put("mood", mood);
+        result.put("flowAndDate", flowAndDate);
 
         return result;
     }
@@ -52,6 +68,10 @@ public class PeriodData implements Comparable<PeriodData>{
         return hadFlow;
     }
 
+    public String getEndDate() {
+        return endDate;
+    }
+
     public String getFlowLevel() {
         return flowLevel;
     }
@@ -62,6 +82,14 @@ public class PeriodData implements Comparable<PeriodData>{
 
     public int getMood() {
         return mood;
+    }
+
+    public String getFlowAndDate() {
+        return flowAndDate;
+    }
+
+    public void setFlowAndDate(String flowCondition) {
+        this.flowAndDate = flowCondition + "-" + date;
     }
 
     @Override
@@ -78,19 +106,20 @@ public class PeriodData implements Comparable<PeriodData>{
                 && getMood() == that.getMood()
                 && getDate().equals(that.getDate())
                 && Objects.equals(getStartDate(), that.getStartDate())
+                && Objects.equals(getEndDate(), that.getEndDate())
                 && Objects.equals(getFlowLevel(), that.getFlowLevel())
                 && Objects.equals(getSymptoms(), that.getSymptoms());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getDate(), getStartDate(), getHadFlow(), getFlowLevel(), getSymptoms(), getMood());
+        return Objects.hash(getDate(), getStartDate(), getEndDate(), getHadFlow(), getFlowLevel(), getSymptoms(), getMood());
     }
 
     @NonNull
     @Override
     public String toString() {
-        return "Date: " + getDate() + " StartDate: " + getStartDate() + " Had Flow: " + getHadFlow()
+        return "Date: " + getDate() + " StartDate: " + getStartDate() + " EndDate: " + getEndDate() + " Had Flow: " + getHadFlow()
                 + " Flow Level: " + getFlowLevel() + " Symptoms: " + getSymptoms() + " Mood: " + getMood();
     }
 }

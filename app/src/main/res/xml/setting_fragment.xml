@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="Notification Setting">
+
+        <EditTextPreference
+            android:key="edittext_preference"
+            android:title="Edit text preference"
+            android:summary="@string/test"
+            android:dialogTitle="@string/test"
+            android:dependency="checkbox_preference" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/test">
+
+        <Preference
+            android:title="@string/test">
+            <intent android:action="android.intent.action.VIEW"
+                android:data="http://codepath.com/" />
+        </Preference>
+
+    </PreferenceCategory>
+</PreferenceScreen>

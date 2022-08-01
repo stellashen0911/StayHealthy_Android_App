@@ -39,6 +39,7 @@
         <entry key="app/src/main/res/layout/nav_header.xml" value="0.38632246376811596" />
         <entry key="app/src/main/res/layout/nav_header_profile_page.xml" value="0.38632246376811596" />
         <entry key="app/src/main/res/layout/post_item.xml" value="0.38632246376811596" />
+        <entry key="app/src/main/res/layout/setting_fragment.xml" value="0.38632246376811596" />
         <entry key="app/src/main/res/layout/water_intake_item.xml" value="0.38632246376811596" />
         <entry key="app/src/main/res/menu/activity_main_drawer.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.40260416666666665" />
@@ -46,6 +47,7 @@
         <entry key="app/src/main/res/menu/profile_page.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_award.xml" value="0.118" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_award_round.xml" value="0.118" />
+        <entry key="app/src/main/res/xml/setting_fragment.xml" value="0.2171875" />
       </map>
     </option>
   </component>

@@ -29,8 +29,6 @@ import com.example.stayhealthy_android_app.JourneyActivity;
 import com.example.stayhealthy_android_app.Period.Calendar.CalendarAdapter;
 import com.example.stayhealthy_android_app.Period.Model.PeriodData;
 import com.example.stayhealthy_android_app.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
@@ -78,6 +76,8 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     private RadioGroup periodConditionRG;
     private RadioButton hadFlowRB;
     private RadioButton noFlowRB;
+    private List<String> daysOfMonth;
+    private List<Integer> periodDatesInMonth;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,12 +91,20 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         assert user != null;
         mDatabase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
 
-        // Initialize the selected date as today
+        // Initialize the selected date as today.
         selectedDate = LocalDate.now();
+
+        // Initialize the days of month array in selectedDate's month.
+        daysOfMonth = new ArrayList<>();
+
+        // Initialize the recorded periods dates in selectedDate's month.
+        periodDatesInMonth = new ArrayList<>();
 
         initWidgets();
         // Register flow condition radio group.
         registerFlowConditionRadioGroup();
+
+        // Set bottom navigation view
         setBottomNavigationView();
 
         // Read Data from database and update UI.
@@ -104,14 +112,18 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
 
     }
 
+    // Call this method every time the selected date is changed. The information displayed on the
+    // screen is based on the selected date.
     private void readDataFromDatabaseAndUpdateUI() {
-        // Set the selected date view. no need read data
+        // Set the selected date view. no need to read data.
         setDateView();
-        // Read this month's period dates and update UI
-        readPeriodsDatesInMonthAndUpdateCalendarRV();
+        // Set the initial calendar recycler view which displays the days of the selected month.
+        setCalendarRecyclerView();
+        // Read this month's period dates from database and update the adapter for calendarRV.
+        generatePeriodDatesInMonthAndUpdateCalendarRecyclerViewAdapter();
 
-        // Read data from database and update UI
-        setFlowCondition();
+        // Read `hasFlow`, `flowLevel`, `symptoms` and `mood` data from database and update UI.
+        setFlowConditionRadioGroup();
         setFlowLevelView();
         setSymptomsView();
         setMoodView();
@@ -492,7 +504,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         monthYearPickerDialog.show(getSupportFragmentManager(), "MonthYearPickerDialog");
     }
 
-    // interface in CalendarAdapter.OnItemListener. Used to update date by selected day on the
+    // Interface in CalendarAdapter.OnItemListener. Used to update date by selected day on the
     // calendar recycler view.
     @Override
     public void onItemClick(int position, TextView dateTV) {
@@ -520,7 +532,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         noFlowRB = findViewById(R.id.noFlowRB);
     }
 
-    private void setFlowCondition() {
+    private void setFlowConditionRadioGroup() {
         DatabaseReference flowConditionRef = mDatabase.child("period").child(convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT)).child("hadFlow");
         flowConditionRef.get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
@@ -595,28 +607,38 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         dateTV.setText(convertLocalDateToStringDate(selectedDate, DATE_FULL_FORMAT));
     }
 
-    // Display the days of month array on the calendar recycler view.
-    private void setDaysOfMonthRecyclerView(List<Integer> periodDatesInMonth) {
+    // Display the days of selected date's month on the calendar recycler view. Here the periodDatesInMonth
+    // is empty array, its data has to be read from the database.
+    private void setCalendarRecyclerView() {
         monthYearBTN.setText(monthYearFromDate(selectedDate));
-        ArrayList<String> daysOfMonth = daysOfMonthArray(selectedDate);
+        daysOfMonth = generateDaysOfMonthArray(selectedDate);
+        periodDatesInMonth = new ArrayList<>();
 
+        setCalendarRecyclerViewLayout();
+
+        setCalendarRecyclerViewAdapter();
+    }
+
+    private void setCalendarRecyclerViewLayout() {
         // Set the LayoutManager for recyclerView
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 7);
         calendarRV.setLayoutManager(layoutManager);
+    }
 
-        // Set the selected day text color and drawable background
-        int selectedDayColor = getColor(R.color.black);
-        Drawable selectedDayBackground = ResourcesCompat.getDrawable(getResources(),
+    private void setCalendarRecyclerViewAdapter() {
+        // Set the selected date text color and drawable background.
+        int selectedDateColor = getColor(R.color.black);
+        Drawable selectedDateBackground = ResourcesCompat.getDrawable(getResources(),
                 R.drawable.m_customer_circle_gray_drawable, null);
 
-        // Set the period dates text color and drawable background
+        // Set the period dates text color and drawable background.
         int periodDatesColor = getColor(R.color.white);
         Drawable periodDatesBackground = ResourcesCompat.getDrawable(getResources(),
                 R.drawable.m_customer_circle_red_drawable, null);
 
-        // Set the Adapter for recyclerView
+        // Set the Adapter for recyclerView, here the periodDatesInMonth is empty
         CalendarAdapter calendarAdapter = new CalendarAdapter(daysOfMonth, this,
-                selectedDate.getDayOfMonth(), selectedDayColor, selectedDayBackground, periodDatesInMonth, periodDatesColor, periodDatesBackground);
+                selectedDate.getDayOfMonth(), selectedDateColor, selectedDateBackground, periodDatesInMonth, periodDatesColor, periodDatesBackground);
         calendarRV.setAdapter(calendarAdapter);
     }
 
@@ -628,8 +650,11 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         return year + "-" + monthValue + "-" + date;
     }
 
-    private void readPeriodsDatesInMonthAndUpdateCalendarRV() {
-        List<Integer> periodDates = new ArrayList<>();
+    // Read the database of selected month and find the days which has flow to form
+    // `PeriodDatesInMonth`. And set a new adapter for calendar recycler view.
+    private void generatePeriodDatesInMonthAndUpdateCalendarRecyclerViewAdapter() {
+        // Initialize periodDatesInMonth
+        periodDatesInMonth = new ArrayList<>();
         String firstDayInMonth = calculateSearchDate(1);
         String lastDayInMonth = calculateSearchDate(selectedDate.lengthOfMonth());
 
@@ -646,20 +671,20 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                         if (periodData.getHadFlow()) {
                             String[] date = periodData.getDate().split("-");
                             int day = Integer.parseInt(date[2]);
-                            periodDates.add(day);
+                            periodDatesInMonth.add(day);
                         }
                     }
                 }
             }
-            // Update days of month on the calendar recycler view when read data is done.
-            setDaysOfMonthRecyclerView(periodDates);
+            // Update the adapter of calendar recycler view when read data is done.
+            setCalendarRecyclerViewAdapter();
         });
     }
 
-    // Create the days of month array according to the user selected month. Used as the item list in
-    // calendar recycler view.
-    private ArrayList<String> daysOfMonthArray(LocalDate date) {
-        ArrayList<String> daysOfMonthArray = new ArrayList<>();
+    // Generate the days of month array according to the month of user selected date. The array is
+    // used as the item list in calendar recycler view.
+    private List<String> generateDaysOfMonthArray(LocalDate date) {
+        List<String> daysOfMonthArray = new ArrayList<>();
         YearMonth yearMonth = YearMonth.from(date);
 
         int daysInMonth = yearMonth.lengthOfMonth();
@@ -689,6 +714,24 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         return date.format(dateTimeFormatter);
     }
 
+    // Update user selected date. Convert the (year, month, day) to LocalDate format.
+    private void setSelectedDate(int year, int month, int day) {
+        selectedDate = selectedDate.plusDays(day - selectedDate.getDayOfMonth());
+        selectedDate = selectedDate.plusMonths(month - (selectedDate.getMonthValue()));
+        selectedDate = selectedDate.plusYears(year - selectedDate.getYear());
+    }
+
+    // Get the milliseconds of selectedDate. Zone is set as system default.
+    private Long selectedDateInMilliseconds() {
+        return selectedDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
+
+    // Get number of neighbor days in milliseconds. `days` > 0 means days after today.
+    // `days` < 0 means the days before today. `today` is in milliseconds format.
+    private Long neighborDaysInMilliseconds(Long today, int days) {
+        return today + (long) days * DAY_TO_MILLISECONDS;
+    }
+
     // Set the bottom navigation view. Display the selected home.
     private void setBottomNavigationView() {
         // Initialize and assign variable
@@ -715,24 +758,6 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
 
             return isItemSelected;
         });
-    }
-
-    // Update user selected date. Convert the (year, month, day) to LocalDate format.
-    private void setSelectedDate(int year, int month, int day) {
-        selectedDate = selectedDate.plusDays(day - selectedDate.getDayOfMonth());
-        selectedDate = selectedDate.plusMonths(month - (selectedDate.getMonthValue()));
-        selectedDate = selectedDate.plusYears(year - selectedDate.getYear());
-    }
-
-    // Get the milliseconds of selectedDate. Zone is set as system default.
-    private Long selectedDateInMilliseconds() {
-        return selectedDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-    }
-
-    // Get number of neighbor days in milliseconds. `days` > 0 means days after today.
-    // `days` < 0 means the days before today. `today` is in milliseconds format.
-    private Long neighborDaysInMilliseconds(Long today, int days) {
-        return today + (long) days * DAY_TO_MILLISECONDS;
     }
 
     private int monthValueFromMonthName(String name) {

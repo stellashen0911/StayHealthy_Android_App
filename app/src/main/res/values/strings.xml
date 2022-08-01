@@ -84,7 +84,7 @@
     <string name="start_date_string">Start Date</string>
     <string name="end_date_string">End Date</string>
     <string name="cycle_range_string">Cycle Range</string>
-    <string name="title_activity_profile_page">ProfilePageActivity</string>
+    <string name="title_activity_profile_page">Profile</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>

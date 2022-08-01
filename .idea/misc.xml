@@ -35,7 +35,11 @@
         <entry key="app/src/main/res/layout/item_cycle_history.xml" value="0.4615740740740741" />
         <entry key="app/src/main/res/layout/item_mood_face.xml" value="0.3875" />
         <entry key="app/src/main/res/layout/month_year_picker.xml" value="0.43703703703703706" />
+        <entry key="app/src/main/res/layout/nav_header.xml" value="0.38632246376811596" />
+        <entry key="app/src/main/res/menu/activity_main_drawer.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.40260416666666665" />
+        <entry key="app/src/main/res/menu/profile_menu.xml" value="0.4036458333333333" />
+        <entry key="app/src/main/res/menu/profile_page.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_award.xml" value="0.118" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_award_round.xml" value="0.118" />
       </map>

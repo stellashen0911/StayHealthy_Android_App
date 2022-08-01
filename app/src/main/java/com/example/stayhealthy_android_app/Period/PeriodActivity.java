@@ -40,6 +40,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Month;
@@ -147,10 +148,54 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         generatePeriodDatesInMonthAndUpdateCalendarRecyclerViewAdapter();
 
         // Read `hadFlow`, `flowLevel`, `symptoms` and `mood` data from database and update UI.
+        setRecentPeriodView();
         setFlowConditionRadioGroup();
         setFlowLevelView();
         setSymptomsView();
         setMoodView();
+    }
+
+    private void setRecentPeriodView() {
+        String selectedDateInStr = convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT);
+        Log.v(TAG, selectedDateInStr);
+        DatabaseReference periodRef = mDatabase.child("period");
+        Query periodMonthQuery = periodRef.orderByChild("date").endAt(selectedDateInStr).limitToLast(1);
+
+        periodMonthQuery.get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.v(TAG, "Error getting data", task.getException());
+            } else {
+                for (DataSnapshot ds : task.getResult().getChildren()) {
+                    PeriodData periodData = ds.getValue(PeriodData.class);
+                    if (periodData != null) {
+                        Log.v(TAG, periodData.toString());
+                        String startDate = dateShortToLongFormat(periodData.getStartDate());
+                        String endDate = dateShortToLongFormat(periodData.getEndDate());
+                        String startDateSub = startDate.substring(0, startDate.length() - 4);
+                        String recentPeriods;
+                        if (startDate.equals(endDate)) {
+                            recentPeriods = startDateSub;
+                        } else if (startDate.substring(startDate.length() - 4).equals(endDate.substring(endDate.length() - 4))) {
+                            recentPeriods = startDateSub + " - " + endDate.substring(0, endDate.length() - 4);
+                        } else {
+                            recentPeriods = startDate + " - " + endDate;
+                        }
+                        periodDateDetailsTV.setText(recentPeriods);
+                        return;
+                    }
+                }
+                periodDateDetailsTV.setText(R.string.no_record_string);
+            }
+        });
+    }
+
+    private String dateShortToLongFormat(String date) {
+        String[] dateSplit = date.split("-");
+        String year = dateSplit[0];
+        String month = monthValueToMonthName(Integer.parseInt(dateSplit[1]));
+        String day = dateSplit[2];
+
+        return month + " " + day + " " + year;
     }
 
     // If checked button is changed in the radio group, save changes to firebase database.
@@ -205,7 +250,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                     }
                 }
                 if (periodDataList.isEmpty()) {
-                    saveOnePeriodDateInStrToDatabase(dateInStr, dateInStr, true, "", "", -1);
+                    saveOnePeriodDateInStrToDatabase(dateInStr, dateInStr, dateInStr, true, "", "", -1);
                     return;
                 }
 
@@ -219,7 +264,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                                     .addOnSuccessListener(unused -> Log.v(TAG, "write start date to database is successful"))
                                     .addOnFailureListener(Throwable::printStackTrace);
                         } else {
-                            saveOnePeriodDateInStrToDatabase(dateInStr, periodData.getStartDate(), true, "", "", -1);
+                            saveOnePeriodDateInStrToDatabase(dateInStr, periodData.getStartDate(), dateInStr, true, "", "", -1);
                         }
                         break;
                     }
@@ -230,7 +275,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                     }
                     if (periodData.getHadFlow()) {
                         if (periodData.getDate().equals(startDate)) {
-                            saveOnePeriodDateInStrToDatabase(dateInStr, periodData.getStartDate(), true, "", "", -1);
+                            saveOnePeriodDateInStrToDatabase(dateInStr, periodData.getStartDate(), dateInStr, true, "", "", -1);
                         }
                         if (periodData.getDate().compareTo(dateInStr) < 0) {
                             periodRef.child(dateInStr).child("hadFlow").setValue(true);
@@ -284,9 +329,9 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         return format.format(calendar.getTime());
     }
 
-    private void saveOnePeriodDateInStrToDatabase(String date, String startDate, boolean hadFlow,
-                                                  String flowLevel, String symptoms, int mood) {
-        PeriodData periodData = new PeriodData(date, startDate, hadFlow, flowLevel, symptoms, mood);
+    private void saveOnePeriodDateInStrToDatabase(String date, String startDate, String endDate,
+                                                  boolean hadFlow, String flowLevel, String symptoms, int mood) {
+        PeriodData periodData = new PeriodData(date, startDate, endDate, hadFlow, flowLevel, symptoms, mood);
         mDatabase.child("period").child(date).setValue(periodData)
                 .addOnSuccessListener(unused -> {
                     Log.v(TAG, "write one period date to database is successful");
@@ -295,19 +340,20 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                 .addOnFailureListener(Throwable::printStackTrace);
     }
 
-    private void saveOnePeriodDateInLongToDatabase(Long date, Long startDate, boolean hadFlow,
-                                                   String flowLevel, String symptoms, int mood) {
+    private void saveOnePeriodDateInLongToDatabase(Long date, Long startDate, Long endDate,
+                                                   boolean hadFlow, String flowLevel, String symptoms, int mood) {
         String dateInStr = convertUtcMillisecondsToDate(date, DATE_SHORT_FORMAT);
         String startDateInStr = convertUtcMillisecondsToDate(startDate, DATE_SHORT_FORMAT);
-        saveOnePeriodDateInStrToDatabase(dateInStr, startDateInStr, hadFlow, flowLevel, symptoms, mood);
+        String endDateInStr = convertUtcMillisecondsToDate(endDate, DATE_SHORT_FORMAT);
+        saveOnePeriodDateInStrToDatabase(dateInStr, startDateInStr, endDateInStr, hadFlow, flowLevel, symptoms, mood);
     }
 
     private void savePeriodRangeToDatabase(Long startDate, Long endDate) {
         Long date = startDate;
-        saveOnePeriodDateInLongToDatabase(date, startDate, true, "", "", -1);
+        saveOnePeriodDateInLongToDatabase(date, startDate, endDate, true, "", "", -1);
         while (!date.equals(endDate)) {
             date = neighborDaysInMilliseconds(date, 1);
-            saveOnePeriodDateInLongToDatabase(date, startDate, true, "", "", -1);
+            saveOnePeriodDateInLongToDatabase(date, startDate, endDate, true, "", "", -1);
         }
     }
 
@@ -350,7 +396,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                             .addOnFailureListener(Throwable::printStackTrace);
                 } else {
                     Long date = selectedDateInMilliseconds();
-                    saveOnePeriodDateInLongToDatabase(date, date, true, flowLevel, "", -1);
+                    saveOnePeriodDateInLongToDatabase(date, date, date, true, flowLevel, "", -1);
                 }
             }
         });
@@ -403,7 +449,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                             .addOnFailureListener(Throwable::printStackTrace);
                 } else {
                     Long date = selectedDateInMilliseconds();
-                    saveOnePeriodDateInLongToDatabase(date, date, true, "", symptoms, -1);
+                    saveOnePeriodDateInLongToDatabase(date, date, date, true, "", symptoms, -1);
                 }
             }
         });
@@ -480,7 +526,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                             .addOnFailureListener(Throwable::printStackTrace);
                 } else {
                     Long date = selectedDateInMilliseconds();
-                    saveOnePeriodDateInLongToDatabase(date, date, true, "", "", mood);
+                    saveOnePeriodDateInLongToDatabase(date, date, date,true, "", "", mood);
                 }
             }
         });
@@ -785,12 +831,12 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         });
     }
 
-    private int monthValueFromMonthName(String name) {
-        return Month.valueOf(name.toUpperCase()).getValue();
+    private String monthValueToMonthName(int month) {
+        return new DateFormatSymbols().getMonths()[month - 1];
     }
 
-    private void setRecentPeriodView() {
-
+    private int monthNameToMonthValue(String name) {
+        return Month.valueOf(name.toUpperCase()).getValue();
     }
 
     private void setCycleHistoryRangeView() {

@@ -26,6 +26,10 @@ import com.example.stayhealthy_android_app.JourneyActivity;
 import com.example.stayhealthy_android_app.Period.Calendar.CalendarAdapter;
 import com.example.stayhealthy_android_app.Period.Model.PeriodData;
 import com.example.stayhealthy_android_app.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -167,79 +171,114 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                     // today is the startDate, have to check the days after today, if has flow, update
                     // those days startDate.
                     if (checkedRadioButton.equals(binding.hadFlowRB)) {
-                        updateDatabaseHadFlowChecked();
+                        updateDatabaseWhenHadFlowChecked();
                     } else if (checkedRadioButton.equals(binding.noFlowRB)) {
-                        updateDatabaseNoFlowChecked();
+                        updateDatabaseWhenNoFlowChecked();
                     }
                 }
             }
         });
     }
 
-    private void updateDatabaseHadFlowChecked() {
-        List<PeriodData> periodDataList = new ArrayList<>();
-        Long date = selectedDateInMilliseconds();
-        // Search range, 1 days before today to 1 days after today.
-        String startDate = convertUtcMillisecondsToDate(neighborDaysInMilliseconds(date, -1), DATE_SHORT_FORMAT);
-        String dateInStr = convertUtcMillisecondsToDate(date, DATE_SHORT_FORMAT);
-        String endDate = convertUtcMillisecondsToDate(neighborDaysInMilliseconds(date, 7), DATE_SHORT_FORMAT);
+    private void checkDatesBeforeAndAfter(PeriodData periodDataToday) {
+        String selectedDateInStr = convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT);
+        String dateBefore = convertLocalDateToStringDate(LocalDate.parse(selectedDateInStr).minusDays(1), DATE_SHORT_FORMAT);
+        String dateAfter = convertLocalDateToStringDate(LocalDate.parse(selectedDateInStr).plusDays(1), DATE_SHORT_FORMAT);
+
+        Log.v(TAG, dateBefore + " " + dateAfter);
 
         DatabaseReference periodRef = mDatabase.child("period");
-        Query periodMonthQuery = periodRef.orderByChild("date").startAt(startDate).endAt(endDate);
 
-        periodMonthQuery.get().addOnCompleteListener(task -> {
+        Query queryBefore = periodRef.orderByChild("endDate").equalTo(dateBefore);
+        Query queryAfter = periodRef.orderByChild("startDate").equalTo(dateAfter);
+
+        Task<DataSnapshot> task1 = queryBefore.get();
+        Task<DataSnapshot> task2 = queryAfter.get();
+
+        List<PeriodData> periodDataList = new ArrayList<>();
+
+        Tasks.whenAllSuccess(task1, task2)
+                .addOnFailureListener(Throwable::printStackTrace)
+                .addOnSuccessListener(list -> {
+                    PeriodData periodData;
+                    DataSnapshot dsBefore = (DataSnapshot) list.get(0);
+                    DataSnapshot dsAfter = (DataSnapshot) list.get(1);
+                    for (DataSnapshot ds : dsBefore.getChildren()) {
+                        periodData = ds.getValue(PeriodData.class);
+                        // if before had flow, update endDate
+                        if (periodData != null && periodData.getHadFlow()) {
+                            periodData.setEndDate(selectedDateInStr);
+                            periodDataList.add(periodData);
+                        }
+                    }
+                    for (DataSnapshot ds : dsAfter.getChildren()) {
+                        periodData = ds.getValue(PeriodData.class);
+                        // if after had flow, download today to end date, update startDate
+                        if (periodData != null && periodData.getHadFlow()) {
+                            periodData.setStartDate(selectedDateInStr);
+                            periodDataList.add(periodData);
+                        }
+                    }
+                    // if before does not had flow and after does not had flow. simply update data
+                    if (periodDataList.isEmpty()) {
+                        periodRef.child(selectedDateInStr).setValue(periodDataToday).addOnSuccessListener(unused -> {
+                                    Log.v(TAG, "write one period date to database is successful");
+                                    updateUI();})
+                                .addOnFailureListener(Throwable::printStackTrace);
+                    } else {
+                        periodData = periodDataList.get(0);
+                        if (periodData.getEndDate().equals(selectedDateInStr)) {
+                            periodDataToday.setStartDate(periodData.getStartDate());
+                            periodDataList.add(periodDataToday);
+                        }
+                        if (periodData.getStartDate().equals(selectedDateInStr)) {
+                            periodDataToday.setEndDate(periodData.getEndDate());
+                            periodDataList.add(periodDataToday);
+                        }
+                        for(PeriodData data : periodDataList) {
+                            Map<String, Object> periods = data.toMap();
+                            Map<String, Object> childUpdates = new HashMap<>();
+                            childUpdates.put(data.getDate(), periods);
+                            mDatabase.child("period").updateChildren(childUpdates)
+                                    .addOnSuccessListener(unused -> {
+                                        Log.v(TAG, "update period range data in database is successful");
+                                        updateUI();})
+                                    .addOnFailureListener(Throwable::printStackTrace);
+                        }
+                    }
+                });
+    }
+
+    private void updateDatabaseWhenHadFlowChecked() {
+        DatabaseReference periodRef = mDatabase.child("period");
+        // Check whether database has data or not
+        String date = convertLocalDateToStringDate(selectedDate, DATE_SHORT_FORMAT);
+        periodRef.child(date).get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 Log.v(TAG, "Error getting data", task.getException());
             } else {
-                // Indicates whether the date is already stored in the database or not.
-                boolean dateInDatabase = false;
-                for (DataSnapshot ds : task.getResult().getChildren()) {
-                    PeriodData periodData = ds.getValue(PeriodData.class);
-                    if (periodData != null) {
-                        periodDataList.add(periodData);
-                        if (periodData.getDate().equals(dateInStr)) {
-                            dateInDatabase = true;
-                        }
+                PeriodData periodData = task.getResult().getValue(PeriodData.class);
+                // if has data and had flow is true do nothing.
+                // if has data and had flow is false or no data, check the date before and after
+                // selected date.
+                if (periodData != null) {
+                    if (!periodData.getHadFlow()) {
+                        // if has data, update the previous PeriodData
+                        checkDatesBeforeAndAfter(periodData);
+                        Log.v(TAG, "has data and had flow is false");
                     }
-                }
-                if (periodDataList.isEmpty()) {
-                    saveOnePeriodDateInStrToDatabase(dateInStr, dateInStr, dateInStr, true, "", "", -1);
-                    return;
-                }
-
-                for(PeriodData periodData : periodDataList) {
-                    if (periodData.getDate().equals(startDate) && periodData.getHadFlow()) {
-                        if (dateInDatabase) {
-                            periodRef.child(dateInStr).child("hadFlow").setValue(true)
-                                    .addOnSuccessListener(unused -> Log.v(TAG, "write flow condition to database is successful"))
-                                    .addOnFailureListener(Throwable::printStackTrace);
-                            periodRef.child(dateInStr).child("startDate").setValue(periodData.getStartDate())
-                                    .addOnSuccessListener(unused -> Log.v(TAG, "write start date to database is successful"))
-                                    .addOnFailureListener(Throwable::printStackTrace);
-                        } else {
-                            saveOnePeriodDateInStrToDatabase(dateInStr, periodData.getStartDate(), dateInStr, true, "", "", -1);
-                        }
-                        break;
-                    }
-                    if (periodData.getDate().equals(dateInStr)) {
-                        periodRef.child(dateInStr).child("hadFlow").setValue(true)
-                                .addOnSuccessListener(unused -> Log.v(TAG, "write flow condition to database is successful"))
-                                .addOnFailureListener(Throwable::printStackTrace);
-                    }
-                    if (periodData.getHadFlow()) {
-                        if (periodData.getDate().equals(startDate)) {
-                            saveOnePeriodDateInStrToDatabase(dateInStr, periodData.getStartDate(), dateInStr, true, "", "", -1);
-                        }
-                        if (periodData.getDate().compareTo(dateInStr) < 0) {
-                            periodRef.child(dateInStr).child("hadFlow").setValue(true);
-                        }
-                    }
+                } else {
+                    Log.v(TAG, "no data");
+                    // if no data, create new one period data
+                    Long dateLong = selectedDateInMilliseconds();
+                    periodData = generatePeriodData(dateLong, dateLong, dateLong);
+                    checkDatesBeforeAndAfter(periodData);
                 }
             }
         });
     }
 
-    private void updateDatabaseNoFlowChecked() {
+    private void updateDatabaseWhenNoFlowChecked() {
         updateSelectedInDateDatabase();
 
         updatePreviousDatabase();

@@ -88,8 +88,18 @@ public class PeriodData implements Comparable<PeriodData>{
         return flowAndDate;
     }
 
-    public void setFlowAndDate(String flowCondition) {
-        this.flowAndDate = flowCondition + "-" + date;
+
+    public void setHadFlow(boolean hadFlow) {
+        this.hadFlow = hadFlow;
+        this.flowAndDate = generateFlowAndDate();
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
     }
 
     @Override

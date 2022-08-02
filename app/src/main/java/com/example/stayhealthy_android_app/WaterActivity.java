@@ -3,6 +3,7 @@ package com.example.stayhealthy_android_app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,12 +37,15 @@ public class WaterActivity  extends AppCompatActivity {
     private DatabaseReference myDataBase;
     private static final String WATER_INTAKE_DB_NAME = "water_intake";
     WaterIntakeAdapter waterIntakeAdapter;
+    private static final String TODAY_WATER_OZ_CONST = " oz of your 64 oz goal";
+    TextView todayWaterTextView;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_water);
+        todayWaterTextView = findViewById(R.id.today_status);
         waterIntakesList = new ArrayList<>();
         waterListRecyclerView = findViewById(R.id.water_intake_recycler_view);
         waterListRecyclerView.setHasFixedSize(false);
@@ -103,6 +107,7 @@ public class WaterActivity  extends AppCompatActivity {
                 waterIntakesList.add(new WaterIntakeModel(waterOz,date));
                 waterIntakeAdapter.notifyDataSetChanged();
             }
+            todayWaterTextView.setText(waterIntakesList.get(0).getWaterOz() + TODAY_WATER_OZ_CONST );
         }));
     }
 
@@ -165,6 +170,7 @@ public class WaterActivity  extends AppCompatActivity {
         }
         todayModel.addWater(waterOz);
         waterDbRef.child(dateStr).setValue(todayModel);
+        todayWaterTextView.setText(todayModel.getWaterOz() + TODAY_WATER_OZ_CONST);
         waterIntakeAdapter.notifyDataSetChanged();
 
     }

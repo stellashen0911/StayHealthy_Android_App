@@ -13,6 +13,7 @@
         <entry key="app/src/main/res/drawable/m_customer_border_drawable.xml" value="0.117" />
         <entry key="app/src/main/res/drawable/m_customer_circle_drawable.xml" value="0.3995" />
         <entry key="app/src/main/res/drawable/m_customer_circle_gray_drawable.xml" value="0.3805" />
+        <entry key="app/src/main/res/drawable/m_customer_circle_grey_drawable.xml" value="0.3035" />
         <entry key="app/src/main/res/drawable/m_customer_circle_red_drawable.xml" value="0.4005" />
         <entry key="app/src/main/res/drawable/text_circle_background.xml" value="0.3995" />
         <entry key="app/src/main/res/layout/activity_award.xml" value="0.27169698079427085" />

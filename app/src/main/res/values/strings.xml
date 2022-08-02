@@ -62,7 +62,7 @@
         <item>Abdominal Cramps</item>
         <item>Stomachache</item>
         <item>Headache</item>
-        <item>Chilling</item>
+        <item>Chills</item>
     </string-array>
     <string-array name="mood_array">
         <item>😃</item>

@@ -3,13 +3,6 @@
     <PreferenceCategory
         android:title="Notification Setting">
 
-        <EditTextPreference
-            android:key="edittext_preference"
-            android:title="Edit text preference"
-            android:summary="@string/test"
-            android:dialogTitle="@string/test"
-            android:dependency="checkbox_preference" />
-
     </PreferenceCategory>
 
     <PreferenceCategory

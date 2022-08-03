@@ -1,30 +1,30 @@
 package com.example.stayhealthy_android_app.Period.Model;
 
 public class Cycle implements Comparable<Cycle>{
-    private String startDate;
-    private String endDate;
-    private int cycleRanges;
+    private final String startDate;
+    private final String cycleRanges;
+    private final String totalDays;
 
-    public Cycle(String startDate, String endDate, int cycleRanges) {
+    public Cycle(String startDate, String cycleRanges, String totalDays) {
         this.startDate = startDate;
-        this.endDate = endDate;
         this.cycleRanges = cycleRanges;
+        this.totalDays = totalDays;
+    }
+
+    public String getCycleRanges() {
+        return cycleRanges;
+    }
+
+    public String getTotalDays() {
+        return totalDays;
     }
 
     public String getStartDate() {
         return startDate;
     }
 
-    public String getEndDate() {
-        return endDate;
-    }
-
-    public int getCycleRanges() {
-        return cycleRanges;
-    }
-
     @Override
     public int compareTo(Cycle o) {
-        return this.getEndDate().compareTo(o.getEndDate());
+        return this.getStartDate().compareTo(o.getStartDate());
     }
 }

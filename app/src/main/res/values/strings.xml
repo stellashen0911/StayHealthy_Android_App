@@ -25,7 +25,7 @@
     <string name="symptoms_string">Symptoms</string>
     <string name="mood_string">Mood</string>
     <string name="period_prediction_title_string">Period Prediction</string>
-    <string name="period_prediction_string">Your period is likely to start on</string>
+    <string name="period_prediction_string">Your period is likely to start on: No Record</string>
     <string name="period_cycle_history_string">Cycle History</string>
     <string name="period_recent_string">Recent Period</string>
     <string name="period_range_string">June 29 - July 5</string>
@@ -96,5 +96,10 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="test">Test</string>
+    <string name="dash_string">-</string>
+    <string name="expand_string">expand</string>
+    <string name="ranges">Ranges</string>
+    <string name="cycle_range">Cycle Range</string>
+    <string name="total_days">Total Days</string>
 
 </resources>

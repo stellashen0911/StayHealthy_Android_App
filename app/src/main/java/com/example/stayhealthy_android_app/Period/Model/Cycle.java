@@ -1,5 +1,7 @@
 package com.example.stayhealthy_android_app.Period.Model;
 
+import androidx.annotation.NonNull;
+
 public class Cycle implements Comparable<Cycle>{
     private final String startDate;
     private final String cycleRanges;
@@ -26,5 +28,11 @@ public class Cycle implements Comparable<Cycle>{
     @Override
     public int compareTo(Cycle o) {
         return this.getStartDate().compareTo(o.getStartDate());
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Cycles: " + getCycleRanges() + " totalDays: " + totalDays;
     }
 }

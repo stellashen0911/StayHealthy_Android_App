@@ -96,17 +96,19 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         // Initialize the selected date as today.
         selectedDate = LocalDate.now();
 
-        // Initialize the days of month array in selectedDate's month.
+        // Initialize the days of month array, period dates and recorded dates in selectedDate's
+        // month. Initialize the cycle history list.
         daysOfMonth = new ArrayList<>();
-
-        // Initialize the period dates and recorded dates in selectedDate's month.
         periodDatesInMonth = new ArrayList<>();
         recordedDatesInMonth = new ArrayList<>();
-
         cycleList = new ArrayList<>();
 
         // Set bottom navigation view.
         setBottomNavigationView();
+
+        // Set divider for cycleHistory recycler view.
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        binding.cycleHistoryRV.addItemDecoration(dividerItemDecoration);
     }
 
     @Override
@@ -326,13 +328,13 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
 
     // Expand and collapse Cycle History Card View
     public void expandAndCollapseCycleHistory(View view) {
-        if (binding.cycleHistoryContentLL.getVisibility() == View.GONE) {
-            TransitionManager.beginDelayedTransition(binding.cycleHistoryContentLL, new AutoTransition());
-            binding.cycleHistoryContentLL.setVisibility(View.VISIBLE);
+        if (binding.cycleHistoryRV.getVisibility() == View.GONE) {
+            TransitionManager.beginDelayedTransition(binding.cycleHistoryRV, new AutoTransition());
+            binding.cycleHistoryRV.setVisibility(View.VISIBLE);
             binding.cycleHistoryExpandBTN.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_baseline_expand_less_24));
         } else {
-            TransitionManager.beginDelayedTransition(binding.cycleHistoryContentLL, new AutoTransition());
-            binding.cycleHistoryContentLL.setVisibility(View.GONE);
+            TransitionManager.beginDelayedTransition(binding.cycleHistoryRV, new AutoTransition());
+            binding.cycleHistoryRV.setVisibility(View.GONE);
             binding.cycleHistoryExpandBTN.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_baseline_expand_more_24));
         }
     }
@@ -630,9 +632,6 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         binding.cycleHistoryRV.setLayoutManager(linearLayoutManager);
         setCycleHistoryRecyclerViewAdapter();
-
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, linearLayoutManager.getOrientation());
-        binding.cycleHistoryRV.addItemDecoration(dividerItemDecoration);
     }
 
     private void setCycleHistoryRecyclerViewAdapter() {
@@ -676,10 +675,11 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                         cycleStart = cycleStart.substring(0, cycleStart.length() - 5);
                         cycleEnd = cycleEnd.substring(0, cycleEnd.length() - 5);
                     }
-                    Cycle cycle = new Cycle(startDate, cycleStart + " - " + cycleEnd, ranges + " days");
+                    Cycle cycle = new Cycle(startDate, "Cycle: " + cycleStart + " - " + cycleEnd, ranges + " days");
                     cycleList.add(cycle);
                 }
                 cycleList.sort(Collections.reverseOrder());
+                Log.v(TAG, cycleList.toString());
                 setCycleHistoryRecyclerViewAdapter();
             }
         });
@@ -972,7 +972,6 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                             .addOnSuccessListener(unused -> Log.v(TAG, "write one symptoms date to database is successful"))
                             .addOnFailureListener(Throwable::printStackTrace);
                 } else {
-
                     periodData = new PeriodData(date, "", "", false, "", symptoms, -1);
                     saveOnePeriodDataToDatabase(periodData);
                 }

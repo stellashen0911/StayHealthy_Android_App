@@ -290,6 +290,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                     color = ContextCompat.getColor(PeriodActivity.this, R.color.gray); // Opaque Blue
                 }
                 view.setBackgroundColor(color);
+                view.setPadding(20, 20, 20, 20);
                 return view;
             }
         };

@@ -1,8 +1,7 @@
 package com.example.stayhealthy_android_app.Journey;
 
-import android.content.Context;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,14 +9,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.stayhealthy_android_app.R;
 
 public class JourneyPostViewHolder  extends RecyclerView.ViewHolder  {
-    public TextView postText;
-    private Context context;
+    public ImageView postImage;
     public JourneyPostViewHolder(@NonNull View itemView) {
         super(itemView);
-        postText = itemView.findViewById(R.id.post_text);
+        postImage = itemView.findViewById(R.id.imageViewPost);
     }
 
     public void bindJourneyPost(JourneyPost post) {
-        postText.setText(post.getPost());
+        postImage.setImageBitmap(post.getPostRes());
     }
 }

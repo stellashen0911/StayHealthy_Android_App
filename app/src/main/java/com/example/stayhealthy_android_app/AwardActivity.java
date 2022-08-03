@@ -67,9 +67,6 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
             @Override
             public void onClick(View v) {
                 //to do:
-                System.out.println("clicked button");
-                Intent i = new Intent(AwardActivity.this, SettingsActivity.class);
-                startActivity(i);
             }
         });
     }
@@ -132,12 +129,11 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
-        Fragment fragment = null;
-        Class fragmentClass = null;
         switch(item.getItemId()) {
             case R.id.nav_settings:
                 drawer.closeDrawers();
-                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                Intent i = new Intent(AwardActivity.this, SettingsActivity.class);
+                startActivity(i);
                 break;
             case R.id.nav_health_records:
                 drawer.closeDrawers();
@@ -153,21 +149,6 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
                 break;
         }
 
-//        if (fragment != null) {
-//            // Insert the fragment by replacing any existing fragment
-//            FragmentManager fragmentManager = getSupportFragmentManager();
-//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//            fragmentTransaction.replace(R.id.fragment_container, fragment);
-//            fragmentManager.popBackStack();
-//            fragmentTransaction.commit();
-//            // Highlight the selected item has been done by NavigationView
-//            item.setChecked(true);
-//            // Set action bar title
-//            setTitle(item.getTitle());
-//            // Close the navigation drawer
-//            drawer.closeDrawer(GravityCompat.START);
-//        }
-        System.out.println("here 6");
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

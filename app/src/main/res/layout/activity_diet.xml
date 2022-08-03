@@ -80,7 +80,7 @@
         android:id="@+id/textView12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="68dp"
+        android:layout_marginStart="32dp"
         android:layout_marginBottom="28dp"
         android:text="Net Cal: 0 Cal"
         app:layout_constraintBottom_toTopOf="@+id/textView9"
@@ -90,7 +90,7 @@
         android:id="@+id/textView13"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="64dp"
+        android:layout_marginEnd="32dp"
         android:text="Target Cal: 0 Cal"
         app:layout_constraintBottom_toBottomOf="@+id/textView12"
         app:layout_constraintEnd_toEndOf="parent" />

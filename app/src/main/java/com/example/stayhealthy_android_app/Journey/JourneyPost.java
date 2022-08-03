@@ -1,11 +1,13 @@
 package com.example.stayhealthy_android_app.Journey;
 
+import android.graphics.Bitmap;
+
 public class JourneyPost {
-    String post;
-    public JourneyPost (String post) {
+    Bitmap post;
+    public JourneyPost (Bitmap post) {
         this.post = post;
     }
-    public String getPost() {
+    public Bitmap getPostRes() {
         return post;
     }
 }

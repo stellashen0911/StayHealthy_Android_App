@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.stayhealthy_android_app.AwardActivity;
@@ -18,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class DietActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
@@ -34,6 +36,7 @@ public class DietActivity extends AppCompatActivity {
     private TextView netCalView;
     private TextView targetCalView;
     private TextView weightView;
+    private ImageView imageView;
 
     private DatabaseReference myDataBase;
 
@@ -47,6 +50,7 @@ public class DietActivity extends AppCompatActivity {
         initWidgets();
         setBottomNavigationView();
         initTextViews();
+        initImageView();
         loadValues();
     }
 
@@ -78,14 +82,22 @@ public class DietActivity extends AppCompatActivity {
         weightView = findViewById(R.id.textView15);
     }
 
-    @SuppressLint("SetTextI18n")
-    private void fillValues() {
-        proteinView.setText("Protein: " + protein + " Cal");
-        fatView.setText("Fat: " + fat + " Cal");
-        carbsView.setText("Carbs: " + carbs + " Cal");
-        netCalView.setText("Net Cal: " + netCal + " Cal");
-        targetCalView.setText("Target Cal: " + targetCal + " Cal");
-        weightView.setText("Weight: " + weight + " kg");
+    private void initImageView() {
+        imageView = findViewById(R.id.imageView3);
+        int rand = (new Random()).nextInt(6);
+        if (rand == 0) {
+            imageView.setImageResource(R.drawable.bean_stew);
+        } else if (rand == 1) {
+            imageView.setImageResource(R.drawable.goulash);
+        } else if (rand == 2) {
+            imageView.setImageResource(R.drawable.lamb_peka);
+        } else if (rand == 3) {
+            imageView.setImageResource(R.drawable.sandwich);
+        } else if (rand == 4) {
+            imageView.setImageResource(R.drawable.sardines);
+        } else {
+            imageView.setImageResource(R.drawable.walnutroll);
+        }
     }
 
     @Override

@@ -13,16 +13,21 @@ import com.example.stayhealthy_android_app.JourneyActivity;
 import com.example.stayhealthy_android_app.R;
 import com.example.stayhealthy_android_app.WaterActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DietActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
 
-    private int protein;
-    private int fat;
-    private int carbs;
-    private int netCal;
-    private int targetCal;
-    private int weight;
+    private long protein;
+    private long fat;
+    private long carbs;
+    private long netCal;
+    private long targetCal;
+    private long weight;
     private TextView proteinView;
     private TextView fatView;
     private TextView carbsView;
@@ -30,24 +35,38 @@ public class DietActivity extends AppCompatActivity {
     private TextView targetCalView;
     private TextView weightView;
 
+    private DatabaseReference myDataBase;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diet);
+        myDataBase = FirebaseDatabase.getInstance().getReference("user").
+                child("test@gmail_com").child("diets").child("20220731");
+
         initWidgets();
         setBottomNavigationView();
-        loadValues();
         initTextViews();
-        fillValues();
+        loadValues();
     }
 
     private void loadValues() {
-        protein = 1;
-        fat = 2;
-        carbs = 3;
-        netCal = 4;
-        targetCal = 5;
-        weight = 63;
+        myDataBase.get().addOnCompleteListener(task -> {
+            HashMap tempMap = (HashMap) task.getResult().getValue();
+            protein = (long) tempMap.get("protein");
+            fat = (long) tempMap.get("fat");
+            carbs = (long) tempMap.get("carbs");
+            netCal = (long) tempMap.get("net");
+            targetCal = (long) tempMap.get("target");
+            weight = (long) tempMap.get("weight");
+            proteinView.setText("Protein: " + protein + " Cal");
+            fatView.setText("Fat: " + fat + " Cal");
+            carbsView.setText("Carbs: " + carbs + " Cal");
+            netCalView.setText("Net Cal: " + netCal + " Cal");
+            targetCalView.setText("Target Cal: " + targetCal + " Cal");
+            weightView.setText("Weight: " + weight + " kg");
+        });
+
     }
 
     private void initTextViews() {
@@ -72,10 +91,8 @@ public class DietActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Set home selected when going back to this activity from other activities
         bottomNavigationView.setSelectedItemId(R.id.health_record_icon);
         loadValues();
-        fillValues();
     }
 
     private void initWidgets() {

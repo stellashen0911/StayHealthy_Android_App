@@ -44,7 +44,6 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         profile_nv.setNavigationItemSelectedListener(this);
         System.out.println("profile init finished");
     }

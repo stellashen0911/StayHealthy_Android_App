@@ -1,8 +1,14 @@
 package com.example.stayhealthy_android_app;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,12 +42,25 @@ public class WaterActivity  extends AppCompatActivity {
     private DatabaseReference myDataBase;
     private static final String WATER_INTAKE_DB_NAME = "water_intake";
     WaterIntakeAdapter waterIntakeAdapter;
-
+    private static final String TODAY_WATER_OZ_CONST = " oz of your 64 oz goal";
+    TextView todayWaterTextView;
+    TextView dailyPercentageTextView;
+    ProgressBar dailyProgressBar;
+    Handler handler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_water);
+        handler = new Handler();
+        dailyPercentageTextView = findViewById(R.id.percentage);
+        dailyProgressBar = findViewById(R.id.daily_progress_bar);
+//        Drawable progressDrawable = dailyProgressBar.getProgressDrawable().mutate();
+//        progressDrawable.setColorFilter(ColoR., android.graphics.PorterDuff.Mode.SRC_IN);
+//        dailyProgressBar.setProgressDrawable(progressDrawable);
+        dailyProgressBar.setProgressTintList(ColorStateList.valueOf(Color.BLUE));
+
+        todayWaterTextView = findViewById(R.id.today_status);
         waterIntakesList = new ArrayList<>();
         waterListRecyclerView = findViewById(R.id.water_intake_recycler_view);
         waterListRecyclerView.setHasFixedSize(false);
@@ -103,6 +122,11 @@ public class WaterActivity  extends AppCompatActivity {
                 waterIntakesList.add(new WaterIntakeModel(waterOz,date));
                 waterIntakeAdapter.notifyDataSetChanged();
             }
+            todayWaterTextView.setText(waterIntakesList.get(0).getWaterOz() + TODAY_WATER_OZ_CONST );
+            Long percentage = (waterIntakesList.get(0).getWaterOz()*100) / WaterIntakeModel.DAILY_WATER_TARGET_OZ;
+            dailyPercentageTextView.setText(percentage+"%");
+            handler.post(() -> dailyProgressBar.setProgress(percentage.intValue()));
+
         }));
     }
 
@@ -165,8 +189,11 @@ public class WaterActivity  extends AppCompatActivity {
         }
         todayModel.addWater(waterOz);
         waterDbRef.child(dateStr).setValue(todayModel);
+        todayWaterTextView.setText(todayModel.getWaterOz() + TODAY_WATER_OZ_CONST);
+        Long percentage = (todayModel.getWaterOz()*100) / WaterIntakeModel.DAILY_WATER_TARGET_OZ;
+        dailyPercentageTextView.setText(percentage+"%");
+        handler.post(() -> dailyProgressBar.setProgress(percentage.intValue()));
         waterIntakeAdapter.notifyDataSetChanged();
-
     }
 
     // Convert milliseconds in UTC time to date in string

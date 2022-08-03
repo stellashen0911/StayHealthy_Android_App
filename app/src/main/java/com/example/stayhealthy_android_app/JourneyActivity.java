@@ -4,8 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.example.stayhealthy_android_app.Journey.JourneyPost;
 import com.example.stayhealthy_android_app.Journey.JourneyPostAdapter;
@@ -26,9 +31,11 @@ public class JourneyActivity extends AppCompatActivity {
     private DatabaseReference myDataBase;
     private static final String POST_DB_NAME = "posts";
     RecyclerView postRecyclerView;
+    JourneyPostAdapter postAdapter;
     private List<JourneyPost> posts;
     // set a new activity on this button to open camera
     FloatingActionButton addButton;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +47,13 @@ public class JourneyActivity extends AppCompatActivity {
         posts = new ArrayList<>();
         postRecyclerView = findViewById(R.id.post_recycler_view);
         postRecyclerView.setHasFixedSize(false);
-        JourneyPostAdapter postAdapter  = new JourneyPostAdapter(posts, this);
+        postAdapter  = new JourneyPostAdapter(posts, this);
         postRecyclerView.setAdapter(postAdapter);
         postRecyclerView .setLayoutManager(new LinearLayoutManager(this));
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         myDataBase = FirebaseDatabase.getInstance().getReference();
         Calendar cal = Calendar.getInstance();
+        /*
         String userDBName = user.getEmail().replace('.','_');
         // demo code store data to cloud db
         myDataBase.child("user").child(userDBName).child(POST_DB_NAME).removeValue();
@@ -67,6 +75,7 @@ public class JourneyActivity extends AppCompatActivity {
                 postAdapter.notifyDataSetChanged();
             }
         });
+         */
         setBottomNavigationView();
     }
 
@@ -102,5 +111,25 @@ public class JourneyActivity extends AppCompatActivity {
             }
             return isItemSelected;
         });
+    }
+
+    public void onAddPicturePressed(View view) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        } catch (ActivityNotFoundException e) {
+            // display error state to the user
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            posts.add(new JourneyPost(imageBitmap));
+            postAdapter.notifyDataSetChanged();
+        }
     }
 }

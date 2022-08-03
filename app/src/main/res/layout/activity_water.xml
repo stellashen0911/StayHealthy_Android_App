@@ -25,11 +25,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title"
         android:orientation="vertical">
+        <ProgressBar
+            android:id="@+id/daily_progress_bar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="15dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:progress="25"/>
         <TextView
+            android:id="@+id/percentage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="36dp"
-            android:text="this is intentionally left blank. I will use a third party library to show chart."/>
+            android:textSize="20sp"
+            android:layout_gravity="center_horizontal"
+            />
+
     </androidx.appcompat.widget.LinearLayoutCompat>
     <ScrollView
         android:id="@+id/buttons"
@@ -51,13 +62,25 @@
                     android:layout_height="100dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBaseline_toBottomOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/eight_oz"
                     android:src="@drawable/glass_water"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
+                    android:padding="15dp"
                     android:scaleType="fitCenter"
-                    android:adjustViewBounds="true"/>
+                    android:background="@drawable/circular_background"
+                />
+                <TextView
+                    android:id="@+id/eight_oz"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="@+id/glass_water"
+                    app:layout_constraintEnd_toEndOf="@+id/glass_water"
+                    app:layout_constraintTop_toBottomOf="@+id/glass_water"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:text="8 oz"
+                    android:textSize="10sp"/>
 
                 <ImageButton
                     android:id="@+id/bottle_water"
@@ -66,14 +89,26 @@
                     app:layout_constraintStart_toEndOf="@+id/glass_water"
                     app:layout_constraintEnd_toStartOf="@id/large_bottle_water"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBaseline_toBottomOf="parent"
-                    android:src="@drawable/water_bottle"
+                    android:src="@drawable/bottle_water"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
                     android:scaleType="fitCenter"
-                    android:adjustViewBounds="true"/>
+                    android:adjustViewBounds="true"
+                    android:padding="10dp"
+                    android:background="@drawable/circular_background"
+                    />
+                <TextView
+                    android:id="@+id/sixteen_oz"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/bottle_water"
+                    app:layout_constraintStart_toStartOf="@id/bottle_water"
+                    app:layout_constraintEnd_toEndOf="@id/bottle_water"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:textSize="10sp"
+                    android:text="16 oz"/>
 
                 <ImageButton
                     android:id="@+id/large_bottle_water"
@@ -86,7 +121,20 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
                     android:scaleType="fitCenter"
-                    android:adjustViewBounds="true"/>
+                    android:adjustViewBounds="true"
+                    android:padding="10dp"
+                    android:background="@drawable/circular_background"
+                    />
+                <TextView
+                    android:id="@+id/twenty_four_oz"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="@+id/large_bottle_water"
+                    app:layout_constraintEnd_toEndOf="@+id/large_bottle_water"
+                    app:layout_constraintTop_toBottomOf="@id/large_bottle_water"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:text="24 oz"
+                    android:textSize="10sp"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
@@ -95,15 +143,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:text="Today"/>
+                android:text="Today"
+                android:textSize="20sp"
+                android:textColor="#112AB6"/>
             <TextView
+
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="10dp"
                 android:id="@+id/today_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="0 oz of your 80 oz goal"/>
+                android:text="0 oz of your 64 oz goal"
+                android:textSize="20sp"
+                android:textColor="#112AB6"/>
             <View
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"

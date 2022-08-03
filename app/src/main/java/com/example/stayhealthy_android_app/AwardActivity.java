@@ -45,6 +45,7 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
         profile_nv = findViewById(R.id.nav_view);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Award");
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);

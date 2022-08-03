@@ -12,8 +12,6 @@ public class SettingFragment extends PreferenceFragment {
 
         // below line is used to add preference
         // fragment from our xml folder.
-        System.out.println("here settings fragment start");
         addPreferencesFromResource(R.xml.setting_fragment);
-        System.out.println("here settings fragment end");
     }
 }

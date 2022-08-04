@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -53,11 +54,12 @@ public class JourneyActivity extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         myDataBase = FirebaseDatabase.getInstance().getReference();
         Calendar cal = Calendar.getInstance();
-        /*
         String userDBName = user.getEmail().replace('.','_');
         // demo code store data to cloud db
         myDataBase.child("user").child(userDBName).child(POST_DB_NAME).removeValue();
-        myDataBase.child("user").child(userDBName).child(POST_DB_NAME).child(String.valueOf(cal.getTimeInMillis())).setValue(new JourneyPost("this is a post"));
+        myDataBase.child("user").child(userDBName).child(POST_DB_NAME)
+                .child(String.valueOf(cal.getTimeInMillis()))
+                .setValue(new JourneyPost(null, "this is a post"));
        // end of demo code
         myDataBase.child("user").child(userDBName).child(POST_DB_NAME).get().addOnCompleteListener((task) -> {
             HashMap<String, HashMap<String,String>> tempMap = (HashMap) task.getResult().getValue();
@@ -71,11 +73,10 @@ public class JourneyActivity extends AppCompatActivity {
             });
             for (int i = 0; i < timestamps.size(); i++) {
                 String postStr = tempMap.get(timestamps.get(i)).get("post");
-                posts.add(new JourneyPost(postStr));
+                posts.add(new JourneyPost(null,postStr));
                 postAdapter.notifyDataSetChanged();
             }
         });
-         */
         setBottomNavigationView();
     }
 
@@ -128,8 +129,16 @@ public class JourneyActivity extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-            posts.add(new JourneyPost(imageBitmap));
-            postAdapter.notifyDataSetChanged();
+            Intent editPostIntent = new Intent(this,EditPostActivity.class);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+            editPostIntent.putExtra("image",byteArray);
+            startActivity(editPostIntent);
+
+
+            // posts.add(new JourneyPost(imageBitmap,""));
+            // postAdapter.notifyDataSetChanged();
         }
     }
 }

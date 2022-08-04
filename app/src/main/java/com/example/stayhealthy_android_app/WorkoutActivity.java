@@ -2,6 +2,7 @@ package com.example.stayhealthy_android_app;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 
 import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
@@ -12,6 +13,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -20,6 +25,7 @@ import java.util.Locale;
 
 public class WorkoutActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
+    private DatabaseReference myDataBase;
     private TextView dateInfoLabel;
     private TextView goal_calories_TX;
     private TextView completed_calories_TX;
@@ -29,12 +35,16 @@ public class WorkoutActivity extends AppCompatActivity {
     private Toolbar toolbar;
     int goal_calories;
     int completed_calories;
+    private CardView CV1;
+    private CardView CV2;
+    private CardView CV3;
+    private CardView CV4;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workout);
-
 
         //setup the bottom nav bar
         initWidgets();
@@ -57,7 +67,22 @@ public class WorkoutActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Work Out Records");
+
+        //set up the firebase
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        myDataBase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+
+        //set up the card view of detailed workout
+        CV1 = (CardView) findViewById(R.id.workoutDataCV_01);
+        CV2 = (CardView) findViewById(R.id.workoutDataCV_02);
+        CV3 = (CardView) findViewById(R.id.workoutDataCV_03);
+        CV4 = (CardView) findViewById(R.id.workoutDataCV_04);
+
+        //CV2.setVisibility(View.GONE);
+        //CV2.setVisibility(View.VISIBLE);
     }
+
+
 
     public void openEditGoalActivity() {
         Intent EditWorkoutIntent = new Intent(this, EditWorkoutGoalActivity.class);
@@ -75,18 +100,14 @@ public class WorkoutActivity extends AppCompatActivity {
 
     private void update_goal() {
         //initiate the progress bar
-        System.out.println("here");
         goal_calories_TX = findViewById(R.id.CaloriesGoal);
         completed_calories_TX = findViewById(R.id.GoalFinishedNumber);
         show_percentage = findViewById(R.id.progressBar_percentage);
         progressBar = findViewById(R.id.progressBar);
 
         goal_calories = Integer.parseInt(goal_calories_TX.getText().toString());
-        System.out.println("goal calorie is " + goal_calories);
         completed_calories = Integer.parseInt(completed_calories_TX.getText().toString());
         double progress = (double) ((double) completed_calories / (double) goal_calories);
-        System.out.println("complete calorie is " + completed_calories);
-        System.out.println("the progress is " + progress);
         int int_progress = (int) (progress * 100);
         progressBar.setProgress(int_progress);
         String progress_str = String.valueOf(int_progress);

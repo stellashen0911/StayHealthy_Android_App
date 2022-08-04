@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -47,6 +48,7 @@ public class WaterActivity  extends AppCompatActivity {
     TextView dailyPercentageTextView;
     ProgressBar dailyProgressBar;
     Handler handler;
+    private Toolbar toolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,11 @@ public class WaterActivity  extends AppCompatActivity {
         addLargeBottleWaterButton.setOnClickListener((v)->addWaterIntake(24));
         initWidgets();
         setBottomNavigationView();
+
+        //set up the toolbar
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Water Records");
     }
 
     @Override

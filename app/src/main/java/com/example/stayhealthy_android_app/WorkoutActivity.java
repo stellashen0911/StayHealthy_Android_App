@@ -1,6 +1,7 @@
 package com.example.stayhealthy_android_app;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
@@ -25,6 +26,7 @@ public class WorkoutActivity extends AppCompatActivity {
     private TextView show_percentage;
     private ProgressBar progressBar;
     private Button editWorkoutGoalBtn;
+    private Toolbar toolbar;
     int goal_calories;
     int completed_calories;
 
@@ -50,6 +52,11 @@ public class WorkoutActivity extends AppCompatActivity {
                 openEditGoalActivity();
             }
         });
+
+        //set up the toolbar
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Work Out Records");
     }
 
     public void openEditGoalActivity() {

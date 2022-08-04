@@ -15,18 +15,17 @@
         <entry key="app/src/main/res/drawable/m_customer_circle_gray_drawable.xml" value="0.3805" />
         <entry key="app/src/main/res/drawable/m_customer_circle_red_drawable.xml" value="0.4005" />
         <entry key="app/src/main/res/drawable/text_circle_background.xml" value="0.3995" />
-        <entry key="app/src/main/res/layout/activity_award.xml" value="0.22072936660268713" />
+        <entry key="app/src/main/res/layout/activity_award.xml" value="0.27169698079427085" />
         <entry key="app/src/main/res/layout/activity_breakfast.xml" value="0.26197916666666665" />
         <entry key="app/src/main/res/layout/activity_diet.xml" value="0.26197916666666665" />
         <entry key="app/src/main/res/layout/activity_dinner.xml" value="0.26197916666666665" />
-        <entry key="app/src/main/res/layout/activity_edit_post.xml" value="0.146875" />
-        <entry key="app/src/main/res/layout/activity_edit_workout_goal.xml" value="0.23731884057971014" />
-        <entry key="app/src/main/res/layout/activity_health_record.xml" value="0.2645161290322581" />
+        <entry key="app/src/main/res/layout/activity_edit_workout_goal.xml" value="0.37585948999377267" />
+        <entry key="app/src/main/res/layout/activity_health_record.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/activity_journey.xml" value="0.1881261189778646" />
         <entry key="app/src/main/res/layout/activity_lunch.xml" value="0.26197916666666665" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_period.xml" value="0.3179611650485437" />
-        <entry key="app/src/main/res/layout/activity_profile_page.xml" value="0.20390070921985815" />
+        <entry key="app/src/main/res/layout/activity_profile_page.xml" value="0.29393115942028986" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/activity_settings.xml" value="0.29393115942028986" />
         <entry key="app/src/main/res/layout/activity_snack.xml" value="0.26197916666666665" />

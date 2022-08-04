@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.util.Pair;
@@ -78,6 +79,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     private List<Integer> periodDatesInMonth;
     private List<Integer> recordedDatesInMonth;
     private List<Cycle> cycleList;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -109,6 +111,11 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         // Set divider for cycleHistory recycler view.
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         binding.cycleHistoryRV.addItemDecoration(dividerItemDecoration);
+
+        //set up the toolbar
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Period Records");
     }
 
     @Override

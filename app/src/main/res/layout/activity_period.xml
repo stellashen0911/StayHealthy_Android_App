@@ -189,28 +189,14 @@
                             android:text="@string/period_recent_string"
                             android:textAppearance="?attr/textAppearanceHeadline6" />
 
-                        <LinearLayout
+
+                        <TextView
+                            android:id="@+id/periodRangeDetailsTV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/periodDateDetailsTV"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/horizontal_margin"
-                                android:text="@string/no_record_string"
-                                android:textAppearance="?attr/textAppearanceBody2" />
-
-                            <TextView
-                                android:id="@+id/periodRangeTotalDaysTV"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/horizontal_margin"
-                                android:text="@string/no_record_string"
-                                android:textAppearance="?attr/textAppearanceBody2" />
-
-                        </LinearLayout>
+                            android:layout_marginStart="@dimen/horizontal_margin"
+                            android:text="@string/no_record_string"
+                            android:textAppearance="?attr/textAppearanceBody2" />
 
                     </LinearLayout>
 
@@ -423,9 +409,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/vertical_margin"
-                android:clickable="true"
-                android:minHeight="48dp"
-                android:onClick="expandCycleHistory"
+                android:clickable="false"
+                android:focusable="true"
                 app:cardCornerRadius="4dp"
                 app:cardElevation="4dp"
                 app:layout_constraintBottom_toTopOf="@id/guideline1"
@@ -433,56 +418,45 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/periodCycleHistoryTV"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/horizontal_margin"
-                        android:text="@string/period_cycle_history_string"
-                        android:textAppearance="?attr/textAppearanceHeadline6" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/periodCurrentCycleStartTV"
-                            android:layout_width="match_parent"
+                            android:id="@+id/periodCycleHistoryTV"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/no_record_string"
-                            android:textAppearance="?attr/textAppearanceBody2" />
+                            android:layout_weight="1"
+                            android:padding="@dimen/horizontal_margin"
+                            android:text="@string/period_cycle_history_string"
+                            android:textAppearance="?attr/textAppearanceHeadline6" />
 
-                        <TextView
-                            android:id="@+id/periodCurrentCycleTV"
-                            android:layout_width="match_parent"
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/cycleHistoryExpandBTN"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="-"
-                            android:textAppearance="?attr/textAppearanceBody2" />
-
-                        <TextView
-                            android:id="@+id/periodCurrentCycleEndTV"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/no_record_string"
-                            android:textAppearance="?attr/textAppearanceBody2" />
-
-                        <TextView
-                            android:id="@+id/periodCycleTotalDaysTV"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/no_record_string"
-                            android:textAppearance="?attr/textAppearanceBody2" />
+                            android:contentDescription="@string/expand_string"
+                            android:onClick="expandAndCollapseCycleHistory"
+                            app:icon="@drawable/ic_baseline_expand_more_24"
+                            app:iconGravity="textEnd"
+                            app:iconSize="20dp" />
 
                     </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/cycleHistoryRV"
+                        android:layout_width="match_parent"
+                        android:layout_height="156dp"
+                        android:layout_marginStart="@dimen/horizontal_margin"
+                        android:layout_marginEnd="@dimen/horizontal_margin"
+                        android:visibility="gone">
+
+                    </androidx.recyclerview.widget.RecyclerView>
 
                 </LinearLayout>
 
@@ -513,29 +487,14 @@
                         android:text="@string/period_prediction_title_string"
                         android:textAppearance="?attr/textAppearanceHeadline6" />
 
-                    <LinearLayout
+
+                    <TextView
+                        android:id="@+id/periodPredictionDateTV"
                         android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/periodPredictionDescriptionTV"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/period_prediction_string"
-                            android:textAppearance="?attr/textAppearanceBody2" />
-
-                        <TextView
-                            android:id="@+id/periodPredictionDateTV"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/horizontal_margin"
-                            android:text="@string/no_record_string"
-                            android:textAppearance="?attr/textAppearanceBody2" />
-
-                    </LinearLayout>
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/horizontal_margin"
+                        android:text="@string/period_prediction_string"
+                        android:textAppearance="?attr/textAppearanceBody2" />
 
                 </LinearLayout>
 

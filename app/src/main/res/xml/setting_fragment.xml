@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory
-        android:title="Notification Setting">
+        <PreferenceCategory
+            android:title="Notification Setting">
 
-    </PreferenceCategory>
+        </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/test">
-
-        <Preference
+        <PreferenceCategory
             android:title="@string/test">
-            <intent android:action="android.intent.action.VIEW"
-                android:data="http://codepath.com/" />
-        </Preference>
 
-    </PreferenceCategory>
+            <Preference
+                android:title="@string/test">
+                <intent android:action="android.intent.action.VIEW" />
+            </Preference>
+
+        </PreferenceCategory>
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="switch_preference_1"
+            android:title="Work-Out Notification"
+            android:summary="Turn the Work-Out Notification on or off"/>
+
 </PreferenceScreen>

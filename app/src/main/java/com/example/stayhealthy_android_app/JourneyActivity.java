@@ -1,6 +1,10 @@
 package com.example.stayhealthy_android_app;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -9,13 +13,16 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.example.stayhealthy_android_app.Journey.JourneyPost;
 import com.example.stayhealthy_android_app.Journey.JourneyPostAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -27,7 +34,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-public class JourneyActivity extends AppCompatActivity {
+public class JourneyActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private BottomNavigationView bottomNavigationView;
     private DatabaseReference myDataBase;
     private static final String POST_DB_NAME = "posts";
@@ -37,14 +44,21 @@ public class JourneyActivity extends AppCompatActivity {
     // set a new activity on this button to open camera
     FloatingActionButton addButton;
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    private DrawerLayout drawer;
+    private Toolbar toolbar;
+    private NavigationView profile_nv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addButton = findViewById(R.id.add_new_post);
         setContentView(R.layout.activity_journey);
+
         // Initialize and assign variable
         initWidgets();
+        setBottomNavigationView();
+        initProfileDrawer();
+
         posts = new ArrayList<>();
         postRecyclerView = findViewById(R.id.post_recycler_view);
         postRecyclerView.setHasFixedSize(false);
@@ -80,6 +94,7 @@ public class JourneyActivity extends AppCompatActivity {
         setBottomNavigationView();
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -87,10 +102,51 @@ public class JourneyActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.journey_icon);
     }
 
+    @Override
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     private void initWidgets() {
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
     }
 
+    private void initProfileDrawer() {
+        // Initialize profile drawer
+        drawer = findViewById(R.id.drawer_layout);
+        profile_nv = findViewById(R.id.nav_view);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Journey");
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+        profile_nv.setNavigationItemSelectedListener(this);
+
+        //set up the header button listeners
+        View headerView = profile_nv.getHeaderView(0);
+        Button LogOutBtn = (Button) headerView.findViewById(R.id.profile_logout_btn);
+        Button ChangeAvartaButton = (Button) headerView.findViewById(R.id.update_profile_image_btn);
+
+        LogOutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            }
+        });
+
+        ChangeAvartaButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //to do:
+            }
+        });
+    }
     private void setBottomNavigationView() {
         // Set Home selected
         bottomNavigationView.setSelectedItemId(R.id.journey_icon);
@@ -140,5 +196,33 @@ public class JourneyActivity extends AppCompatActivity {
             // posts.add(new JourneyPost(imageBitmap,""));
             // postAdapter.notifyDataSetChanged();
         }
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Create a new fragment and specify the fragment to show based on nav item clicked
+        switch(item.getItemId()) {
+            case R.id.nav_settings:
+                drawer.closeDrawers();
+                Intent i = new Intent(JourneyActivity.this, SettingsActivity.class);
+                startActivity(i);
+                break;
+            case R.id.nav_health_records:
+                drawer.closeDrawers();
+                startActivity(new Intent(getApplicationContext(), HealthRecordActivity.class));
+                break;
+            case R.id.nav_award:
+                drawer.closeDrawers();
+                startActivity(new Intent(getApplicationContext(), AwardActivity.class));
+                break;
+            case R.id.nav_journey:
+                drawer.closeDrawers();
+                startActivity(new Intent(getApplicationContext(), JourneyActivity.class));
+                break;
+        }
+
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }

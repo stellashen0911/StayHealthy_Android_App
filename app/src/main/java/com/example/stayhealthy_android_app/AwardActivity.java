@@ -9,12 +9,14 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.ui.NavigationUI;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.Button;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -34,20 +36,41 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
         // Initialize and assign variable
         initWidgets();
         setBottomNavigationView();
+        initProfileDrawer();
+    }
 
+    private void initProfileDrawer() {
         // Initialize profile drawer
         drawer = findViewById(R.id.drawer_layout);
         profile_nv = findViewById(R.id.nav_view);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Award");
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         profile_nv.setNavigationItemSelectedListener(this);
-        System.out.println("profile init finished");
-    }
 
+        //set up the header button listeners
+        View headerView = profile_nv.getHeaderView(0);
+        Button LogOutBtn = (Button) headerView.findViewById(R.id.profile_logout_btn);
+        Button ChangeAvartaButton = (Button) headerView.findViewById(R.id.update_profile_image_btn);
+
+        LogOutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            }
+        });
+
+        ChangeAvartaButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //to do:
+            }
+        });
+    }
     private void initWidgets() {
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
     }
@@ -107,51 +130,26 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
-        System.out.println("clicked");
-        Fragment fragment = null;
-        Class fragmentClass = null;
-        System.out.println(item.getItemId());
         switch(item.getItemId()) {
             case R.id.nav_settings:
-                fragmentClass = SettingFragment.class;
-                try {
-                    fragment = (Fragment) fragmentClass.newInstance();
-                    System.out.println("here 4");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                drawer.closeDrawers();
+                Intent i = new Intent(AwardActivity.this, SettingsActivity.class);
+                startActivity(i);
                 break;
             case R.id.nav_health_records:
-                System.out.println("here 3");
                 drawer.closeDrawers();
                 startActivity(new Intent(getApplicationContext(), HealthRecordActivity.class));
                 break;
             case R.id.nav_award:
-                System.out.println("clicked award");
                 drawer.closeDrawers();
                 startActivity(new Intent(getApplicationContext(), AwardActivity.class));
                 break;
             case R.id.nav_journey:
-                System.out.println("clicked journey");
                 drawer.closeDrawers();
                 startActivity(new Intent(getApplicationContext(), JourneyActivity.class));
                 break;
         }
 
-        if (fragment != null) {
-            System.out.println("here 5");
-            // Insert the fragment by replacing any existing fragment
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commit();
-
-            // Highlight the selected item has been done by NavigationView
-            item.setChecked(true);
-            // Set action bar title
-            setTitle(item.getTitle());
-            // Close the navigation drawer
-            drawer.closeDrawer(GravityCompat.START);
-        }
-        System.out.println("here 6");
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stayhealthy_android_app.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
@@ -24,10 +23,14 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
     private final List<Integer> periodDates;
     private final int periodDatesColor;
     private final Drawable periodDatesBackground;
+    private final List<Integer> recordedDates;
+    private final int recordedDatesColor;
+    private final Drawable recordedDatesBackground;
 
     public CalendarAdapter(List<String> daysOfMonth, OnItemListener onItemListener,
                            int selectedDate, int selectedDateColor, Drawable selectedDateBackground,
-                           List<Integer> periodDates, int periodDatesColor, Drawable periodDatesBackground) {
+                           List<Integer> periodDates, int periodDatesColor, Drawable periodDatesBackground,
+                           List<Integer> recordedDates, int recordedDatesColor, Drawable recordedDatesBackground) {
         this.daysOfMonth = daysOfMonth;
         this.onItemListener = onItemListener;
         this.selectedDate = selectedDate;
@@ -36,6 +39,9 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
         this.periodDates = periodDates;
         this.periodDatesColor = periodDatesColor;
         this.periodDatesBackground = periodDatesBackground;
+        this.recordedDates = recordedDates;
+        this.recordedDatesColor = recordedDatesColor;
+        this.recordedDatesBackground = recordedDatesBackground;
     }
 
     @NonNull
@@ -64,6 +70,9 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
             } else if (periodDates.contains(day)) {
                 holder.getDaysOfMonth().setTextColor(periodDatesColor);
                 holder.getDaysOfMonth().setBackground(periodDatesBackground);
+            } else if (recordedDates.contains(day)) {
+                holder.getDaysOfMonth().setTextColor(recordedDatesColor);
+                holder.getDaysOfMonth().setBackground(recordedDatesBackground);
             }
         }
 

@@ -22,4 +22,5 @@
         android:name="com.example.stayhealthy_android_app.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+
 </navigation>

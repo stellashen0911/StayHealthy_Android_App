@@ -42,7 +42,7 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
     private void initProfileDrawer() {
         // Initialize profile drawer
         drawer = findViewById(R.id.drawer_layout);
-        profile_nv = findViewById(R.id.nav_view);
+        profile_nv = findViewById(R.id.nav_view_award);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Award");

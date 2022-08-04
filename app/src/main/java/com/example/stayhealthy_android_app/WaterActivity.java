@@ -72,7 +72,7 @@ public class WaterActivity  extends AppCompatActivity {
         addLargeBottleWaterButton = findViewById(R.id.large_bottle_water);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         myDataBase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-        produceFakeData ();
+//        produceFakeData ();
         readWaterData (30,  waterIntakeAdapter );
         // Initialize and assign variable
         addGlassWaterButton.setOnClickListener((v)->addWaterIntake(8));

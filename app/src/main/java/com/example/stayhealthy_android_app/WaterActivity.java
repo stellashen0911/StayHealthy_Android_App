@@ -55,11 +55,7 @@ public class WaterActivity  extends AppCompatActivity {
         handler = new Handler();
         dailyPercentageTextView = findViewById(R.id.percentage);
         dailyProgressBar = findViewById(R.id.daily_progress_bar);
-//        Drawable progressDrawable = dailyProgressBar.getProgressDrawable().mutate();
-//        progressDrawable.setColorFilter(ColoR., android.graphics.PorterDuff.Mode.SRC_IN);
-//        dailyProgressBar.setProgressDrawable(progressDrawable);
         dailyProgressBar.setProgressTintList(ColorStateList.valueOf(Color.BLUE));
-
         todayWaterTextView = findViewById(R.id.today_status);
         waterIntakesList = new ArrayList<>();
         waterListRecyclerView = findViewById(R.id.water_intake_recycler_view);
@@ -72,7 +68,7 @@ public class WaterActivity  extends AppCompatActivity {
         addLargeBottleWaterButton = findViewById(R.id.large_bottle_water);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         myDataBase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-//        produceFakeData ();
+        produceFakeData ();
         readWaterData (30,  waterIntakeAdapter );
         // Initialize and assign variable
         addGlassWaterButton.setOnClickListener((v)->addWaterIntake(8));
@@ -99,6 +95,7 @@ public class WaterActivity  extends AppCompatActivity {
 
     public void readWaterData (int numDays, WaterIntakeAdapter waterIntakeAdapter ) {
         DatabaseReference waterDbRef = myDataBase.child(WATER_INTAKE_DB_NAME);
+
         Query waterIntakeQueryLastMonth = waterDbRef.orderByChild("date").limitToLast(numDays);
         waterIntakeQueryLastMonth.get().addOnCompleteListener((task -> {
             HashMap<String, HashMap> tempMap = (HashMap) task.getResult().getValue();
@@ -157,18 +154,18 @@ public class WaterActivity  extends AppCompatActivity {
     private void produceFakeData () {
         DatabaseReference waterDbRef = myDataBase.child(WATER_INTAKE_DB_NAME);
         waterDbRef.removeValue();
-        for (int i = 1 ; i<=9; i++) {
-            String dateStr = "2022-01-0"+i;
-            waterDbRef.child(dateStr).setValue(new WaterIntakeModel(40,dateStr));
-        }
-        for (int i = 10 ; i<=31; i++) {
-            String dateStr = "2022-01-"+i;
-            long waterOz = 40;
-            if( i % 7  == 0 ) {
-                waterOz = WaterIntakeModel.DAILY_WATER_TARGET_OZ;
-            }
-            waterDbRef.child(dateStr).setValue(new WaterIntakeModel(waterOz,dateStr));
-        }
+//        for (int i = 1 ; i<=9; i++) {
+//            String dateStr = "2022-01-0"+i;
+//            waterDbRef.child(dateStr).setValue(new WaterIntakeModel(40,dateStr));
+//        }
+//        for (int i = 10 ; i<=31; i++) {
+//            String dateStr = "2022-01-"+i;
+//            long waterOz = 40;
+//            if( i % 7  == 0 ) {
+//                waterOz = WaterIntakeModel.DAILY_WATER_TARGET_OZ;
+//            }
+//            waterDbRef.child(dateStr).setValue(new WaterIntakeModel(waterOz,dateStr));
+//        }
     }
 
 

@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/image_view_2"
         android:layout_width="158dp"
         android:layout_height="89dp"
         android:layout_marginTop="30dp"
@@ -18,7 +18,7 @@
         app:srcCompat="@mipmap/ic_launcher_logo_round" />
 
     <EditText
-        android:id="@+id/editTextTextEmailAddress"
+        android:id="@+id/edittext_text_email_address"
         style="@style/Widget.AppCompat.EditText"
         android:layout_width="287dp"
         android:layout_height="48dp"
@@ -29,18 +29,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+        app:layout_constraintTop_toBottomOf="@+id/image_view_2" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/text_view_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Username"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTextEmailAddress"
-        app:layout_constraintStart_toStartOf="@+id/editTextTextEmailAddress" />
+        app:layout_constraintBottom_toTopOf="@+id/edittext_text_email_address"
+        app:layout_constraintStart_toStartOf="@+id/edittext_text_email_address" />
 
     <EditText
-        android:id="@+id/editTextTextPassword"
+        android:id="@+id/edittext_text_password"
         android:layout_width="286dp"
         android:layout_height="48dp"
         android:layout_marginTop="35dp"
@@ -49,16 +49,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress"
+        app:layout_constraintTop_toBottomOf="@+id/edittext_text_email_address"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/text_view_3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Password"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTextPassword"
-        app:layout_constraintStart_toStartOf="@+id/editTextTextPassword" />
+        app:layout_constraintBottom_toTopOf="@+id/edittext_text_password"
+        app:layout_constraintStart_toStartOf="@+id/edittext_text_password" />
 
     <Button
         android:id="@+id/button_login"
@@ -69,10 +69,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/edittext_text_password" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/text_view_4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
@@ -92,7 +92,7 @@
         android:textSize="10sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/textView4"
+        app:layout_constraintStart_toEndOf="@+id/text_view_4"
         app:layout_constraintTop_toBottomOf="@+id/button_login" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

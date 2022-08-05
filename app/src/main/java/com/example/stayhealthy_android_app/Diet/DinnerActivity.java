@@ -62,7 +62,6 @@ public class DinnerActivity extends AppCompatActivity {
         super.onResume();
         loadValues();
     }
-
     @SuppressLint("SetTextI18n")
     private void loadValues() {
         myDataBase.get().addOnCompleteListener(task -> {

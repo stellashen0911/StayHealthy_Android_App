@@ -1,6 +1,7 @@
 package com.example.stayhealthy_android_app.Diet;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ public class DietActivity extends AppCompatActivity {
     private TextView targetCalView;
     private TextView weightView;
     private ImageView imageView;
+    private Toolbar toolbar;
 
     private DatabaseReference myDataBase;
 
@@ -49,6 +51,11 @@ public class DietActivity extends AppCompatActivity {
         initTextViews();
         initImageView();
         loadValues();
+
+        //set up the toolbar
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Diet Records");
     }
 
     private void loadValues() {

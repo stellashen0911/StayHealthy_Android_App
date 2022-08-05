@@ -31,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
         //set up the buttons
         Login_btn = findViewById(R.id.button_login);
         register_btn = findViewById(R.id.button_sign_up);
-        login_email = findViewById(R.id.editTextTextEmailAddress);
-        login_password = findViewById(R.id.editTextTextPassword);
+        login_email = findViewById(R.id.edittext_text_email_address);
+        login_password = findViewById(R.id.edittext_text_password);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 

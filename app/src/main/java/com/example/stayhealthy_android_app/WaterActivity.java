@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -48,6 +49,7 @@ public class WaterActivity  extends AppCompatActivity {
     TextView dailyPercentageTextView;
     ProgressBar dailyProgressBar;
     Handler handler;
+    private Toolbar toolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,11 +58,7 @@ public class WaterActivity  extends AppCompatActivity {
         handler = new Handler();
         dailyPercentageTextView = findViewById(R.id.percentage);
         dailyProgressBar = findViewById(R.id.daily_progress_bar);
-//        Drawable progressDrawable = dailyProgressBar.getProgressDrawable().mutate();
-//        progressDrawable.setColorFilter(ColoR., android.graphics.PorterDuff.Mode.SRC_IN);
-//        dailyProgressBar.setProgressDrawable(progressDrawable);
         dailyProgressBar.setProgressTintList(ColorStateList.valueOf(Color.BLUE));
-
         todayWaterTextView = findViewById(R.id.today_status);
         waterIntakesList = new ArrayList<>();
         waterListRecyclerView = findViewById(R.id.water_intake_recycler_view);
@@ -82,6 +80,11 @@ public class WaterActivity  extends AppCompatActivity {
         addLargeBottleWaterButton.setOnClickListener((v)->addWaterIntake(24));
         initWidgets();
         setBottomNavigationView();
+
+        //set up the toolbar
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Water Records");
     }
 
     @Override
@@ -101,6 +104,7 @@ public class WaterActivity  extends AppCompatActivity {
 
     public void readWaterData (int numDays, WaterIntakeAdapter waterIntakeAdapter ) {
         DatabaseReference waterDbRef = myDataBase.child(WATER_INTAKE_DB_NAME);
+
         Query waterIntakeQueryLastMonth = waterDbRef.orderByChild("date").limitToLast(numDays);
         waterIntakeQueryLastMonth.get().addOnCompleteListener((task -> {
             HashMap<String, HashMap> tempMap = (HashMap) task.getResult().getValue();

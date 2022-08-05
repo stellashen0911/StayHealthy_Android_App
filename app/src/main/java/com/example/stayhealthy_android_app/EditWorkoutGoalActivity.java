@@ -1,12 +1,19 @@
 package com.example.stayhealthy_android_app;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -16,6 +23,9 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
     private TextView dateInfoLabel;
     private TextView goal_calories_TX;
     private TextView goal_time;
+    private Toolbar toolbar;
+    private DatabaseReference myDataBase;
+    private Spinner workout_numbers_selection;
 
 
     @Override
@@ -30,6 +40,20 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
         goal_calories_TX = findViewById(R.id.textView_show_workout_calories);
         goal_time = findViewById(R.id.textView_show_workout_time);
 
+        //set up the toolbar
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Edit Workout Goals for Today");
+
+        //set up the firebase
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        myDataBase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+
+        //set up the workout number selection
+        workout_numbers_selection = findViewById(R.id.spinner_select_activity_numbers);
+        ArrayAdapter<CharSequence> workout_numbers_selection_adapter = ArrayAdapter.createFromResource(this, R.array.workout_activity_numbers, android.R.layout.simple_spinner_item);
+        workout_numbers_selection_adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+        workout_numbers_selection.setAdapter(workout_numbers_selection_adapter);
     }
 
     private void initDate() {

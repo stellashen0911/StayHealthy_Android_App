@@ -15,7 +15,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="#112AB6"/>
     
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/chart"
@@ -24,7 +25,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginTop="30dp">
         <ProgressBar
             android:id="@+id/daily_progress_bar"
             style="@android:style/Widget.ProgressBar.Horizontal"
@@ -48,11 +50,20 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/chart"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="50dp">
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="#112AB6"
+                android:text="Quick Add Water"
+                android:gravity="left"
+                android:layout_marginStart="10dp"/>
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -146,23 +157,36 @@
                 android:text="Today"
                 android:textSize="20sp"
                 android:textColor="#112AB6"/>
-            <TextView
-
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="10dp"
-                android:id="@+id/today_status"
-                android:layout_width="wrap_content"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="0 oz of your 64 oz goal"
-                android:textSize="20sp"
-                android:textColor="#112AB6"/>
+                android:orientation="horizontal"
+                android:gravity="center_horizontal">
+                <androidx.constraintlayout.utils.widget.ImageFilterView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/water_drop" />
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="10dp"
+                    android:id="@+id/today_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="0 oz of your 64 oz goal"
+                    android:textSize="20sp"
+                    android:textColor="#112AB6"/>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
             <View
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:background="#c0c0c0"/>
+                android:background="#c0c0c0"
+                android:layout_marginTop="40dp"/>
             
         </androidx.appcompat.widget.LinearLayoutCompat>
     </ScrollView>

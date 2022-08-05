@@ -48,11 +48,39 @@ public class DinnerActivity extends AppCompatActivity {
 
         foodAdapter = new FoodAdapter(foods);
         FoodClickListener listener = position -> {
-            foods.get(position).onLinkClicked(position);
+            foods.get(position).onFoodClicked(position);
             foodAdapter.notifyItemChanged(position);
         };
 
-        foodAdapter.setFoodClickListener(listener);
+        FoodCheckedListener foodCheckedListener = (position, isChecked) -> {
+            FoodItem food = foods.get(position);
+            long foodProtein = food.getProtein();
+            long foodFat = food.getFat();
+            long foodCarbs = food.getCarbs();
+            if (isChecked) {
+                protein += foodProtein;
+                fat += foodFat;
+                carbs += foodCarbs;
+                netCal += (foodProtein + foodFat + foodCarbs);
+            } else {
+                protein -= foodProtein;
+                fat -= foodFat;
+                carbs -= foodCarbs;
+                netCal -= (foodProtein + foodFat + foodCarbs);
+            }
+            proteinView.setText("Protein: " + protein + " Cal");
+            fatView.setText("Fat: " + fat + " Cal");
+            carbsView.setText("Carbs: " + carbs + " Cal");
+            netCalView.setText("Net Cal: " + netCal + " Cal");
+
+            myDataBase.child("protein").setValue(protein);
+            myDataBase.child("fat").setValue(fat);
+            myDataBase.child("carbs").setValue(carbs);
+            myDataBase.child("net").setValue(netCal);
+            myDataBase.child("foods").child(food.getFoodName()).child("checked").setValue(isChecked ? 1 : 0);
+        };
+
+        foodAdapter.setFoodClickListener(listener, foodCheckedListener);
         recyclerView.setAdapter(foodAdapter);
         recyclerView.setLayoutManager(layoutManager);
     }
@@ -81,7 +109,9 @@ public class DinnerActivity extends AppCompatActivity {
                 long foodProtein = tempFoods.get(foodName).get("protein");
                 long foodFat = tempFoods.get(foodName).get("fat");
                 long foodCarbs = tempFoods.get(foodName).get("carbs");
-                foods.add(new FoodItem(foodName, "protein: " + foodProtein + " Cal; fat: " + foodFat + " Cal; carbs: " + foodCarbs + " Cal"));
+                long foodChecked = tempFoods.get(foodName).get("checked");
+                boolean checked = foodChecked == 1 ? true : false;
+                foods.add(new FoodItem(foodName, foodProtein, foodFat, foodCarbs, checked));
             }
             createRecyclerView();
         });

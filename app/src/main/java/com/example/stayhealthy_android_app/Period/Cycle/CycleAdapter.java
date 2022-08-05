@@ -26,7 +26,7 @@ public class CycleAdapter extends RecyclerView.Adapter<CycleViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull CycleViewHolder holder, int position) {
-        holder.bingThisData(cycleList.get(position));
+        holder.bindThisData(cycleList.get(position));
     }
 
     @Override

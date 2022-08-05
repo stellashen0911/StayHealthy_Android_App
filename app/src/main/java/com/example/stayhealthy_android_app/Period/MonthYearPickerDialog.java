@@ -91,7 +91,7 @@ public class MonthYearPickerDialog extends DialogFragment {
         return builder.create();
     }
 
-    // Convert month value [0, 11] to month name
+    // Convert month value [0, 11] to month label
     private String getMonth(int month) {
         return new DateFormatSymbols().getMonths()[month];
     }

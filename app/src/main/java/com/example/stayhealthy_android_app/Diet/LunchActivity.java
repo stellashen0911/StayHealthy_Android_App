@@ -53,21 +53,23 @@ public class LunchActivity extends AppCompatActivity {
         };
 
         FoodCheckedListener foodCheckedListener = (position, isChecked) -> {
-            FoodItem food = foods.get(position);
-            long foodProtein = food.getProtein();
-            long foodFat = food.getFat();
-            long foodCarbs = food.getCarbs();
-            if (isChecked) {
+            foods.get(position).setFoodChecked(isChecked);
+
+            protein = 0;
+            fat = 0;
+            carbs = 0;
+            netCal = 0;
+
+            for (FoodItem food :foods) {
+                long foodProtein = food.getFoodChecked() ? food.getProtein() : 0;
+                long foodFat = food.getFoodChecked() ? food.getFat() : 0;
+                long foodCarbs = food.getFoodChecked() ? food.getCarbs() : 0;
                 protein += foodProtein;
                 fat += foodFat;
                 carbs += foodCarbs;
                 netCal += (foodProtein + foodFat + foodCarbs);
-            } else {
-                protein -= foodProtein;
-                fat -= foodFat;
-                carbs -= foodCarbs;
-                netCal -= (foodProtein + foodFat + foodCarbs);
             }
+
             proteinView.setText("Protein: " + protein + " Cal");
             fatView.setText("Fat: " + fat + " Cal");
             carbsView.setText("Carbs: " + carbs + " Cal");
@@ -77,7 +79,7 @@ public class LunchActivity extends AppCompatActivity {
             myDataBase.child("fat").setValue(fat);
             myDataBase.child("carbs").setValue(carbs);
             myDataBase.child("net").setValue(netCal);
-            myDataBase.child("foods").child(food.getFoodName()).child("checked").setValue(isChecked ? 1 : 0);
+            myDataBase.child("foods").child(foods.get(position).getFoodName()).child("checked").setValue(isChecked ? 1 : 0);
         };
 
         foodAdapter.setFoodClickListener(listener, foodCheckedListener);

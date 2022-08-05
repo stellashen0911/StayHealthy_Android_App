@@ -11,28 +11,86 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.example.stayhealthy_android_app.Diet.DietActivity;
 import com.example.stayhealthy_android_app.Period.PeriodActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 public class HealthRecordActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private BottomNavigationView bottomNavigationView;
     private DrawerLayout drawer;
     private Toolbar toolbar;
     private NavigationView profile_nv;
+    private DatabaseReference dieDB;
+    private DatabaseReference waterDB;
+
+    private ProgressBar pbDiet;
+    private ProgressBar pbWater;
+    private ProgressBar pbPeriod;
+    private ProgressBar pbWorkout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_health_record);
 
-        // Initialize and assign variable
+        initProgressBars();
+
+        dieDB = FirebaseDatabase.getInstance().getReference("user").
+                child("test@gmail_com").child("diets").child("20220731");
+        updatePBDiet();
+        updatePBWater();
+        updatePBPeriod();
+        updatePBWorkout();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        assert user != null;
+        waterDB = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+
         initWidgets();
         setBottomNavigationView();
         initProfileDrawer();
 
+    }
+
+    private void updatePBDiet() {
+        dieDB.get().addOnCompleteListener(task -> {
+            HashMap tempMap = (HashMap) task.getResult().getValue();
+            long netCal = (long) ((HashMap)tempMap.get("breakfast")).get("net") +
+                    (long) ((HashMap)tempMap.get("lunch")).get("net") +
+                    (long) ((HashMap)tempMap.get("dinner")).get("net") +
+                    (long) ((HashMap)tempMap.get("snack")).get("net");
+            long targetCal = (long) tempMap.get("target");
+            double v = 100 * (double) netCal / targetCal;
+            this.pbDiet.setProgress((int)v);
+        });
+    }
+
+    private void updatePBWater() {
+        // TODO update progress bar of water
+    }
+
+    private void updatePBPeriod() {
+        // TODO update progress bar of period
+    }
+
+    private void updatePBWorkout() {
+        // TODO update progress bar of workout
+    }
+
+    private void initProgressBars() {
+        this.pbDiet = findViewById(R.id.progressBarDiet);
+        this.pbPeriod = findViewById(R.id.progressBarPeriod);
+        this.pbWater = findViewById(R.id.progressBarWater);
+        this.pbWorkout = findViewById(R.id.progressBarWorkout);
     }
 
     private void initProfileDrawer() {

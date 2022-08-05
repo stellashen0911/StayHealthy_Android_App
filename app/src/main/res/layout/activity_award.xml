@@ -98,7 +98,7 @@
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/receivedAwardRV"
                             android:layout_width="match_parent"
-                            android:layout_height="156dp"
+                            android:layout_height="wrap_content"
                             android:visibility="visible"/>
 
                     </LinearLayout>
@@ -154,7 +154,7 @@
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/notReceivedAwardRV"
                             android:layout_width="match_parent"
-                            android:layout_height="256dp"
+                            android:layout_height="wrap_content"
                             android:visibility="visible"/>
 
                     </LinearLayout>

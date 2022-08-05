@@ -42,7 +42,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/horizontal_margin"
-                    android:text="@string/water_drink_goal_100"
+                    android:text="@string/water_drink_goal_100_3_days"
                     android:textAppearance="?attr/textAppearanceSubtitle1"
                     android:textColor="@color/dark_gray" />
 
@@ -52,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/horizontal_margin"
-                    android:text="@string/today"
+                    android:text="@string/_1_3_days"
                     android:textAppearance="?attr/textAppearanceOverline"
                     android:textColor="@color/dark_gray" />
 

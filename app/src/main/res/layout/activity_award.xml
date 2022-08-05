@@ -89,7 +89,7 @@
                                 android:layout_height="wrap_content"
                                 android:contentDescription="@string/expand_string"
                                 android:onClick="expandAndCollapseReceivedAward"
-                                app:icon="@drawable/ic_baseline_expand_more_24"
+                                app:icon="@drawable/ic_baseline_expand_less_24"
                                 app:iconGravity="textEnd"
                                 app:iconSize="20dp" />
 
@@ -145,7 +145,7 @@
                                 android:layout_height="wrap_content"
                                 android:contentDescription="@string/expand_string"
                                 android:onClick="expandAndCollapseNotReceivedAward"
-                                app:icon="@drawable/ic_baseline_expand_more_24"
+                                app:icon="@drawable/ic_baseline_expand_less_24"
                                 app:iconGravity="textEnd"
                                 app:iconSize="20dp" />
 

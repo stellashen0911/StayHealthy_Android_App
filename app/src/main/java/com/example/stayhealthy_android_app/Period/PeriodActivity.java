@@ -205,7 +205,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
 
         materialDatePicker.addOnPositiveButtonClickListener(
                 selection -> {
-                    // Save the selected range to firebase database
+                    // Save the selected range to firebase database. Here the milliseconds is in UTC.
                     Long startDateInMilliseconds = selection.first;
                     Long endDateInMilliseconds = selection.second;
                     savePeriodRangeToDatabase(startDateInMilliseconds, endDateInMilliseconds);
@@ -815,11 +815,13 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                         // Date before had flow
                         PeriodData periodDataBefore = periodDataBeforeList.get(0);
                         periodDataToday.setStartDate(periodDataBefore.getStartDate());
+                        periodDataToday.setEndDate(date);
                         periodDataBeforeList.add(periodDataToday);
                         saveListOfPeriodDataToDatabase(periodDataBeforeList);
 
                     } else { // Date after had flow
                         PeriodData periodDataAfter = periodDataAfterList.get(0);
+                        periodDataToday.setStartDate(date);
                         periodDataToday.setEndDate(periodDataAfter.getEndDate());
                         periodDataAfterList.add(periodDataToday);
                         saveListOfPeriodDataToDatabase(periodDataAfterList);

@@ -26,6 +26,10 @@ public class FoodItem implements FoodClickListener {
         return foodInfo;
     }
 
+    public void setFoodChecked(boolean isChecked) {
+        this.checked = isChecked;
+    }
+
     public long getProtein() {
         return protein;
     }

@@ -61,10 +61,22 @@ public class DietActivity extends AppCompatActivity {
     private void loadValues() {
         myDataBase.get().addOnCompleteListener(task -> {
             HashMap tempMap = (HashMap) task.getResult().getValue();
-            protein = (long) tempMap.get("protein");
-            fat = (long) tempMap.get("fat");
-            carbs = (long) tempMap.get("carbs");
-            netCal = (long) tempMap.get("net");
+            protein = (long) ((HashMap)tempMap.get("breakfast")).get("protein") +
+                    (long) ((HashMap)tempMap.get("lunch")).get("protein") +
+                    (long) ((HashMap)tempMap.get("dinner")).get("protein") +
+                    (long) ((HashMap)tempMap.get("snack")).get("protein");
+            fat = (long) ((HashMap)tempMap.get("breakfast")).get("fat") +
+                    (long) ((HashMap)tempMap.get("lunch")).get("fat") +
+                    (long) ((HashMap)tempMap.get("dinner")).get("fat") +
+                    (long) ((HashMap)tempMap.get("snack")).get("fat");
+            carbs = (long) ((HashMap)tempMap.get("breakfast")).get("carbs") +
+                    (long) ((HashMap)tempMap.get("lunch")).get("carbs") +
+                    (long) ((HashMap)tempMap.get("dinner")).get("carbs") +
+                    (long) ((HashMap)tempMap.get("snack")).get("carbs");
+            netCal = (long) ((HashMap)tempMap.get("breakfast")).get("net") +
+                    (long) ((HashMap)tempMap.get("lunch")).get("net") +
+                    (long) ((HashMap)tempMap.get("dinner")).get("net") +
+                    (long) ((HashMap)tempMap.get("snack")).get("net");
             targetCal = (long) tempMap.get("target");
             weight = (long) tempMap.get("weight");
             proteinView.setText("Protein: " + protein + " Cal");

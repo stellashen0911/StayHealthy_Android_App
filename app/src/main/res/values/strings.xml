@@ -101,5 +101,18 @@
     <string name="ranges">Ranges</string>
     <string name="cycle_range">Cycle Range</string>
     <string name="total_days">Total Days</string>
+    <string name="award_icon">Award Icon</string>
+    <string name="received">Received</string>
+    <string name="go_for_it">Go For it</string>
+    <string name="water_drink_goal_100">Water Drink Goal 100%</string>
+    <string name="today">Today</string>
+
+    <string-array name="workout_activity_numbers">
+        <item>choose number by click</item>
+        <item>1 workout activity</item>
+        <item>2 workout activities</item>
+        <item>3 workout activities</item>
+        <item>4 workout activities</item>
+    </string-array>
 
 </resources>

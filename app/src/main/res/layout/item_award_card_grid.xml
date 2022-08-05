@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/awardCV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/vertical_margin"
+        android:clickable="false"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="center"
+                android:src="@drawable/trophy"
+                android:cropToPadding="true"
+                android:contentDescription="@string/award_icon"/>
+
+            <TextView
+                android:id="@+id/awardNameTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/water_drink_goal_100"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textSize="12sp"
+                android:textAlignment="center"/>
+
+            <TextView
+                android:id="@+id/awardDetailsTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/today"
+                android:textAppearance="?attr/textAppearanceCaption" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

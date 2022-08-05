@@ -20,8 +20,8 @@ public class CycleViewHolder extends RecyclerView.ViewHolder{
         this.totalDaysTV = itemView.findViewById(R.id.totalDaysTV);
     }
 
-    public void bingThisData(Cycle cycleToBing) {
-        cycleRangeTV.setText(cycleToBing.getCycleRanges());
-        totalDaysTV.setText(cycleToBing.getTotalDays());
+    public void bindThisData(Cycle cycleToBind) {
+        cycleRangeTV.setText(cycleToBind.getCycleRanges());
+        totalDaysTV.setText(cycleToBind.getTotalDays());
     }
 }

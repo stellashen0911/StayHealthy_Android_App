@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -47,6 +49,7 @@ public class WaterActivity  extends AppCompatActivity {
     TextView dailyPercentageTextView;
     ProgressBar dailyProgressBar;
     Handler handler;
+    private Toolbar toolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,7 @@ public class WaterActivity  extends AppCompatActivity {
         addBottleWaterButton = findViewById(R.id.bottle_water);
         addLargeBottleWaterButton = findViewById(R.id.large_bottle_water);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        assert user != null;
         myDataBase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
         produceFakeData ();
         readWaterData (30,  waterIntakeAdapter );
@@ -76,6 +80,11 @@ public class WaterActivity  extends AppCompatActivity {
         addLargeBottleWaterButton.setOnClickListener((v)->addWaterIntake(24));
         initWidgets();
         setBottomNavigationView();
+
+        //set up the toolbar
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Water Records");
     }
 
     @Override
@@ -101,15 +110,15 @@ public class WaterActivity  extends AppCompatActivity {
             HashMap<String, HashMap> tempMap = (HashMap) task.getResult().getValue();
             List<String> dates = new ArrayList<>(tempMap.keySet());
             dates.sort(Comparator.reverseOrder());
-            long currentTime = Calendar.getInstance().getTimeInMillis();
-            String currentDate = convertUtcMillisecondsToDate(currentTime);
+            Date currentDate = Calendar.getInstance().getTime();
+            String currentDateInStr = convertDateToDateStr(currentDate);
             int startIndex = 0;
-            if (!dates.get(0).equals(currentDate)) {
+            if (!dates.get(0).equals(currentDateInStr)) {
                 dates.remove(dates.size()-1);
                 startIndex = 1;
-                WaterIntakeModel todayModel = new WaterIntakeModel(0, currentDate);
+                WaterIntakeModel todayModel = new WaterIntakeModel(0, currentDateInStr);
                 waterIntakesList.add(todayModel);
-                waterDbRef.child(currentDate).setValue(todayModel);
+                waterDbRef.child(currentDateInStr).setValue(todayModel);
             }
 
 
@@ -173,8 +182,8 @@ public class WaterActivity  extends AppCompatActivity {
     private void addWaterIntake(long waterOz){
         DatabaseReference waterDbRef = myDataBase.child(WATER_INTAKE_DB_NAME);
         WaterIntakeModel todayModel = null;
-        long currentTimestamp = Calendar.getInstance().getTimeInMillis();
-        String dateStr = convertUtcMillisecondsToDate(currentTimestamp);
+        Date currentDate = Calendar.getInstance().getTime();
+        String dateStr = convertDateToDateStr(currentDate);
         for(int i =0;i<waterIntakesList.size();i++) {
             if (dateStr.equals(waterIntakesList.get(i).getDate())) {
                 todayModel = waterIntakesList.get(i);
@@ -193,12 +202,10 @@ public class WaterActivity  extends AppCompatActivity {
         waterIntakeAdapter.notifyDataSetChanged();
     }
 
-    // Convert milliseconds in UTC time to date in string
-    private String convertUtcMillisecondsToDate(Long milliseconds) {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        calendar.setTimeInMillis(milliseconds);
+
+    // Convert date to date in string
+    private String convertDateToDateStr(Date date) {
         SimpleDateFormat format = new SimpleDateFormat(/*dateFormat=*/"yyyy-MM-dd", Locale.US);
-        format.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return format.format(calendar.getTime());
+        return format.format(date);
     }
 }

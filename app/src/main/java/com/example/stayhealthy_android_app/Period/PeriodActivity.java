@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.util.Pair;
@@ -78,6 +79,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     private List<Integer> periodDatesInMonth;
     private List<Integer> recordedDatesInMonth;
     private List<Cycle> cycleList;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -109,6 +111,11 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         // Set divider for cycleHistory recycler view.
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         binding.cycleHistoryRV.addItemDecoration(dividerItemDecoration);
+
+        //set up the toolbar
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Period Records");
     }
 
     @Override
@@ -501,7 +508,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         // Initially, start date in the format "MMMM dd", end date in the format "dd".
         String recentPeriodStart = monthValueToMonthShort(startMonth) + " " + getDayInDateShort(startDate);
         String recentPeriodEnd = String.valueOf(getDayInDateShort(endDate));
-        // If start month is not equal to end month, add month name to the end date "MMMM dd".
+        // If start month is not equal to end month, add month label to the end date "MMMM dd".
         if (startMonth != endMonth ) {
             recentPeriodEnd = monthValueToMonthShort(endMonth) + " " + recentPeriodEnd;
         }
@@ -608,6 +615,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                         // Add 28 days to her last period start day
                         long defaultRange = 28;
                         int times = (int) (calculateDaysBetween(periodData.getStartDate(), date) / defaultRange + 1);
+                        // Calculated PredictedDate in the format "MMM dd yyyy"
                         String predictedDate = localDateToDateInStr(startDate.plusDays(defaultRange * times), DATE_LONG_FORMAT);
                         // If the predicted date is on the same year as selected date, only display MM dd.
                         String prediction = "Your period is likely to start on: ";

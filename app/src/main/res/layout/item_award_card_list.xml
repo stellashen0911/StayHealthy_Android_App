@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/awardCV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/vertical_margin"
+        android:clickable="false"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/horizontal_margin"
+                android:contentDescription="@string/award_icon"
+                android:cropToPadding="true"
+                android:src="@drawable/trophy"
+                app:tint="@color/gray"
+                tools:ignore="ImageContrastCheck" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/awardNameTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/horizontal_margin"
+                    android:text="@string/water_drink_goal_100"
+                    android:textAppearance="?attr/textAppearanceSubtitle1"
+                    android:textColor="@color/dark_gray" />
+
+                <TextView
+                    android:id="@+id/awardDetailsTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/horizontal_margin"
+                    android:text="@string/today"
+                    android:textAppearance="?attr/textAppearanceOverline"
+                    android:textColor="@color/dark_gray" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

@@ -119,10 +119,17 @@
 
     <string-array name="workout_activities">
         <item>choose workout activity</item>
+        <item>HIIT</item>
         <item>Running</item>
         <item>Swimming</item>
         <item>Dancing</item>
         <item>Walking</item>
+        <item>Hiking</item>
+        <item>Jogging</item>
+        <item>Biking</item>
+        <item>Playing Badminton</item>
+        <item>Playing Basketball</item>
+        <item>Playing Frisbee</item>
     </string-array>
 
     <string-array name="workout_time_range">

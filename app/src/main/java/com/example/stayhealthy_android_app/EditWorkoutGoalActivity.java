@@ -4,12 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -26,12 +20,15 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 
 public class EditWorkoutGoalActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     private TextView dateInfoLabel;
     private TextView goal_calories_TX;
     private TextView goal_time;
+    private int totalCalories;
+    private int totalTime;
     private Toolbar toolbar;
     private DatabaseReference myDataBase;
     private Spinner workout_numbers_selection;
@@ -48,6 +45,19 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
     private CardView CV2;
     private CardView CV3;
     private CardView CV4;
+    private HashMap<String, Integer> activitiesCalories;
+    private int activity_1_calories;
+    private int activity_2_calories;
+    private int activity_3_calories;
+    private int activity_4_calories;
+    private int activity_1_time;
+    private int activity_2_time;
+    private int activity_3_time;
+    private int activity_4_time;
+    private int prev_total_cal_1;
+    private int prev_total_cal_2;
+    private int prev_total_cal_3;
+    private int prev_total_cal_4;
 
 
     @Override
@@ -57,6 +67,7 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
         //setup the bottom nav bar
         initWidgets();
         setBottomNavigationView();
+
         //set up the date for today
         initDate();
         goal_calories_TX = findViewById(R.id.textView_show_workout_calories);
@@ -80,12 +91,42 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
         CV2.setVisibility(View.GONE);
         CV3.setVisibility(View.GONE);
         CV4.setVisibility(View.GONE);
+        activity_1_calories = 0;
+        activity_2_calories = 0;
+        activity_3_calories = 0;
+        activity_4_calories = 0;
+        activity_1_time = 0;
+        activity_2_time = 0;
+        activity_3_time = 0;
+        activity_4_time = 0;
+        prev_total_cal_1 = 0;
+        prev_total_cal_2 = 0;
+        prev_total_cal_3 = 0;
+        prev_total_cal_4 = 0;
+        totalCalories = 0;
+        totalCalories = 0;
+
+        //set up the activities calories burned
+        activitiesCalories = new HashMap<String, Integer>();
+        activitiesCalories.put("Swimming",430);
+        activitiesCalories.put("Running",606);
+        activitiesCalories.put("Walking",250);
+        activitiesCalories.put("Hiking",430);
+        activitiesCalories.put("Jogging",450);
+        activitiesCalories.put("Biking",450);
+        activitiesCalories.put("Dancing",370);
+        activitiesCalories.put("Playing Badminton",300);
+        activitiesCalories.put("Playing Basketball",558);
+        activitiesCalories.put("Playing Frisbee",220);
+        activitiesCalories.put("HIIT",686);
 
         //set up the workout number selection
         workout_numbers_selection = findViewById(R.id.spinner_select_activity_numbers);
         ArrayAdapter<CharSequence> workout_numbers_selection_adapter = ArrayAdapter.createFromResource(this, R.array.workout_activity_numbers, android.R.layout.simple_spinner_item);
         workout_numbers_selection_adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         workout_numbers_selection.setAdapter(workout_numbers_selection_adapter);
+
+        updateTotalTimeAndCalories();
 
         workout_numbers_selection.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -140,12 +181,16 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
                 String text = workout_activity_choose_1.getSelectedItem().toString();
                 System.out.println("text is "+ text);
 
-                //update the card view UI
-                TextView cardActivity_show = findViewById(R.id.workoutDetail_title_01);
-                cardActivity_show.setText(text);
+                if (!text.equals("choose workout activity")) {
+                    //update the card view UI
+                    TextView cardActivity_show = findViewById(R.id.workoutDetail_title_01);
+                    cardActivity_show.setText(text);
 
-                //store data, connect with database to calculate the calories
-
+                    //store data, connect with database to calculate the calories
+                    int oneHourCalories = (int) activitiesCalories.get(text);
+                    activity_1_calories = oneHourCalories;
+                    System.out.println("after choose running, calories ia "+activity_1_calories);
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -159,12 +204,15 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
                 String text = workout_activity_choose_2.getSelectedItem().toString();
                 System.out.println("text is "+ text);
 
-                //update the card view UI
-                TextView cardActivity_show = findViewById(R.id.workoutDetail_title_02);
-                cardActivity_show.setText(text);
+                if (!text.equals("choose workout activity")) {
+                    //update the card view UI
+                    TextView cardActivity_show = findViewById(R.id.workoutDetail_title_02);
+                    cardActivity_show.setText(text);
 
-                //store data, connect with database to calculate the calories
-
+                    //store data, connect with database to calculate the calories
+                    int oneHourCalories = (int) activitiesCalories.get(text);
+                    activity_2_calories = oneHourCalories;
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -178,12 +226,15 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
                 String text = workout_activity_choose_3.getSelectedItem().toString();
                 System.out.println("text is "+ text);
 
-                //update the card view UI
-                TextView cardActivity_show = findViewById(R.id.workoutDetail_title_03);
-                cardActivity_show.setText(text);
+                if (!text.equals("choose workout activity")) {
+                    //update the card view UI
+                    TextView cardActivity_show = findViewById(R.id.workoutDetail_title_03);
+                    cardActivity_show.setText(text);
 
-                //store data, connect with database to calculate the calories
-
+                    //store data, connect with database to calculate the calories
+                    int oneHourCalories = (int) activitiesCalories.get(text);
+                    activity_3_calories = oneHourCalories;
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -197,12 +248,15 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
                 String text = workout_activity_choose_4.getSelectedItem().toString();
                 System.out.println("text is "+ text);
 
-                //update the card view UI
-                TextView cardActivity_show = findViewById(R.id.workoutDetail_title_04);
-                cardActivity_show.setText(text);
+                if (!text.equals("choose workout activity")) {
+                    //update the card view UI
+                    TextView cardActivity_show = findViewById(R.id.workoutDetail_title_04);
+                    cardActivity_show.setText(text);
 
-                //store data, connect with database to calculate the calories
-
+                    //store data, connect with database to calculate the calories
+                    int oneHourCalories = (int) activitiesCalories.get(text);
+                    activity_4_calories = oneHourCalories;
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -214,14 +268,30 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String text = workout_time_choose_1.getSelectedItem().toString();
-                System.out.println("text is "+ text);
 
                 //update the card view UI
                 TextView cardTime_show = findViewById(R.id.workoutDetail_min_01);
                 cardTime_show.setText(text);
 
-                //store data, connect with database to calculate the calories
-
+                if (!text.equals("choose time")) {
+                    //store data, connect with database to calculate the calories
+                    String parts[] = text.split(" ", 2);
+                    text = parts[0];
+                    int timeForActivity = Integer.parseInt(text);
+                    totalTime -= activity_1_time;
+                    totalCalories -= prev_total_cal_1;
+                    activity_1_time = timeForActivity;
+                    if (activity_1_calories != 0 && activity_1_time != 0) {
+                        //double percentage = activity_1_time / 60;
+                        float percentage = activity_1_time *  100f/ 60;
+                        percentage = percentage / 100;
+                        int currentCalories = (int) (percentage * activity_1_calories);
+                        totalCalories += currentCalories;
+                        totalTime += activity_1_time;
+                        prev_total_cal_1 = currentCalories;
+                        updateTotalTimeAndCalories();
+                    }
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -239,8 +309,24 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
                 TextView cardTime_show = findViewById(R.id.workoutDetail_min_02);
                 cardTime_show.setText(text);
 
-                //store data, connect with database to calculate the calories
-
+                if (!text.equals("choose time")) {
+                    //store data, connect with database to calculate the calories
+                    String parts[] = text.split(" ", 2);
+                    text = parts[0];
+                    int timeForActivity = Integer.parseInt(text);
+                    totalTime -= activity_2_time;
+                    totalCalories -= prev_total_cal_2;
+                    activity_2_time = timeForActivity;
+                    if (activity_2_calories != 0 && activity_2_time != 0) {
+                        float percentage = activity_2_time *  100f/ 60;
+                        percentage = percentage / 100;
+                        int currentCalories = (int) (percentage * activity_2_calories);
+                        totalCalories += currentCalories;
+                        totalTime += activity_2_time;
+                        prev_total_cal_2 = currentCalories;
+                        updateTotalTimeAndCalories();
+                    }
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -258,8 +344,24 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
                 TextView cardTime_show = findViewById(R.id.workoutDetail_min_03);
                 cardTime_show.setText(text);
 
-                //store data, connect with database to calculate the calories
-
+                if (!text.equals("choose time")) {
+                    //store data, connect with database to calculate the calories
+                    String parts[] = text.split(" ", 2);
+                    text = parts[0];
+                    int timeForActivity = Integer.parseInt(text);
+                    totalTime -= activity_3_time;
+                    totalCalories -= prev_total_cal_3;
+                    activity_3_time = timeForActivity;
+                    if (activity_3_calories != 0 && activity_3_time != 0) {
+                        float percentage = activity_3_time *  100f/ 60;
+                        percentage = percentage / 100;
+                        int currentCalories = (int) (percentage * activity_3_calories);
+                        totalCalories += currentCalories;
+                        totalTime += activity_3_time;
+                        prev_total_cal_3 = currentCalories;
+                        updateTotalTimeAndCalories();
+                    }
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -277,8 +379,24 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
                 TextView cardTime_show = findViewById(R.id.workoutDetail_min_04);
                 cardTime_show.setText(text);
 
-                //store data, connect with database to calculate the calories
-
+                if (!text.equals("choose time")) {
+                    //store data, connect with database to calculate the calories
+                    String parts[] = text.split(" ", 2);
+                    text = parts[0];
+                    int timeForActivity = Integer.parseInt(text);
+                    totalTime -= activity_3_time;
+                    totalCalories -= prev_total_cal_3;
+                    activity_3_time = timeForActivity;
+                    if (activity_3_calories != 0 && activity_3_time != 0) {
+                        float percentage = activity_3_time *  100f/ 60;
+                        percentage = percentage / 100;
+                        int currentCalories = (int) (percentage * activity_3_calories);
+                        totalCalories += currentCalories;
+                        totalTime += activity_3_time;
+                        prev_total_cal_3 = currentCalories;
+                        updateTotalTimeAndCalories();
+                    }
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -286,33 +404,14 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
             }
         });
 
-//        URL url = null;
-//        try {
-//            url = new URL("https://api.api-ninjas.com/v1/caloriesburned?activity=skiing");
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        }
-//        HttpURLConnection connection = null;
-//        try {
-//            connection = (HttpURLConnection) url.openConnection();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        connection.setRequestProperty("accept", "application/json");
-//        InputStream responseStream = null;
-//        try {
-//            responseStream = connection.getInputStream();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        ObjectMapper mapper = new ObjectMapper();
-//        JsonNode root = mapper.readTree(responseStream);
-//        System.out.println(root.path("fact").asText());
 
+    }
 
-
-
-
+    private void updateTotalTimeAndCalories() {
+        String tempCalories =  String.valueOf(totalCalories);
+        goal_calories_TX.setText(tempCalories);
+        String tempTime =  String.valueOf(totalTime);
+        goal_time.setText(tempTime);
     }
 
     private void updateCardViewNumber() {

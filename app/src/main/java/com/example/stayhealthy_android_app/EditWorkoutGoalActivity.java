@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -31,6 +33,7 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
     private int totalTime;
     private Toolbar toolbar;
     private DatabaseReference myDataBase;
+    private Button updateBtn;
     private Spinner workout_numbers_selection;
     private Spinner workout_activity_choose_1;
     private Spinner workout_time_choose_1;
@@ -72,6 +75,7 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
         initDate();
         goal_calories_TX = findViewById(R.id.textView_show_workout_calories);
         goal_time = findViewById(R.id.textView_show_workout_time);
+        updateBtn = findViewById(R.id.button_submit_goal);
 
         //set up the toolbar
         toolbar = findViewById(R.id.toolbar);
@@ -81,6 +85,7 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
         //set up the firebase
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         myDataBase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+
 
         //set up the card view of detailed workout
         CV1 = (CardView) findViewById(R.id.workoutGoalCV_01);
@@ -103,7 +108,7 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
         prev_total_cal_2 = 0;
         prev_total_cal_3 = 0;
         prev_total_cal_4 = 0;
-        totalCalories = 0;
+        totalTime = 0;
         totalCalories = 0;
 
         //set up the activities calories burned
@@ -384,16 +389,16 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
                     String parts[] = text.split(" ", 2);
                     text = parts[0];
                     int timeForActivity = Integer.parseInt(text);
-                    totalTime -= activity_3_time;
-                    totalCalories -= prev_total_cal_3;
-                    activity_3_time = timeForActivity;
-                    if (activity_3_calories != 0 && activity_3_time != 0) {
-                        float percentage = activity_3_time *  100f/ 60;
+                    totalTime -= activity_4_time;
+                    totalCalories -= prev_total_cal_4;
+                    activity_4_time = timeForActivity;
+                    if (activity_4_calories != 0 && activity_4_time != 0) {
+                        float percentage = activity_4_time *  100f/ 60;
                         percentage = percentage / 100;
-                        int currentCalories = (int) (percentage * activity_3_calories);
+                        int currentCalories = (int) (percentage * activity_4_calories);
                         totalCalories += currentCalories;
-                        totalTime += activity_3_time;
-                        prev_total_cal_3 = currentCalories;
+                        totalTime += activity_4_time;
+                        prev_total_cal_4 = currentCalories;
                         updateTotalTimeAndCalories();
                     }
                 }
@@ -404,7 +409,68 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
             }
         });
 
+        updateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                passDataToWorkout();
+            }
+        });
+    }
 
+    private void passDataToWorkout() {
+        Intent i = new Intent(this,
+                WorkoutActivity.class);
+        
+        String total_goal_calories = goal_calories_TX.getText().toString();
+        String numberOfActivities = String.valueOf(totalNumberOfWorkout);
+        TextView activity_one = findViewById(R.id.workoutDetail_title_01);
+        String activity_one_label = activity_one.getText().toString();
+        TextView activity_two = findViewById(R.id.workoutDetail_title_02);
+        String activity_two_label = activity_two.getText().toString();
+        TextView activity_three = findViewById(R.id.workoutDetail_title_03);
+        String activity_three_label = activity_three.getText().toString();
+        TextView activity_four = findViewById(R.id.workoutDetail_title_04);
+        String activity_four_label = activity_four.getText().toString();
+
+        TextView activity_time_one = findViewById(R.id.workoutDetail_min_01);
+        String activity_time_Label_one = activity_time_one.getText().toString();
+        TextView activity_time_two = findViewById(R.id.workoutDetail_min_02);
+        String activity_time_Label_two = activity_time_two.getText().toString();
+        TextView activity_time_three = findViewById(R.id.workoutDetail_min_03);
+        String activity_time_Label_three = activity_time_three.getText().toString();
+        TextView activity_time_four = findViewById(R.id.workoutDetail_min_04);
+        String activity_time_Label_four = activity_time_four.getText().toString();
+
+        String activity_calories_one = String.valueOf(prev_total_cal_1);
+        String activity_calories_two = String.valueOf(prev_total_cal_2);
+        String activity_calories_three = String.valueOf(prev_total_cal_3);
+        String activity_calories_four = String.valueOf(prev_total_cal_4);
+
+        //Create the bundle
+        Bundle bundle = new Bundle();
+
+        //Add your data to bundle
+        bundle.putString("calories", total_goal_calories);
+        bundle.putString("activities", numberOfActivities);
+        bundle.putString("activity_one", activity_one_label);
+        bundle.putString("activity_two", activity_two_label);
+        bundle.putString("activity_three", activity_three_label);
+        bundle.putString("activity_four", activity_four_label);
+        bundle.putString("activity_time_one", activity_time_Label_one);
+        bundle.putString("activity_time_two", activity_time_Label_two);
+        bundle.putString("activity_time_three", activity_time_Label_three);
+        bundle.putString("activity_time_four", activity_time_Label_four);
+        bundle.putString("activity_calories_four", activity_calories_four);
+        bundle.putString("activity_calories_one", activity_calories_one);
+        bundle.putString("activity_calories_two", activity_calories_two);
+        bundle.putString("activity_calories_three", activity_calories_three);
+
+
+        //Add the bundle to the intent
+        i.putExtras(bundle);
+
+        //Fire that second activity
+        startActivity(i);
     }
 
     private void updateTotalTimeAndCalories() {

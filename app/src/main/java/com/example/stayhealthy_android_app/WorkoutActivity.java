@@ -9,10 +9,14 @@ import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.internal.MaterialCheckable;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -39,6 +43,25 @@ public class WorkoutActivity extends AppCompatActivity {
     private CardView CV2;
     private CardView CV3;
     private CardView CV4;
+    private int totalWorkoutActivities;
+    private String TOTAL_WORKOUT_CALORIES;
+    private String TOTAL_ACTIVITIES;
+    private String ActivityOneLabel;
+    private String ActivityTwoLabel;
+    private String ActivityThreeLabel;
+    private String ActivityFourLabel;
+    private String ActivityOneTime;
+    private String ActivityTwoTime;
+    private String ActivityThreeTime;
+    private String ActivityFourTime;
+    private int Activity_Calories_one;
+    private int Activity_Calories_two;
+    private int Activity_Calories_three;
+    private int Activity_Calories_four;
+    private CheckBox activity_checkbox_one;
+    private CheckBox activity_checkbox_two;
+    private CheckBox activity_checkbox_three;
+    private CheckBox activity_checkbox_four;
 
 
     @Override
@@ -52,7 +75,7 @@ public class WorkoutActivity extends AppCompatActivity {
 
         //initialize the date and the goal without setting
         initDate();
-        update_goal();
+        update_goal_progress_bar();
 
         //set up the edit workout button
         editWorkoutGoalBtn = findViewById(R.id.button_edit_goal);
@@ -78,11 +101,100 @@ public class WorkoutActivity extends AppCompatActivity {
         CV3 = (CardView) findViewById(R.id.workoutDataCV_03);
         CV4 = (CardView) findViewById(R.id.workoutDataCV_04);
 
-        //CV2.setVisibility(View.GONE);
-        //CV2.setVisibility(View.VISIBLE);
+        //Get the bundle
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null) {
+            //Extract the data…
+            TOTAL_WORKOUT_CALORIES = bundle.getString("calories");
+            TOTAL_ACTIVITIES = bundle.getString("activities");
+            ActivityOneLabel = bundle.getString("activity_one");
+            ActivityTwoLabel = bundle.getString("activity_two");
+            ActivityThreeLabel = bundle.getString("activity_three");
+            ActivityFourLabel = bundle.getString("activity_four");
+            ActivityOneTime = bundle.getString("activity_time_one");
+            ActivityTwoTime = bundle.getString("activity_time_two");
+            ActivityThreeTime = bundle.getString("activity_time_three");
+            ActivityFourTime = bundle.getString("activity_time_four");
+            Activity_Calories_one = Integer.parseInt(bundle.getString("activity_calories_one"));
+            Activity_Calories_two = Integer.parseInt(bundle.getString("activity_calories_two"));
+            Activity_Calories_three = Integer.parseInt(bundle.getString("activity_calories_three"));
+            Activity_Calories_four = Integer.parseInt(bundle.getString("activity_calories_four"));
+            update_Goal_CardView();
+        }
+
+        activity_checkbox_one = (CheckBox) findViewById(R.id.workoutDetail_checkbox_01);
+        activity_checkbox_one.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    completed_calories += Activity_Calories_one;
+                    String completed_workout_calories = String.valueOf(completed_calories);
+                    completed_calories_TX.setText(completed_workout_calories);
+                    update_goal_progress_bar();
+                } else {
+                    completed_calories -= Activity_Calories_one;
+                    String completed_workout_calories = String.valueOf(completed_calories);
+                    completed_calories_TX.setText(completed_workout_calories);
+                    update_goal_progress_bar();
+                }
+            }
+        });
+
+        activity_checkbox_two = (CheckBox) findViewById(R.id.workoutDetail_checkbox_02);
+        activity_checkbox_two.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    completed_calories += Activity_Calories_two;
+                    String completed_workout_calories = String.valueOf(completed_calories);
+                    completed_calories_TX.setText(completed_workout_calories);
+                    update_goal_progress_bar();
+                } else {
+                    completed_calories -= Activity_Calories_two;
+                    String completed_workout_calories = String.valueOf(completed_calories);
+                    completed_calories_TX.setText(completed_workout_calories);
+                    update_goal_progress_bar();
+                }
+            }
+        });
+
+        activity_checkbox_three = (CheckBox) findViewById(R.id.workoutDetail_checkbox_03);
+        activity_checkbox_three.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    completed_calories += Activity_Calories_three;
+                    String completed_workout_calories = String.valueOf(completed_calories);
+                    completed_calories_TX.setText(completed_workout_calories);
+                    update_goal_progress_bar();
+                } else {
+                    completed_calories -= Activity_Calories_three;
+                    String completed_workout_calories = String.valueOf(completed_calories);
+                    completed_calories_TX.setText(completed_workout_calories);
+                    update_goal_progress_bar();
+                }
+            }
+        });
+
+        activity_checkbox_four = (CheckBox) findViewById(R.id.workoutDetail_checkbox_04);
+        activity_checkbox_four.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    completed_calories += Activity_Calories_four;
+                    String completed_workout_calories = String.valueOf(completed_calories);
+                    completed_calories_TX.setText(completed_workout_calories);
+                    update_goal_progress_bar();
+                } else {
+                    completed_calories -= Activity_Calories_four;
+                    String completed_workout_calories = String.valueOf(completed_calories);
+                    completed_calories_TX.setText(completed_workout_calories);
+                    update_goal_progress_bar();
+                }
+            }
+        });
     }
-
-
 
     public void openEditGoalActivity() {
         Intent EditWorkoutIntent = new Intent(this, EditWorkoutGoalActivity.class);
@@ -98,7 +210,72 @@ public class WorkoutActivity extends AppCompatActivity {
         dateInfoLabel.setText(formattedString);
     }
 
-    private void update_goal() {
+    private void update_Goal_CardView() {
+        updateCardViewNumber();
+
+        //set up the card view activity label
+        TextView workout_Activity_one = findViewById(R.id.workoutDetail_title_01);
+        workout_Activity_one.setText(ActivityOneLabel);
+        TextView workout_Activity_two = findViewById(R.id.workoutDetail_title_02);
+        workout_Activity_two.setText(ActivityTwoLabel);
+        TextView workout_Activity_three = findViewById(R.id.workoutDetail_title_03);
+        workout_Activity_three.setText(ActivityThreeLabel);
+        TextView workout_Activity_four = findViewById(R.id.workoutDetail_title_04);
+        workout_Activity_four.setText(ActivityFourLabel);
+
+        //set up the card view activity time
+        TextView workout_Activity_Time_one = findViewById(R.id.workoutDetail_min_01);
+        workout_Activity_Time_one.setText(ActivityOneTime);
+        TextView workout_Activity_Time_two = findViewById(R.id.workoutDetail_min_02);
+        workout_Activity_Time_two.setText(ActivityTwoTime);
+        TextView workout_Activity_Time_three = findViewById(R.id.workoutDetail_min_03);
+        workout_Activity_Time_three.setText(ActivityThreeTime);
+        TextView workout_Activity_Time_four = findViewById(R.id.workoutDetail_min_04);
+        workout_Activity_Time_four.setText(ActivityFourTime);
+
+
+        //update the total
+        goal_calories_TX = findViewById(R.id.CaloriesGoal);
+        completed_calories_TX = findViewById(R.id.GoalFinishedNumber);
+        goal_calories_TX.setText(TOTAL_WORKOUT_CALORIES);
+        completed_calories_TX.setText("0");
+        goal_calories = Integer.parseInt(goal_calories_TX.getText().toString());
+        completed_calories = Integer.parseInt(completed_calories_TX.getText().toString());
+        update_goal_progress_bar();
+
+    }
+
+    private void updateCardViewNumber() {
+        int total_activities = Integer.parseInt(TOTAL_ACTIVITIES);
+        if (total_activities == 1) {
+            CV1.setVisibility(View.VISIBLE);
+            CV2.setVisibility(View.GONE);
+            CV3.setVisibility(View.GONE);
+            CV4.setVisibility(View.GONE);
+        } else if (total_activities == 2) {
+            CV1.setVisibility(View.VISIBLE);
+            CV2.setVisibility(View.VISIBLE);
+            CV3.setVisibility(View.GONE);
+            CV4.setVisibility(View.GONE);
+        } else if (total_activities == 3) {
+            CV1.setVisibility(View.VISIBLE);
+            CV2.setVisibility(View.VISIBLE);
+            CV3.setVisibility(View.VISIBLE);
+            CV4.setVisibility(View.GONE);
+        } else if (total_activities == 4) {
+            CV1.setVisibility(View.VISIBLE);
+            CV2.setVisibility(View.VISIBLE);
+            CV3.setVisibility(View.VISIBLE);
+            CV4.setVisibility(View.VISIBLE);
+        } else {
+            CV1.setVisibility(View.GONE);
+            CV2.setVisibility(View.GONE);
+            CV3.setVisibility(View.GONE);
+            CV4.setVisibility(View.GONE);
+        }
+    }
+
+    private void update_goal_progress_bar() {
         //initiate the progress bar
         goal_calories_TX = findViewById(R.id.CaloriesGoal);
         completed_calories_TX = findViewById(R.id.GoalFinishedNumber);
@@ -112,8 +289,6 @@ public class WorkoutActivity extends AppCompatActivity {
         progressBar.setProgress(int_progress);
         String progress_str = String.valueOf(int_progress);
         show_percentage.setText(progress_str + "%");
-
-
     }
 
     private void initWidgets() {

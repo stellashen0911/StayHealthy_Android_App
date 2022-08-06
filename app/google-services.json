@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "850358891794",
+    "firebase_url": "https://stayhealthy-app-default-rtdb.firebaseio.com",
     "project_id": "stayhealthy-app",
     "storage_bucket": "stayhealthy-app.appspot.com"
   },

@@ -3,14 +3,14 @@ package com.example.stayhealthy_android_app.Journey;
 import android.graphics.Bitmap;
 
 public class JourneyPost {
-    Bitmap postPhoto;
+    String postPhotoUri;
     String post;
-    public JourneyPost (Bitmap postPhoto,String post) {
-        this.postPhoto = postPhoto;
+    public JourneyPost (String postPhotoUri,String post) {
+        this.postPhotoUri = postPhotoUri;
         this.post = post;
     }
-    public Bitmap getPostPhoto() {
-        return postPhoto;
+    public String getPostPhoto() {
+        return postPhotoUri;
     }
 
     public String getPostStr() {

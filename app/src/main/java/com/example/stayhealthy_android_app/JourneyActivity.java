@@ -27,6 +27,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -36,7 +38,6 @@ import java.util.List;
 
 public class JourneyActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private BottomNavigationView bottomNavigationView;
-    private DatabaseReference myDataBase;
     private static final String POST_DB_NAME = "posts";
     RecyclerView postRecyclerView;
     JourneyPostAdapter postAdapter;
@@ -47,6 +48,11 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
     private DrawerLayout drawer;
     private Toolbar toolbar;
     private NavigationView profile_nv;
+    FirebaseUser user;
+    private DatabaseReference myDataBase;
+    FirebaseStorage fStorage;
+    StorageReference storageReference;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,19 +71,20 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
         postAdapter  = new JourneyPostAdapter(posts, this);
         postRecyclerView.setAdapter(postAdapter);
         postRecyclerView .setLayoutManager(new LinearLayoutManager(this));
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        myDataBase = FirebaseDatabase.getInstance().getReference();
-        Calendar cal = Calendar.getInstance();
-        String userDBName = user.getEmail().replace('.','_');
-        // demo code store data to cloud db
-        myDataBase.child("user").child(userDBName).child(POST_DB_NAME).removeValue();
-        myDataBase.child("user").child(userDBName).child(POST_DB_NAME)
-                .child(String.valueOf(cal.getTimeInMillis()))
-                .setValue(new JourneyPost(null, "this is a post"));
-       // end of demo code
-        myDataBase.child("user").child(userDBName).child(POST_DB_NAME).get().addOnCompleteListener((task) -> {
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        myDataBase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+        fStorage = FirebaseStorage.getInstance();
+        storageReference = fStorage.getReference("users").child(user.getUid());
+        storageReference.child(POST_DB_NAME).listAll().addOnCompleteListener((task -> {
+            System.out.println("hello");
+//            HashMap<String, HashMap<String,String>> tempMap = (HashMap) task.getResult().getItems();
+        }));
+        myDataBase.child(POST_DB_NAME).get().addOnCompleteListener((task) -> {
             HashMap<String, HashMap<String,String>> tempMap = (HashMap) task.getResult().getValue();
-            List<String> timestamps = new ArrayList<>(tempMap.keySet());
+            if (tempMap == null ) {
+                tempMap = new HashMap<>();
+            }
+            List<String> timestamps = new ArrayList<>(tempMap.keySet() );
             timestamps.sort((a, b) -> {
                 if (Long.valueOf(a) - Long.valueOf(b) > 0) {
                     return 1;
@@ -175,7 +182,8 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
         try {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         } catch (ActivityNotFoundException e) {
-            // display error state to the user
+            // simply return to the last activity.
+            onBackPressed();
         }
     }
 
@@ -187,18 +195,13 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             Intent editPostIntent = new Intent(this,EditPostActivity.class);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte[] byteArray = stream.toByteArray();
             editPostIntent.putExtra("image",byteArray);
             startActivity(editPostIntent);
-
-
-            // posts.add(new JourneyPost(imageBitmap,""));
-            // postAdapter.notifyDataSetChanged();
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
@@ -221,7 +224,6 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
                 startActivity(new Intent(getApplicationContext(), JourneyActivity.class));
                 break;
         }
-
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

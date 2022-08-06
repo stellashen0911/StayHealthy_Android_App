@@ -58,24 +58,19 @@ public class EditPostActivity  extends AppCompatActivity {
 
     public void postToFirebase() {
         long currentMillis = System.currentTimeMillis();
-        myDataBase.child("posts")
-                .child(String.valueOf(currentMillis))
-                .child("post_text")
-                .setValue(postEditText.getText().toString());
-        storageReference.child("posts")
-                .child(String.valueOf(currentMillis))
-                .child("post_image")
-                .putBytes(currentImageBytes);
-        try {
-            storageReference.child("posts")
-                    .child(String.valueOf(currentMillis))
-                    .child("post_text")
-                    .putBytes(
-                            postEditText.getText()
-                            .toString().getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        String postText = postEditText.getText().toString();
+        final StorageReference fileRef = storageReference.child("posts")
+                .child(String.valueOf(currentMillis));
+                fileRef.putBytes(currentImageBytes).addOnSuccessListener((task)-> {
+                    fileRef.getDownloadUrl().addOnSuccessListener((uriTask -> {
+                       String uriImage =   uriTask.toString();
+                        JourneyPost postModel = new JourneyPost(uriImage,postText);
+                        myDataBase.child("posts")
+                                .child(String.valueOf(currentMillis))
+                                .setValue(postModel);
+                    }));
+                });
+
         Intent intent = new Intent(this, JourneyActivity.class);
         startActivity(intent);
     }

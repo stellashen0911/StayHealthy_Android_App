@@ -7,15 +7,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stayhealthy_android_app.Award.Model.AwardData;
+import com.example.stayhealthy_android_app.Award.Model.AwardDisplay;
 
 import java.util.List;
 
 public class AwardAdapter extends RecyclerView.Adapter<AwardViewHolder> {
-    private final List<AwardData> awardDataList;
+    private final List<AwardDisplay> awardDisplayList;
     private final int itemLayoutID;
 
-    public AwardAdapter(List<AwardData> awardDataList, int itemLayoutID) {
-        this.awardDataList = awardDataList;
+    public AwardAdapter(List<AwardDisplay> awardDisplayList, int itemLayoutID) {
+        this.awardDisplayList = awardDisplayList;
         this.itemLayoutID = itemLayoutID;
     }
 
@@ -27,11 +28,11 @@ public class AwardAdapter extends RecyclerView.Adapter<AwardViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull AwardViewHolder holder, int position) {
-        holder.bindThisData(awardDataList.get(position));
+        holder.bindThisData(awardDisplayList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return awardDataList != null ? awardDataList.size() : 0;
+        return awardDisplayList != null ? awardDisplayList.size() : 0;
     }
 }

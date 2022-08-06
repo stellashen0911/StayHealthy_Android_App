@@ -4,6 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -133,14 +139,180 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String text = workout_activity_choose_1.getSelectedItem().toString();
                 System.out.println("text is "+ text);
-                //to do:
-            }
 
+                //update the card view UI
+                TextView cardActivity_show = findViewById(R.id.workoutDetail_title_01);
+                cardActivity_show.setText(text);
+
+                //store data, connect with database to calculate the calories
+
+            }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                //to do:
+                return;
             }
         });
+
+        workout_activity_choose_2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String text = workout_activity_choose_2.getSelectedItem().toString();
+                System.out.println("text is "+ text);
+
+                //update the card view UI
+                TextView cardActivity_show = findViewById(R.id.workoutDetail_title_02);
+                cardActivity_show.setText(text);
+
+                //store data, connect with database to calculate the calories
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                return;
+            }
+        });
+
+        workout_activity_choose_3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String text = workout_activity_choose_3.getSelectedItem().toString();
+                System.out.println("text is "+ text);
+
+                //update the card view UI
+                TextView cardActivity_show = findViewById(R.id.workoutDetail_title_03);
+                cardActivity_show.setText(text);
+
+                //store data, connect with database to calculate the calories
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                return;
+            }
+        });
+
+        workout_activity_choose_4.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String text = workout_activity_choose_4.getSelectedItem().toString();
+                System.out.println("text is "+ text);
+
+                //update the card view UI
+                TextView cardActivity_show = findViewById(R.id.workoutDetail_title_04);
+                cardActivity_show.setText(text);
+
+                //store data, connect with database to calculate the calories
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                return;
+            }
+        });
+
+        workout_time_choose_1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String text = workout_time_choose_1.getSelectedItem().toString();
+                System.out.println("text is "+ text);
+
+                //update the card view UI
+                TextView cardTime_show = findViewById(R.id.workoutDetail_min_01);
+                cardTime_show.setText(text);
+
+                //store data, connect with database to calculate the calories
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                return;
+            }
+        });
+
+        workout_time_choose_2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String text = workout_time_choose_2.getSelectedItem().toString();
+                System.out.println("text is "+ text);
+
+                //update the card view UI
+                TextView cardTime_show = findViewById(R.id.workoutDetail_min_02);
+                cardTime_show.setText(text);
+
+                //store data, connect with database to calculate the calories
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                return;
+            }
+        });
+
+        workout_time_choose_3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String text = workout_time_choose_3.getSelectedItem().toString();
+                System.out.println("text is "+ text);
+
+                //update the card view UI
+                TextView cardTime_show = findViewById(R.id.workoutDetail_min_03);
+                cardTime_show.setText(text);
+
+                //store data, connect with database to calculate the calories
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                return;
+            }
+        });
+
+        workout_time_choose_4.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String text = workout_time_choose_4.getSelectedItem().toString();
+                System.out.println("text is "+ text);
+
+                //update the card view UI
+                TextView cardTime_show = findViewById(R.id.workoutDetail_min_04);
+                cardTime_show.setText(text);
+
+                //store data, connect with database to calculate the calories
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                return;
+            }
+        });
+
+//        URL url = null;
+//        try {
+//            url = new URL("https://api.api-ninjas.com/v1/caloriesburned?activity=skiing");
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        }
+//        HttpURLConnection connection = null;
+//        try {
+//            connection = (HttpURLConnection) url.openConnection();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        connection.setRequestProperty("accept", "application/json");
+//        InputStream responseStream = null;
+//        try {
+//            responseStream = connection.getInputStream();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        ObjectMapper mapper = new ObjectMapper();
+//        JsonNode root = mapper.readTree(responseStream);
+//        System.out.println(root.path("fact").asText());
+
+
+
+
+
     }
 
     private void updateCardViewNumber() {

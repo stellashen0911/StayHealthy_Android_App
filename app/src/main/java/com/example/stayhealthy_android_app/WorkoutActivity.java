@@ -7,6 +7,7 @@ import androidx.cardview.widget.CardView;
 import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -15,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.example.stayhealthy_android_app.Period.Model.PeriodData;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.internal.MaterialCheckable;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,13 +39,19 @@ public class WorkoutActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private Button editWorkoutGoalBtn;
     private Toolbar toolbar;
+    private DatabaseReference mDatabase;
+    private LocalDate selectedDate;
+    private DatabaseReference work_out_Ref;
+    private DatabaseReference Activity_Ref_one;
+    private DatabaseReference Activity_Ref_two;
+    private DatabaseReference Activity_Ref_three;
+    private DatabaseReference Activity_Ref_four;
     int goal_calories;
     int completed_calories;
     private CardView CV1;
     private CardView CV2;
     private CardView CV3;
     private CardView CV4;
-    private int totalWorkoutActivities;
     private String TOTAL_WORKOUT_CALORIES;
     private String TOTAL_ACTIVITIES;
     private String ActivityOneLabel;
@@ -91,10 +99,6 @@ public class WorkoutActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Work Out Records");
 
-        //set up the firebase
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        myDataBase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-
         //set up the card view of detailed workout
         CV1 = (CardView) findViewById(R.id.workoutDataCV_01);
         CV2 = (CardView) findViewById(R.id.workoutDataCV_02);
@@ -121,6 +125,7 @@ public class WorkoutActivity extends AppCompatActivity {
             Activity_Calories_three = Integer.parseInt(bundle.getString("activity_calories_three"));
             Activity_Calories_four = Integer.parseInt(bundle.getString("activity_calories_four"));
             update_Goal_CardView();
+            update_firebase_setup();
         }
 
         activity_checkbox_one = (CheckBox) findViewById(R.id.workoutDetail_checkbox_01);
@@ -208,6 +213,55 @@ public class WorkoutActivity extends AppCompatActivity {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
         String formattedString = localDate.format(formatter);
         dateInfoLabel.setText(formattedString);
+    }
+
+    private void update_firebase_setup() {
+        // Get the current user from firebase authentication.
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        // Set up the firebase Database reference.
+        assert user != null;
+        mDatabase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+
+        // Initialize the selected date as today.
+        selectedDate = LocalDate.now();
+
+        work_out_Ref = mDatabase.child("work-out");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
+        String formattedDateString = selectedDate.format(formatter);
+        Activity_Ref_one = work_out_Ref.child(formattedDateString).child("Activity_one");
+        Activity_Ref_two = work_out_Ref.child(formattedDateString).child("Activity_two");
+        Activity_Ref_three = work_out_Ref.child(formattedDateString).child("Activity_three");
+        Activity_Ref_four = work_out_Ref.child(formattedDateString).child("Activity_four");
+    }
+
+    private void update_firebase_data(int activity_number) {
+        DatabaseReference current_activity;
+        if (activity_number == 1) {
+            current_activity = Activity_Ref_one;
+        } else if (activity_number == 2) {
+            current_activity = Activity_Ref_two;
+        } else if (activity_number == 3) {
+            current_activity = Activity_Ref_three;
+        } else if (activity_number == 4) {
+            current_activity = Activity_Ref_four;
+        } else {
+            return;
+        }
+
+        current_activity.get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                return;
+            } else {
+                String calories_goal_data = task.getResult().getValue().toString();
+                if (calories_goal_data != null) {
+                    //to do:
+                } else {
+                    //to do:
+                }
+
+            }
+        });
     }
 
     private void update_Goal_CardView() {

@@ -125,8 +125,9 @@ public class WaterActivity  extends AppCompatActivity {
             }
             todayWaterTextView.setText(waterIntakesList.get(0).getWaterOz() + TODAY_WATER_OZ_CONST );
             Long percentage = (waterIntakesList.get(0).getWaterOz()*100) / WaterIntakeModel.DAILY_WATER_TARGET_OZ;
-            dailyPercentageTextView.setText(percentage+"%");
-            handler.post(() -> dailyProgressBar.setProgress(percentage.intValue()));
+            final Long finalPercentage = percentage > 100 ? 100 :percentage;
+            dailyPercentageTextView.setText(finalPercentage+"%");
+            handler.post(() -> dailyProgressBar.setProgress(finalPercentage.intValue()));
 
         }));
     }
@@ -171,9 +172,10 @@ public class WaterActivity  extends AppCompatActivity {
         todayModel.addWater(waterOz);
         waterDbRef.child(dateStr).setValue(todayModel);
         todayWaterTextView.setText(todayModel.getWaterOz() + TODAY_WATER_OZ_CONST);
-        Long percentage = (todayModel.getWaterOz()*100) / WaterIntakeModel.DAILY_WATER_TARGET_OZ;
-        dailyPercentageTextView.setText(percentage+"%");
-        handler.post(() -> dailyProgressBar.setProgress(percentage.intValue()));
+        Long percentage = (todayModel.getWaterOz() * 100) / WaterIntakeModel.DAILY_WATER_TARGET_OZ;
+        final Long finalPercentage = percentage > 100 ? 100 : percentage;
+        dailyPercentageTextView.setText(finalPercentage + "%");
+        handler.post(() -> dailyProgressBar.setProgress(finalPercentage.intValue()));
         waterIntakeAdapter.notifyDataSetChanged();
     }
 

@@ -2,6 +2,7 @@ package com.example.stayhealthy_android_app;
 
 import static com.example.stayhealthy_android_app.Water.WaterIntakeModel.DAILY_WATER_TARGET_OZ;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -23,28 +24,32 @@ import android.widget.Button;
 
 import com.example.stayhealthy_android_app.Award.AwardAdapter;
 import com.example.stayhealthy_android_app.Award.Model.AwardData;
+import com.example.stayhealthy_android_app.Award.Model.AwardDisplay;
 import com.example.stayhealthy_android_app.Water.WaterIntakeModel;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class AwardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private final static String TAG = "MAwardActivity";
     private final static String DATE_SHORT_FORMAT = "yyyy-MM-dd";
-    private final static String DATE_LONG_FORMAT = "MMM dd yyyy";
     private static final String WATER_INTAKE_DB_NAME = "water_intake";
     private static final String AWARD_DB_NAME = "award";
     private static final List<String> AWARD_NAME = new ArrayList<>(Arrays.asList("Water Drink Goal 100%", "Diet Goal 100%", "Workout Goal 100%"));
@@ -57,13 +62,16 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
     private NavigationView profile_nv;
     private RecyclerView receivedAwardRV;
     private RecyclerView notReceivedAwardRV;
-    private List<AwardData> receivedAwardDataList;
-    private List<AwardData> notReceivedAwardDataList;
+    private List<AwardDisplay> receivedAwardDisplayList;
+    private List<AwardDisplay> notReceivedAwardDisplayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_award);
+
+        // Get Today in string.
+        today = localDateToDateInStr(LocalDate.now());
 
         // Get the current user from firebase authentication.
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -72,16 +80,16 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
         assert user != null;
         mDatabase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
 
-        // Get Today in string.
-        today = localDateToDateInStr(LocalDate.now(), DATE_SHORT_FORMAT);
+        DatabaseReference waterRef = mDatabase.child(WATER_INTAKE_DB_NAME).child(today);
+        waterRef.addValueEventListener(waterListener);
 
         // Initialize and assign variable
         initWidgets();
         setBottomNavigationView();
         initProfileDrawer();
 
-        notReceivedAwardDataList = new ArrayList<>();
-        receivedAwardDataList = new ArrayList<>();
+        notReceivedAwardDisplayList = new ArrayList<>();
+        receivedAwardDisplayList = new ArrayList<>();
 
         setNotReceivedAwardRecyclerView();
 
@@ -89,145 +97,136 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
 
     }
 
-//    private void syncWithDatabase(AwardData awardData, AwardLabel label) {
-//        DatabaseReference ref = mDatabase.child(AWARD_DB_NAME).child(label.toString());
-//        ref.setValue(awardData)
-//                .addOnSuccessListener(unused -> {
-//                    Log.v(TAG, "write one award data to database is successful");
-//                    checkLongTermGoal(label);
-//                })
-//                .addOnFailureListener(Throwable::printStackTrace);
-//    }
-//
-//    private void saveReceivedAwardDataToDatabase(AwardData awardData) {
-//        AwardLabel awardLabel = AwardLabel.valueOfName(awardData.getName());
-//        if (awardLabel == null) {
-//            return;
-//        }
-//        DatabaseReference ref = mDatabase.child(AWARD_DB_NAME).child(awardLabel.toString());
-//
-//        ref.get().addOnCompleteListener(task -> {
-//            if (!task.isSuccessful()) {
-//                Log.e(TAG, "Error getting award data from firebase Database", task.getException());
-//            } else {
-//                AwardData data = task.getResult().getValue(AwardData.class);
-//                if (data != null && !data.getDate().equals(awardData.getDate())) {
-//                    data.addTimes();
-//                    data.setDate(awardData.getDate());
-//                    syncWithDatabase(data, awardLabel);
-//                } else {
-//                    awardData.setType(0);
-//                    syncWithDatabase(awardData, awardLabel);
-//                }
-//            }
-//        });
-//    }
-//
-//    private void checkTodayWaterDrinkGoal() {
-//        // Query today's water intake data.
-//        DatabaseReference waterIntakeRef = mDatabase.child(WATER_INTAKE_DB_NAME);
-//        Query query = waterIntakeRef.orderByChild("date").equalTo(today);
-//
-//        query.get().addOnCompleteListener(task -> {
-//            if (!task.isSuccessful()) {
-//                Log.e(TAG, "Error getting water intake data from firebase Database", task.getException());
-//            } else {
-//                for (DataSnapshot ds : task.getResult().getChildren()) {
-//                    WaterIntakeModel value = ds.getValue(WaterIntakeModel.class);
-//                    if (value != null) {
-//                        if (value.getWaterOz() >= DAILY_WATER_TARGET_OZ) {
-//                            AwardData awardData = new AwardData(today, AwardLabel.Water.name, 1, "Today", 1);
-//                            addDataToReceivedAwardDataList(0, awardData);
-//                            saveReceivedAwardDataToDatabase(awardData);
-//                            return;
-//                        }
-//                    }
-//                }
-//                Log.v(TAG, "reach here");
-//                AwardData awardData = new AwardData(today, AwardLabel.Water.name, 0, "Today", 1);
-//                addDataToNotReceivedAwardDataList(awardData);
-//            }
-//        });
-//    }
-//
-//    private int getPosition(int num) {
-//        int left = 0;
-//        int right = TARGET.size() - 1;
-//
-//        while (left <= right) {
-//            int mid = left + (right - left) / 2;
-//            if (num == TARGET.get(mid)) {
-//                return mid;
-//            } else if (num < TARGET.get(mid)) {
-//                right = mid - 1;
-//            } else {
-//                left = mid + 1;
-//            }
-//        }
-//
-//        return left;
-//    }
-//
-//    private void addDataToReceivedAwardDataList(int position, AwardData awardData) {
-//        receivedAwardDataList.add(position, awardData);
-//        Objects.requireNonNull(receivedAwardRV.getAdapter()).notifyItemInserted(position);
-//    }
-//
-//    private void addDataToNotReceivedAwardDataList(AwardData awardData) {
-//        if(notReceivedAwardDataList.contains(awardData)) {
-//            int position = notReceivedAwardDataList.indexOf(awardData);
-//            notReceivedAwardDataList.remove(awardData);
-//            Objects.requireNonNull(notReceivedAwardRV.getAdapter()).notifyItemRemoved(position);
-//        }
-//        notReceivedAwardDataList.add(awardData);
-//        Objects.requireNonNull(notReceivedAwardRV.getAdapter()).notifyItemInserted(notReceivedAwardDataList.size());
-//    }
-//
-//    private void checkLongTermGoal(AwardLabel label) {
-//        DatabaseReference ref = mDatabase.child(AWARD_DB_NAME).child(label.toString());
-//
-//        ref.get().addOnCompleteListener(task -> {
-//            if (!task.isSuccessful()) {
-//                Log.e(TAG, "Error getting water intake data from firebase Database", task.getException());
-//            } else {
-//                AwardData awardData = task.getResult().getValue(AwardData.class);
-//                if (awardData != null) {
-//                    int times = awardData.getTimes();
-//                    int position = getPosition(times);
-//                    if (TARGET.contains(times)) {
-//                        awardData.setDetails(times + " days");
-//                        addDataToReceivedAwardDataList(receivedAwardDataList.size(), awardData);
-//                        if (times == TARGET.get(TARGET.size() - 1)) {
-//                            return;
-//                        }
-//                        awardData.setDetails(times + "/" + TARGET.get(position + 1) + " days");
-//                        addDataToNotReceivedAwardDataList(awardData);
-//                    } else {
-//                        if (position != 0) {
-//                            awardData.setDetails(TARGET.get(position - 1) + " days");
-//                            addDataToReceivedAwardDataList(receivedAwardDataList.size(), awardData);
-//                        }
-//                        awardData.setDetails(times + "/" + TARGET.get(position) + " days");
-//                        addDataToNotReceivedAwardDataList(awardData);
-//                    }
-//                } else {
-//                    awardData = new AwardData(today, label.name, 0, "0/3 days", 0);
-//                    addDataToNotReceivedAwardDataList(awardData);
-//                }
-//            }
-//        });
-//    }
-//
-//    private void checkGoalAndUpdateRecyclerView() {
-//        checkTodayWaterDrinkGoal();
-//        for(AwardLabel awardLabel : AwardLabel.values()) {
-//            checkLongTermGoal(awardLabel);
-//        }
-//    }
+    private void syncWithDatabase(AwardData awardData) {
+        DatabaseReference ref = mDatabase.child(AWARD_DB_NAME).child(awardData.getName());
+        ref.setValue(awardData)
+                .addOnSuccessListener(unused -> {
+                    Log.v(TAG, "write one award data to database is successful");
+                    getAwardDateFromDatabaseAndUpdateRecyclerView();
+                })
+                .addOnFailureListener(Throwable::printStackTrace);
+    }
+
+    private void saveReceivedAwardDataToDatabase(AwardData newData) {
+        DatabaseReference ref = mDatabase.child(AWARD_DB_NAME).child(newData.getName());
+
+        ref.get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.e(TAG, "Error getting award data from firebase Database", task.getException());
+            } else {
+                AwardData awardData = task.getResult().getValue(AwardData.class);
+                if (awardData == null) {
+                    syncWithDatabase(newData);
+                } else {
+                    if (awardData.getDate().equals(newData.getDate())) {
+                        return;
+                    }
+                    awardData.addTimes();
+                    if (TARGET.contains(awardData.getTimes())) {
+                        awardData.setDate(newData.getDate());
+                    }
+                    syncWithDatabase(awardData);
+                }
+            }
+        });
+    }
+
+    ValueEventListener waterListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            WaterIntakeModel value = snapshot.getValue(WaterIntakeModel.class);
+                if (value != null) {
+                    if (value.getWaterOz() >= DAILY_WATER_TARGET_OZ) {
+                        AwardData newData = new AwardData(today, AWARD_NAME.get(0), 1);
+                        saveReceivedAwardDataToDatabase(newData);
+                    }
+                }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+            Log.w(TAG, "Load water database cancelled", error.toException());
+        }
+    };
+
+    private int getPosition(int num) {
+        int left = 0;
+        int right = TARGET.size() - 1;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (num == TARGET.get(mid)) {
+                return mid;
+            } else if (num < TARGET.get(mid)) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        return left;
+    }
+
+    private void getAwardDateFromDatabaseAndUpdateRecyclerView() {
+        notReceivedAwardDisplayList = new ArrayList<>();
+        receivedAwardDisplayList = new ArrayList<>();
+
+        DatabaseReference awardRef = mDatabase.child(AWARD_DB_NAME);
+        List<Task<DataSnapshot>> tasks = new ArrayList<>();
+
+        for (String name : AWARD_NAME) {
+            Query query = awardRef.orderByChild("name").equalTo(name);
+            tasks.add(query.get());
+        }
+
+        Tasks.whenAllSuccess(tasks)
+                .addOnFailureListener(Throwable::printStackTrace)
+                .addOnSuccessListener(list -> {
+                    for(int i = 0; i < AWARD_NAME.size(); i ++) {
+                        DataSnapshot dataSnapshot = (DataSnapshot) list.get(i);
+                        String namePrefix = AWARD_NAME.get(i);
+                        AwardDisplay awardDisplayToday = new AwardDisplay(namePrefix, "Today");
+                        if (dataSnapshot.getValue() == null) {
+                            notReceivedAwardDisplayList.add(0, awardDisplayToday);
+                            notReceivedAwardDisplayList.add(new AwardDisplay(namePrefix + " | 3 Days", "0/3 Days"));
+                        }
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                            AwardData awardData = ds.getValue(AwardData.class);
+                            if (awardData != null) {
+                                if (awardData.getDate().equals(today)) {
+                                    receivedAwardDisplayList.add(0, awardDisplayToday);
+                                } else {
+                                    notReceivedAwardDisplayList.add(0, awardDisplayToday);
+                                }
+                                int times = awardData.getTimes();
+                                int position = getPosition(times);
+                                String num;
+                                if (TARGET.contains(times)) {
+                                    num = TARGET.get(position) + " Days";
+                                    receivedAwardDisplayList.add(new AwardDisplay(namePrefix + " \n " + num, awardData.getDate()));
+                                    if (position != TARGET.size()) {
+                                        num = TARGET.get(position + 1) + " Days";
+                                        notReceivedAwardDisplayList.add(new AwardDisplay(namePrefix + " | " + num, times + "/" + num));
+                                    }
+                                } else {
+                                    if (position != 0) {
+                                        num = TARGET.get(position - 1) + " Days";
+                                        receivedAwardDisplayList.add(new AwardDisplay(namePrefix + " \n " + num, awardData.getDate()));
+                                    }
+                                    num = TARGET.get(position) + " Days";
+                                    notReceivedAwardDisplayList.add(new AwardDisplay(namePrefix + " | " + num, times + "/" + num));
+                                }
+                            }
+                        }
+                    }
+                    setReceivedAwardRecyclerViewAdapter();
+                    setNotReceivedAwardRecyclerViewAdapter();
+                });
+    }
 
     private void setNotReceivedAwardRecyclerViewAdapter() {
         int itemLayout = R.layout.item_award_card_list;
-        notReceivedAwardRV.setAdapter(new AwardAdapter(notReceivedAwardDataList, itemLayout));
+        notReceivedAwardRV.setAdapter(new AwardAdapter(notReceivedAwardDisplayList, itemLayout));
     }
 
     private void setNotReceivedAwardRecyclerView() {
@@ -238,7 +237,7 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
 
     private void setReceivedAwardRecyclerViewAdapter() {
         int itemLayout = R.layout.item_award_card_grid;
-        receivedAwardRV.setAdapter(new AwardAdapter(receivedAwardDataList, itemLayout));
+        receivedAwardRV.setAdapter(new AwardAdapter(receivedAwardDisplayList, itemLayout));
     }
 
     private void setReceivedAwardRecycleView() {
@@ -292,7 +291,7 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
         // Set home selected when going back to this activity from other activities
         bottomNavigationView.setSelectedItemId(R.id.award_icon);
 
-//        checkGoalAndUpdateRecyclerView();
+        getAwardDateFromDatabaseAndUpdateRecyclerView();
     }
 
     @Override
@@ -396,8 +395,13 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
     }
 
     // Convert LocalDate to date in specified string format.
-    private String localDateToDateInStr(LocalDate date, String dateFormat) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dateFormat);
+    private String localDateToDateInStr(LocalDate date) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_SHORT_FORMAT);
         return date.format(dateTimeFormatter);
+    }
+
+    // Convert month value to short month string.
+    private String monthValueToMonthShort(int month) {
+        return new DateFormatSymbols().getShortMonths()[month - 1];
     }
 }

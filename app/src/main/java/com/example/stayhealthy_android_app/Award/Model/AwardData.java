@@ -8,23 +8,15 @@ public class AwardData implements Comparable<AwardData> {
     private String date;
     private String name;
     private int times;
-    private String details;
-    private int type;
 
     public AwardData(){
 
     }
 
-    public AwardData(String date, String name, int times, String details, int type) {
+    public AwardData(String date, String name, int times) {
         this.date = date;
         this.name = name;
         this.times = times;
-        this.details = details;
-        this.type = type;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
     }
 
     public String getName() {
@@ -37,18 +29,6 @@ public class AwardData implements Comparable<AwardData> {
 
     public int getTimes() {
         return times;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public int getType() {
-        return type;
     }
 
     public void setDate(String date) {
@@ -75,12 +55,12 @@ public class AwardData implements Comparable<AwardData> {
         if (this == o) return true;
         if (!(o instanceof AwardData)) return false;
         AwardData data = (AwardData) o;
-        return getType() == data.getType() && getTimes() == data.getTimes()
+        return getTimes() == data.getTimes()
                 && getDate().equals(data.getDate()) && getName().equals(data.getName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getType(), getDate(), getName(), getTimes());
+        return Objects.hash(getDate(), getName(), getTimes());
     }
 }

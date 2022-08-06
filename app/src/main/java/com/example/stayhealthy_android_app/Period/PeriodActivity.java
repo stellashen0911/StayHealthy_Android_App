@@ -266,7 +266,11 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                             stringBuilder.append(symptomsOptions[i]);
                         }
                     }
-                    binding.symptomsDetailsTV.setText(stringBuilder);
+                    if (stringBuilder.length() == 0){
+                        binding.symptomsDetailsTV.setText(R.string.no_record_string);
+                    } else {
+                        binding.symptomsDetailsTV.setText(stringBuilder);
+                    }
                     saveSymptomsToDatabase(stringBuilder.toString());
                 })
                 .setNegativeButton(R.string.cancel_string, null)

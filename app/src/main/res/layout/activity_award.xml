@@ -17,7 +17,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:id="@+id/toolbar_line">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -32,15 +33,13 @@
             <FrameLayout
                 android:id="@+id/fragment_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
-            </FrameLayout>
+                android:layout_height="match_parent" />
         </LinearLayout>
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="54dp"
-            android:paddingBottom="54dp"
+            android:layout_marginTop="54dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -99,7 +98,7 @@
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/receivedAwardRV"
                             android:layout_width="match_parent"
-                            android:layout_height="156dp"
+                            android:layout_height="wrap_content"
                             android:visibility="visible"/>
 
                     </LinearLayout>
@@ -155,7 +154,7 @@
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/notReceivedAwardRV"
                             android:layout_width="match_parent"
-                            android:layout_height="256dp"
+                            android:layout_height="wrap_content"
                             android:visibility="visible"/>
 
                     </LinearLayout>
@@ -184,7 +183,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/profile_menu"
-        android:visibility="gone"/>
+        app:menu="@menu/profile_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

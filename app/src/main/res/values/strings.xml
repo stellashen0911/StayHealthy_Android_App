@@ -108,11 +108,35 @@
     <string name="today">Today</string>
 
     <string-array name="workout_activity_numbers">
-        <item>choose number by click</item>
+        <item>choose activity number by click</item>
         <item>1 workout activity</item>
         <item>2 workout activities</item>
         <item>3 workout activities</item>
         <item>4 workout activities</item>
+    </string-array>
+
+    <string-array name="workout_activities">
+        <item>choose workout activity</item>
+        <item>Running</item>
+        <item>Swimming</item>
+        <item>Dancing</item>
+        <item>Walking</item>
+    </string-array>
+
+    <string-array name="workout_time_range">
+        <item>choose time</item>
+        <item>10 min</item>
+        <item>20 min</item>
+        <item>30 min</item>
+        <item>40 min</item>
+        <item>50 min</item>
+        <item>60 min</item>
+        <item>70 min</item>
+        <item>80 min</item>
+        <item>90 min</item>
+        <item>100 min</item>
+        <item>110 min</item>
+        <item>120 min</item>
     </string-array>
 
 </resources>

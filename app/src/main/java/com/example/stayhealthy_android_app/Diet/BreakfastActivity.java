@@ -14,7 +14,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class BreakfastActivity extends AppCompatActivity {
     private long protein;
@@ -48,11 +47,41 @@ public class BreakfastActivity extends AppCompatActivity {
 
         foodAdapter = new FoodAdapter(foods);
         FoodClickListener listener = position -> {
-            foods.get(position).onLinkClicked(position);
+            foods.get(position).onFoodClicked(position);
             foodAdapter.notifyItemChanged(position);
         };
 
-        foodAdapter.setFoodClickListener(listener);
+        FoodCheckedListener foodCheckedListener = (position, isChecked) -> {
+            foods.get(position).setFoodChecked(isChecked);
+
+            protein = 0;
+            fat = 0;
+            carbs = 0;
+            netCal = 0;
+
+            for (FoodItem food :foods) {
+                long foodProtein = food.getFoodChecked() ? food.getProtein() : 0;
+                long foodFat = food.getFoodChecked() ? food.getFat() : 0;
+                long foodCarbs = food.getFoodChecked() ? food.getCarbs() : 0;
+                protein += foodProtein;
+                fat += foodFat;
+                carbs += foodCarbs;
+                netCal += (foodProtein + foodFat + foodCarbs);
+            }
+
+            proteinView.setText("Protein: " + protein + " Cal");
+            fatView.setText("Fat: " + fat + " Cal");
+            carbsView.setText("Carbs: " + carbs + " Cal");
+            netCalView.setText("Net Cal: " + netCal + " Cal");
+
+            myDataBase.child("protein").setValue(protein);
+            myDataBase.child("fat").setValue(fat);
+            myDataBase.child("carbs").setValue(carbs);
+            myDataBase.child("net").setValue(netCal);
+            myDataBase.child("foods").child(foods.get(position).getFoodName()).child("checked").setValue(isChecked ? 1 : 0);
+        };
+
+        foodAdapter.setFoodClickListener(listener, foodCheckedListener);
         recyclerView.setAdapter(foodAdapter);
         recyclerView.setLayoutManager(layoutManager);
     }
@@ -82,7 +111,9 @@ public class BreakfastActivity extends AppCompatActivity {
                 long foodProtein = tempFoods.get(foodName).get("protein");
                 long foodFat = tempFoods.get(foodName).get("fat");
                 long foodCarbs = tempFoods.get(foodName).get("carbs");
-                foods.add(new FoodItem(foodName, "protein: " + foodProtein + " Cal; fat: " + foodFat + " Cal; carbs: " + foodCarbs + " Cal"));
+                long foodChecked = tempFoods.get(foodName).get("checked");
+                boolean checked = foodChecked == 1 ? true : false;
+                foods.add(new FoodItem(foodName, foodProtein, foodFat, foodCarbs, checked));
             }
             createRecyclerView();
         });

@@ -32,6 +32,21 @@
             android:layout_marginTop="5dp"
             android:text="food_info" />
 
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/food_checkbox"
+            style="@style/Widget.MaterialComponents.CompoundButton.CheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="false"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="4dp"
+            android:checked="false"
+            android:contentDescription="checked_food"
+            app:icon="@drawable/ic_add_entry"
+            app:iconGravity="textEnd"
+            app:iconSize="20dp" />
+
     </RelativeLayout>
 
 </androidx.cardview.widget.CardView>

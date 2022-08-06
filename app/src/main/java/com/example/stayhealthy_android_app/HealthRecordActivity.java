@@ -8,31 +8,134 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.example.stayhealthy_android_app.Diet.DietActivity;
+import com.example.stayhealthy_android_app.Period.Model.PeriodData;
 import com.example.stayhealthy_android_app.Period.PeriodActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 
 public class HealthRecordActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private final static String TAG = "MHealthRecordActivity";
+    private final static String DATE_SHORT_FORMAT = "yyyy-MM-dd";
     private BottomNavigationView bottomNavigationView;
     private DrawerLayout drawer;
     private Toolbar toolbar;
     private NavigationView profile_nv;
+    private DatabaseReference mDatabase;
+    private DatabaseReference dieDB;
+    private DatabaseReference waterDB;
+    private DatabaseReference periodDB;
+
+    private ProgressBar pbDiet;
+    private ProgressBar pbWater;
+    private ProgressBar pbPeriod;
+    private ProgressBar pbWorkout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_health_record);
 
-        // Initialize and assign variable
+        initProgressBars();
+
+        dieDB = FirebaseDatabase.getInstance().getReference("user").
+                child("test@gmail_com").child("diets").child("20220731");
+
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        assert user != null;
+        waterDB = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+
+        periodDB =  FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("period");
+
+
+        updatePBDiet();
+        updatePBWater();
+        updatePBPeriod();
+        updatePBWorkout();
+
         initWidgets();
         setBottomNavigationView();
         initProfileDrawer();
 
+    }
+
+    private void updatePBDiet() {
+        dieDB.get().addOnCompleteListener(task -> {
+            HashMap tempMap = (HashMap) task.getResult().getValue();
+            long netCal = (long) ((HashMap)tempMap.get("breakfast")).get("net") +
+                    (long) ((HashMap)tempMap.get("lunch")).get("net") +
+                    (long) ((HashMap)tempMap.get("dinner")).get("net") +
+                    (long) ((HashMap)tempMap.get("snack")).get("net");
+            long targetCal = (long) tempMap.get("target");
+            double v = 100 * (double) netCal / targetCal;
+            this.pbDiet.setProgress((int)v);
+        });
+    }
+
+    private void updatePBWater() {
+        // TODO update progress bar of water
+    }
+
+    private void updatePBPeriod() {
+        // TODO update progress bar of period
+        LocalDate today = LocalDate.now();
+        String date = localDateToDateInStr(today);
+        Query query = periodDB.orderByChild("flowAndDate").endAt("1-" + date).limitToLast(1);
+
+        query.get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.v("", "Error getting data", task.getException());
+            } else {
+                int periodRange = 28;
+                int remainingDays = periodRange - 1;
+                for (DataSnapshot ds : task.getResult().getChildren()) {
+                    PeriodData periodData = ds.getValue(PeriodData.class);
+                    if (periodData != null && periodData.getHadFlow()) {
+                        LocalDate startDate = LocalDate.parse(periodData.getStartDate());
+                        // Add 28 days to her last period start day
+                        long defaultRange = 28;
+                        int times = (int) (calculateDaysBetween(periodData.getStartDate(), date) / defaultRange + 1);
+                        // Calculated PredictedDate in the format "MMM dd yyyy"
+                        LocalDate predictedDate = startDate.plusDays(defaultRange * times);
+                        String predictedDateInStr = localDateToDateInStr(predictedDate);
+                        remainingDays = (int) calculateDaysBetween(date, predictedDateInStr) - 1;
+
+                    }
+                    this.pbPeriod.setMax(periodRange);
+                    this.pbPeriod.setProgress(remainingDays);
+                }
+            }
+        });
+
+    }
+
+    private void updatePBWorkout() {
+        // TODO update progress bar of workout
+    }
+
+    private void initProgressBars() {
+        this.pbDiet = findViewById(R.id.progressBarDiet);
+        this.pbPeriod = findViewById(R.id.progressBarPeriod);
+        this.pbWater = findViewById(R.id.progressBarWater);
+        this.pbWorkout = findViewById(R.id.progressBarWorkout);
     }
 
     private void initProfileDrawer() {
@@ -157,5 +260,22 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    // Convert LocalDate to date in specified string format.
+    private String localDateToDateInStr(LocalDate date) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_SHORT_FORMAT);
+        return date.format(dateTimeFormatter);
+    }
+
+    // Calculate the days between start and end, not include start or end date. Here the `start`
+    // and `end` are in DATE_SHORT_FORMAT, "yyyy-mm-dd".
+    private long calculateDaysBetween(String start, String end) {
+        if (start.equals("") || end.equals("")) {
+            return 0;
+        }
+        LocalDate dateBefore = LocalDate.parse(start);
+        LocalDate dateAfter = LocalDate.parse(end);
+        return ChronoUnit.DAYS.between(dateBefore, dateAfter);
     }
 }

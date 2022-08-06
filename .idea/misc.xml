@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.2146282973621103" />
         <entry key="app/src/main/res/drawable/circle_progressbar.xml" value="0.339" />
         <entry key="app/src/main/res/drawable/circular_background.xml" value="0.117" />
         <entry key="app/src/main/res/drawable/ic_baseline_photo_camera_24.xml" value="0.118" />

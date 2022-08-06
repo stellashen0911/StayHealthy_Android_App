@@ -72,7 +72,6 @@ public class WaterActivity  extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         assert user != null;
         myDataBase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-        produceFakeData ();
         readWaterData (30,  waterIntakeAdapter );
         // Initialize and assign variable
         addGlassWaterButton.setOnClickListener((v)->addWaterIntake(8));
@@ -98,30 +97,26 @@ public class WaterActivity  extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
     }
 
-    public void onWaterButtonPressed(int waterOZ) {
-        // submit water oz to database.
-    }
-
     public void readWaterData (int numDays, WaterIntakeAdapter waterIntakeAdapter ) {
         DatabaseReference waterDbRef = myDataBase.child(WATER_INTAKE_DB_NAME);
 
         Query waterIntakeQueryLastMonth = waterDbRef.orderByChild("date").limitToLast(numDays);
         waterIntakeQueryLastMonth.get().addOnCompleteListener((task -> {
             HashMap<String, HashMap> tempMap = (HashMap) task.getResult().getValue();
+            if(tempMap == null) {
+                tempMap = new HashMap<>();
+            }
             List<String> dates = new ArrayList<>(tempMap.keySet());
             dates.sort(Comparator.reverseOrder());
             Date currentDate = Calendar.getInstance().getTime();
             String currentDateInStr = convertDateToDateStr(currentDate);
             int startIndex = 0;
-            if (!dates.get(0).equals(currentDateInStr)) {
-                dates.remove(dates.size()-1);
+            if (dates.size() < 1 ||  !dates.get(0).equals(currentDateInStr)) {
                 startIndex = 1;
                 WaterIntakeModel todayModel = new WaterIntakeModel(0, currentDateInStr);
                 waterIntakesList.add(todayModel);
                 waterDbRef.child(currentDateInStr).setValue(todayModel);
             }
-
-
             for (int i = startIndex; i < dates.size(); i++) {
                 Long waterOz =(long)tempMap.get(dates.get(i)).get("waterOz");
                 String date  = (String)tempMap.get(dates.get(i)).get("date");
@@ -159,26 +154,6 @@ public class WaterActivity  extends AppCompatActivity {
             return isItemSelected;
         });
     }
-
-    private void produceFakeData () {
-        DatabaseReference waterDbRef = myDataBase.child(WATER_INTAKE_DB_NAME);
-        waterDbRef.removeValue();
-        for (int i = 1 ; i<=9; i++) {
-            String dateStr = "2022-01-0"+i;
-            waterDbRef.child(dateStr).setValue(new WaterIntakeModel(40,dateStr));
-        }
-        for (int i = 10 ; i<=31; i++) {
-            String dateStr = "2022-01-"+i;
-            long waterOz = 40;
-            if( i % 7  == 0 ) {
-                waterOz = WaterIntakeModel.DAILY_WATER_TARGET_OZ;
-            }
-            waterDbRef.child(dateStr).setValue(new WaterIntakeModel(waterOz,dateStr));
-        }
-    }
-
-
-
     private void addWaterIntake(long waterOz){
         DatabaseReference waterDbRef = myDataBase.child(WATER_INTAKE_DB_NAME);
         WaterIntakeModel todayModel = null;
@@ -201,7 +176,6 @@ public class WaterActivity  extends AppCompatActivity {
         handler.post(() -> dailyProgressBar.setProgress(percentage.intValue()));
         waterIntakeAdapter.notifyDataSetChanged();
     }
-
 
     // Convert date to date in string
     private String convertDateToDateStr(Date date) {

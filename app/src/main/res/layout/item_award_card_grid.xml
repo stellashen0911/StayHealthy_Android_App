@@ -6,16 +6,17 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/awardCV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/vertical_margin"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/horizontal_margin"
         android:clickable="false"
         app:cardCornerRadius="4dp"
         app:cardElevation="4dp">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="vertical" >
 
             <ImageView
@@ -42,7 +43,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/today"
-                android:textAppearance="?attr/textAppearanceCaption" />
+                android:textAppearance="?attr/textAppearanceOverline"
+                android:textColor="@color/black"
+                android:textAlignment="center"/>
 
         </LinearLayout>
 

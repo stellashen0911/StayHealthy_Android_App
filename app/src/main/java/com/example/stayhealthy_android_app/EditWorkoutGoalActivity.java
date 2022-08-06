@@ -29,6 +29,14 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private DatabaseReference myDataBase;
     private Spinner workout_numbers_selection;
+    private Spinner workout_activity_choose_1;
+    private Spinner workout_time_choose_1;
+    private Spinner workout_activity_choose_2;
+    private Spinner workout_time_choose_2;
+    private Spinner workout_activity_choose_3;
+    private Spinner workout_time_choose_3;
+    private Spinner workout_activity_choose_4;
+    private Spinner workout_time_choose_4;
     private int totalNumberOfWorkout;
     private CardView CV1;
     private CardView CV2;
@@ -98,7 +106,41 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
             }
         });
 
+        //set up the activities spinners
+        workout_activity_choose_1 = findViewById(R.id.select_activity_goal_1);
+        workout_time_choose_1 = findViewById(R.id.select_min_goal_1);
+        workout_activity_choose_2 = findViewById(R.id.select_activity_goal_2);
+        workout_time_choose_2 = findViewById(R.id.select_min_goal_2);
+        workout_activity_choose_3 = findViewById(R.id.select_activity_goal_3);
+        workout_time_choose_3 = findViewById(R.id.select_min_goal_3);
+        workout_activity_choose_4 = findViewById(R.id.select_activity_goal_4);
+        workout_time_choose_4 = findViewById(R.id.select_min_goal_4);
 
+        ArrayAdapter<CharSequence> workout_activity_selection_adapter = ArrayAdapter.createFromResource(this, R.array.workout_activities, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> workout_time_selection_adapter = ArrayAdapter.createFromResource(this, R.array.workout_time_range, android.R.layout.simple_spinner_item);
+
+        workout_activity_choose_1.setAdapter(workout_activity_selection_adapter);
+        workout_activity_choose_2.setAdapter(workout_activity_selection_adapter);
+        workout_activity_choose_3.setAdapter(workout_activity_selection_adapter);
+        workout_activity_choose_4.setAdapter(workout_activity_selection_adapter);
+        workout_time_choose_1.setAdapter(workout_time_selection_adapter);
+        workout_time_choose_2.setAdapter(workout_time_selection_adapter);
+        workout_time_choose_3.setAdapter(workout_time_selection_adapter);
+        workout_time_choose_4.setAdapter(workout_time_selection_adapter);
+
+        workout_activity_choose_1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String text = workout_activity_choose_1.getSelectedItem().toString();
+                System.out.println("text is "+ text);
+                //to do:
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                //to do:
+            }
+        });
     }
 
     private void updateCardViewNumber() {

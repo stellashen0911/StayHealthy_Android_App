@@ -8,6 +8,14 @@ public class JourneyPost {
     public JourneyPost (String postPhotoUri,String post) {
         this.postPhotoUri = postPhotoUri;
         this.post = post;
+        if (postPhotoUri == null) {
+           this.postPhotoUri= "";
+        }
+        if (post == null) {
+            this.post = "empty post";
+        }
+
+
     }
     public String getPostPhoto() {
         return postPhotoUri;

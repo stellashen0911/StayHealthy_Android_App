@@ -64,21 +64,17 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
         initWidgets();
         setBottomNavigationView();
         initProfileDrawer();
+        fStorage = FirebaseStorage.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        storageReference = fStorage.getReference("users").child(user.getUid());
 
         posts = new ArrayList<>();
         postRecyclerView = findViewById(R.id.post_recycler_view);
         postRecyclerView.setHasFixedSize(false);
-        postAdapter  = new JourneyPostAdapter(posts, this);
+        postAdapter  = new JourneyPostAdapter(posts, this,fStorage);
         postRecyclerView.setAdapter(postAdapter);
         postRecyclerView .setLayoutManager(new LinearLayoutManager(this));
-        user = FirebaseAuth.getInstance().getCurrentUser();
         myDataBase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-        fStorage = FirebaseStorage.getInstance();
-        storageReference = fStorage.getReference("users").child(user.getUid());
-        storageReference.child(POST_DB_NAME).listAll().addOnCompleteListener((task -> {
-            System.out.println("hello");
-//            HashMap<String, HashMap<String,String>> tempMap = (HashMap) task.getResult().getItems();
-        }));
         myDataBase.child(POST_DB_NAME).get().addOnCompleteListener((task) -> {
             HashMap<String, HashMap<String,String>> tempMap = (HashMap) task.getResult().getValue();
             if (tempMap == null ) {
@@ -93,8 +89,9 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
                 }
             });
             for (int i = 0; i < timestamps.size(); i++) {
-                String postStr = tempMap.get(timestamps.get(i)).get("post");
-                posts.add(new JourneyPost(null,postStr));
+                String postStr = tempMap.get(timestamps.get(i)).get("postStr");
+                String post_photo = tempMap.get(timestamps.get(i)).get("postPhoto");
+                posts.add(new JourneyPost(post_photo,postStr));
                 postAdapter.notifyDataSetChanged();
             }
         });

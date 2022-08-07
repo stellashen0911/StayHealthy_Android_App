@@ -67,7 +67,11 @@ public class EditPostActivity  extends AppCompatActivity {
                         JourneyPost postModel = new JourneyPost(uriImage,postText);
                         myDataBase.child("posts")
                                 .child(String.valueOf(currentMillis))
-                                .setValue(postModel);
+                                .setValue(postModel).addOnSuccessListener((taskdb) -> {
+                                    Intent intent = new Intent(this, JourneyActivity.class);
+                                    startActivity(intent);
+                                });
+
                     }));
                 });
 

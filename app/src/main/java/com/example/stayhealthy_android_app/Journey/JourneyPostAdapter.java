@@ -8,12 +8,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import com.example.stayhealthy_android_app.R;
+import com.google.firebase.storage.FirebaseStorage;
 
 public class JourneyPostAdapter  extends RecyclerView.Adapter<JourneyPostViewHolder> {
 
     private final List<JourneyPost> posts;
     private final Context context;
-    public JourneyPostAdapter(List<JourneyPost> posts, Context context) {
+    private final FirebaseStorage fStorage;
+
+    public JourneyPostAdapter(List<JourneyPost> posts, Context context, FirebaseStorage fStorage) {
+        this.fStorage = fStorage;
         this.posts = posts;
         this.context = context;
     }
@@ -21,7 +25,7 @@ public class JourneyPostAdapter  extends RecyclerView.Adapter<JourneyPostViewHol
     @Override
     public JourneyPostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        return new JourneyPostViewHolder(layoutInflater.inflate(R.layout.post_item, null));
+        return new JourneyPostViewHolder(layoutInflater.inflate(R.layout.post_item, null),fStorage);
     }
 
     @Override

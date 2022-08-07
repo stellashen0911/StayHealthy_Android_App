@@ -53,7 +53,7 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
     private static final String WATER_INTAKE_DB_NAME = "water_intake";
     private static final String AWARD_DB_NAME = "award";
     private static final List<String> AWARD_NAME = new ArrayList<>(Arrays.asList("Water Drink Goal 100%", "Diet Goal 100%", "Workout Goal 100%"));
-    private static final List<Integer> TARGET = new ArrayList<>(Arrays.asList(3, 7, 100, 365));
+    private static final List<Integer> TARGET = new ArrayList<>(Arrays.asList(3, 7, 30, 100, 365, 1000));
     private DatabaseReference mDatabase;
     private String today;
     private BottomNavigationView bottomNavigationView;
@@ -80,6 +80,7 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
         assert user != null;
         mDatabase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
 
+        // Register to listen to the data change in water_intake attribute.
         DatabaseReference waterRef = mDatabase.child(WATER_INTAKE_DB_NAME).child(today);
         waterRef.addValueEventListener(waterListener);
 
@@ -97,50 +98,16 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
 
     }
 
-    private void syncWithDatabase(AwardData awardData) {
-        DatabaseReference ref = mDatabase.child(AWARD_DB_NAME).child(awardData.getName());
-        ref.setValue(awardData)
-                .addOnSuccessListener(unused -> {
-                    Log.v(TAG, "write one award data to database is successful");
-                    getAwardDateFromDatabaseAndUpdateRecyclerView();
-                })
-                .addOnFailureListener(Throwable::printStackTrace);
-    }
-
-    private void saveReceivedAwardDataToDatabase(AwardData newData) {
-        DatabaseReference ref = mDatabase.child(AWARD_DB_NAME).child(newData.getName());
-
-        ref.get().addOnCompleteListener(task -> {
-            if (!task.isSuccessful()) {
-                Log.e(TAG, "Error getting award data from firebase Database", task.getException());
-            } else {
-                AwardData awardData = task.getResult().getValue(AwardData.class);
-                if (awardData == null) {
-                    syncWithDatabase(newData);
-                } else {
-                    if (awardData.getDate().equals(newData.getDate())) {
-                        return;
-                    }
-                    awardData.addTimes();
-                    if (TARGET.contains(awardData.getTimes())) {
-                        awardData.setDate(newData.getDate());
-                    }
-                    syncWithDatabase(awardData);
-                }
-            }
-        });
-    }
-
     ValueEventListener waterListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
             WaterIntakeModel value = snapshot.getValue(WaterIntakeModel.class);
-                if (value != null) {
-                    if (value.getWaterOz() >= DAILY_WATER_TARGET_OZ) {
-                        AwardData newData = new AwardData(today, AWARD_NAME.get(0), 1);
-                        saveReceivedAwardDataToDatabase(newData);
-                    }
+            if (value != null) {
+                if (value.getWaterOz() >= DAILY_WATER_TARGET_OZ) {
+                    AwardData newData = new AwardData(today, AWARD_NAME.get(0), 1);
+                    syncAwardDataWithDatabase(newData);
                 }
+            }
         }
 
         @Override
@@ -149,6 +116,36 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
         }
     };
 
+    // Write the new award data to Database.
+    private void saveAwardDataToDatabase(AwardData awardData) {
+        DatabaseReference ref = mDatabase.child(AWARD_DB_NAME).child(awardData.getName());
+        ref.setValue(awardData)
+                .addOnSuccessListener(unused -> Log.v(TAG, "write one award data to database is successful"))
+                .addOnFailureListener(Throwable::printStackTrace);
+    }
+
+    // Save the received times of user's award to database.
+    private void syncAwardDataWithDatabase(AwardData newData) {
+        DatabaseReference ref = mDatabase.child(AWARD_DB_NAME).child(newData.getName());
+
+        ref.get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.e(TAG, "Error getting award data from firebase Database", task.getException());
+            } else {
+                AwardData awardData = task.getResult().getValue(AwardData.class);
+                if (awardData == null) {
+                    saveAwardDataToDatabase(newData);
+                } else if (!awardData.getDate().equals(newData.getDate())) {
+                    // If today's new award has not been saved to database, update it.
+                    awardData.addTimes(); // Increment the received times.
+                    awardData.setDate(newData.getDate()); // Update the date to the new date.
+                    saveAwardDataToDatabase(awardData);
+                }
+            }
+        });
+    }
+
+    // Binary Search used to find the insert position of one number in an ascending array.
     private int getPosition(int num) {
         int left = 0;
         int right = TARGET.size() - 1;
@@ -167,13 +164,68 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
         return left;
     }
 
-    private void getAwardDateFromDatabaseAndUpdateRecyclerView() {
+    // Generate received/not received Award Display based on the dataSnapshot queried from the database.
+    // There are two kinds of awards. One is the daily goal award and another is the long-term goal
+    // award which rewards users if they meet the daily goal for `TARGET` days.
+    private void generateAwardDisplayAndAddToDisplayList(DataSnapshot dataSnapshot, String namePrefix) {
+        AwardDisplay awardDisplayToday = new AwardDisplay(namePrefix, "Today");
+        // If there is no loaded data, means both awards are not received, add both to notReceivedList.
+        if (dataSnapshot.getValue() == null) {
+            notReceivedAwardDisplayList.add(0, awardDisplayToday);
+            notReceivedAwardDisplayList.add(new AwardDisplay(namePrefix + " | 3 Days", "0/3 Days"));
+        }
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+            AwardData awardData = ds.getValue(AwardData.class);
+            if (awardData == null) {
+                return;
+            }
+
+            // First determine today's goal, if the award data's date is today, means this data
+            // gets updated today, means the user achieves this goal today.
+            if (awardData.getDate().equals(today)) {
+                receivedAwardDisplayList.add(0, awardDisplayToday);
+            } else {
+                notReceivedAwardDisplayList.add(0, awardDisplayToday);
+            }
+
+            // Second determine the long term award.
+            int times = awardData.getTimes(); // the received times of this award.
+            // Find the insert position of `times` in the TARGET array. The `num` smaller than `times`
+            // is the user achieved award. The `num` larger than `times` is the user not received award.
+            int position = getPosition(times);
+            String numOfDays; // number of days in the long-term award details.
+            // If the times meet one of the number in `TARGET`, means user achieve that `num` goal medal.
+            if (TARGET.contains(times)) {
+                numOfDays = TARGET.get(position) + " Days";
+                receivedAwardDisplayList.add(new AwardDisplay(namePrefix, numOfDays));
+                // If user has achieved goal for 1000 days, there is no more long term award.
+                if (position != TARGET.size() - 1) {
+                    numOfDays = TARGET.get(position + 1) + " Days";
+                    notReceivedAwardDisplayList.add(new AwardDisplay(namePrefix + " | " + numOfDays, times + "/" + numOfDays));
+                }
+            } else {
+                // If `times` is smaller than 3, there's no received long term award.
+                if (position != 0) {
+                    numOfDays = TARGET.get(position - 1) + " Days";
+                    receivedAwardDisplayList.add(new AwardDisplay(namePrefix , numOfDays));
+                }
+                // If `times` is larger than 1000, there's no not received long-term award.
+                if (position != TARGET.size()) {
+                    numOfDays = TARGET.get(position) + " Days";
+                    notReceivedAwardDisplayList.add(new AwardDisplay(namePrefix + " | " + numOfDays, times + "/" + numOfDays));
+                }
+            }
+        }
+    }
+
+    // Read award data from database and update UI.
+    private void getAwardDataFromDatabaseAndUpdateRecyclerView() {
         notReceivedAwardDisplayList = new ArrayList<>();
         receivedAwardDisplayList = new ArrayList<>();
 
         DatabaseReference awardRef = mDatabase.child(AWARD_DB_NAME);
-        List<Task<DataSnapshot>> tasks = new ArrayList<>();
-
+        List<Task<DataSnapshot>> tasks = new ArrayList<>(); // multiple tasks list
+        // Create tasks for query in Award database, ordered by award name.
         for (String name : AWARD_NAME) {
             Query query = awardRef.orderByChild("name").equalTo(name);
             tasks.add(query.get());
@@ -182,42 +234,11 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
         Tasks.whenAllSuccess(tasks)
                 .addOnFailureListener(Throwable::printStackTrace)
                 .addOnSuccessListener(list -> {
+                    // Loop over the list of task result.
                     for(int i = 0; i < AWARD_NAME.size(); i ++) {
                         DataSnapshot dataSnapshot = (DataSnapshot) list.get(i);
                         String namePrefix = AWARD_NAME.get(i);
-                        AwardDisplay awardDisplayToday = new AwardDisplay(namePrefix, "Today");
-                        if (dataSnapshot.getValue() == null) {
-                            notReceivedAwardDisplayList.add(0, awardDisplayToday);
-                            notReceivedAwardDisplayList.add(new AwardDisplay(namePrefix + " | 3 Days", "0/3 Days"));
-                        }
-                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            AwardData awardData = ds.getValue(AwardData.class);
-                            if (awardData != null) {
-                                if (awardData.getDate().equals(today)) {
-                                    receivedAwardDisplayList.add(0, awardDisplayToday);
-                                } else {
-                                    notReceivedAwardDisplayList.add(0, awardDisplayToday);
-                                }
-                                int times = awardData.getTimes();
-                                int position = getPosition(times);
-                                String num;
-                                if (TARGET.contains(times)) {
-                                    num = TARGET.get(position) + " Days";
-                                    receivedAwardDisplayList.add(new AwardDisplay(namePrefix + " \n " + num, awardData.getDate()));
-                                    if (position != TARGET.size()) {
-                                        num = TARGET.get(position + 1) + " Days";
-                                        notReceivedAwardDisplayList.add(new AwardDisplay(namePrefix + " | " + num, times + "/" + num));
-                                    }
-                                } else {
-                                    if (position != 0) {
-                                        num = TARGET.get(position - 1) + " Days";
-                                        receivedAwardDisplayList.add(new AwardDisplay(namePrefix + " \n " + num, awardData.getDate()));
-                                    }
-                                    num = TARGET.get(position) + " Days";
-                                    notReceivedAwardDisplayList.add(new AwardDisplay(namePrefix + " | " + num, times + "/" + num));
-                                }
-                            }
-                        }
+                        generateAwardDisplayAndAddToDisplayList(dataSnapshot, namePrefix);
                     }
                     setReceivedAwardRecyclerViewAdapter();
                     setNotReceivedAwardRecyclerViewAdapter();
@@ -291,7 +312,7 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
         // Set home selected when going back to this activity from other activities
         bottomNavigationView.setSelectedItemId(R.id.award_icon);
 
-        getAwardDateFromDatabaseAndUpdateRecyclerView();
+        getAwardDataFromDatabaseAndUpdateRecyclerView();
     }
 
     @Override

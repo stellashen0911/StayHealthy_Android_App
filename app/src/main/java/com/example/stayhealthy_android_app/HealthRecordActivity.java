@@ -1,5 +1,7 @@
 package com.example.stayhealthy_android_app;
 
+import static com.example.stayhealthy_android_app.Period.PeriodActivity.MONTHLY_PERIOD;
+
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -104,23 +106,21 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
             if (!task.isSuccessful()) {
                 Log.v("", "Error getting data", task.getException());
             } else {
-                int periodRange = 28;
-                int remainingDays = periodRange - 1;
                 for (DataSnapshot ds : task.getResult().getChildren()) {
                     PeriodData periodData = ds.getValue(PeriodData.class);
                     if (periodData != null && periodData.getHadFlow()) {
                         LocalDate startDate = LocalDate.parse(periodData.getStartDate());
-                        // Add 28 days to her last period start day
-                        long defaultRange = 28;
-                        int times = (int) (calculateDaysBetween(periodData.getStartDate(), date) / defaultRange + 1);
+                        int times = (int) (calculateDaysBetween(periodData.getStartDate(), date) / MONTHLY_PERIOD + 1);
                         // Calculated PredictedDate in the format "MMM dd yyyy"
-                        LocalDate predictedDate = startDate.plusDays(defaultRange * times);
+                        LocalDate predictedDate = startDate.plusDays(MONTHLY_PERIOD * times);
                         String predictedDateInStr = localDateToDateInStr(predictedDate);
-                        remainingDays = (int) calculateDaysBetween(date, predictedDateInStr) - 1;
-
+                        int remainingDays = (int) calculateDaysBetween(date, predictedDateInStr) - 1;
+                        this.pbPeriod.setMax((int) MONTHLY_PERIOD);
+                        this.pbPeriod.setProgress((int) MONTHLY_PERIOD - remainingDays);
+                    } else {
+                        this.pbPeriod.setMax((int) MONTHLY_PERIOD);
+                        this.pbPeriod.setProgress(0); // "No record"
                     }
-                    this.pbPeriod.setMax(periodRange);
-                    this.pbPeriod.setProgress(remainingDays);
                 }
             }
         });

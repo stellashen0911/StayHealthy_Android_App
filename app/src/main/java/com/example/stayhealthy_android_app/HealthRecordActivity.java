@@ -1,5 +1,8 @@
 package com.example.stayhealthy_android_app;
 
+import static com.example.stayhealthy_android_app.Period.PeriodActivity.MONTHLY_PERIOD;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -22,9 +25,11 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -39,9 +44,11 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
     private Toolbar toolbar;
     private NavigationView profile_nv;
     private DatabaseReference mDatabase;
+    private DatabaseReference staticDietDB;
     private DatabaseReference dieDB;
     private DatabaseReference waterDB;
     private DatabaseReference periodDB;
+    private DatabaseReference workoutDB;
 
     private ProgressBar pbDiet;
     private ProgressBar pbWater;
@@ -54,17 +61,18 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         setContentView(R.layout.activity_health_record);
 
         initProgressBars();
-
-        dieDB = FirebaseDatabase.getInstance().getReference("user").
+        staticDietDB = FirebaseDatabase.getInstance().getReference("user").
                 child("test@gmail_com").child("diets").child("20220731");
-
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         assert user != null;
-        waterDB = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+        mDatabase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
 
-        periodDB =  FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("period");
-
+        dieDB = mDatabase.child("diets").child(java.time.LocalDate.now().toString());
+        waterDB = mDatabase.child("water_intake").child(java.time.LocalDate.now().toString());
+        periodDB = mDatabase.child("period");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
+        workoutDB = mDatabase.child("work-out").child(LocalDate.now().format(formatter));
 
         updatePBDiet();
         updatePBWater();
@@ -78,24 +86,42 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
     }
 
     private void updatePBDiet() {
-        dieDB.get().addOnCompleteListener(task -> {
-            HashMap tempMap = (HashMap) task.getResult().getValue();
-            long netCal = (long) ((HashMap)tempMap.get("breakfast")).get("net") +
-                    (long) ((HashMap)tempMap.get("lunch")).get("net") +
-                    (long) ((HashMap)tempMap.get("dinner")).get("net") +
-                    (long) ((HashMap)tempMap.get("snack")).get("net");
-            long targetCal = (long) tempMap.get("target");
-            double v = 100 * (double) netCal / targetCal;
-            this.pbDiet.setProgress((int)v);
+        staticDietDB.get().addOnCompleteListener(task -> {
+            try {
+                HashMap tempMap = (HashMap) task.getResult().getValue();
+                long breakfastNet = (long) ((HashMap) tempMap.get("breakfast")).get("net");
+                long lunchNet = (long) ((HashMap) tempMap.get("lunch")).get("net");
+                long dinnerNet = (long) ((HashMap) tempMap.get("dinner")).get("net");
+                long snackNet = (long) ((HashMap) tempMap.get("snack")).get("net");
+                long netCal = breakfastNet + lunchNet + dinnerNet + snackNet;
+                long targetCal = (long) tempMap.get("target");
+                double v = 100 * (double) netCal / targetCal;
+                this.pbDiet.setProgress((int) v);
+                dieDB.child("breakfast").child("net").setValue(breakfastNet);
+                dieDB.child("lunch").child("net").setValue(lunchNet);
+                dieDB.child("dinner").child("net").setValue(dinnerNet);
+                dieDB.child("snack").child("net").setValue(snackNet);
+                dieDB.child("target").setValue(targetCal);
+            } catch (Exception err) {
+                this.pbDiet.setProgress(0);
+            }
         });
     }
 
     private void updatePBWater() {
-        // TODO update progress bar of water
+        waterDB.get().addOnCompleteListener(task -> {
+            try {
+                HashMap tempMap = (HashMap) task.getResult().getValue();
+                long taken = (long) tempMap.get("waterOz");
+                double v = 100 * (double) taken / 64;
+                this.pbWater.setProgress(v > 100 ? 100 : (int) v);
+            } catch (Exception err) {
+                this.pbWater.setProgress(0);
+            }
+        });
     }
 
     private void updatePBPeriod() {
-        // TODO update progress bar of period
         LocalDate today = LocalDate.now();
         String date = localDateToDateInStr(today);
         Query query = periodDB.orderByChild("flowAndDate").endAt("1-" + date).limitToLast(1);
@@ -104,23 +130,21 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
             if (!task.isSuccessful()) {
                 Log.v("", "Error getting data", task.getException());
             } else {
-                int periodRange = 28;
-                int remainingDays = periodRange - 1;
                 for (DataSnapshot ds : task.getResult().getChildren()) {
                     PeriodData periodData = ds.getValue(PeriodData.class);
                     if (periodData != null && periodData.getHadFlow()) {
                         LocalDate startDate = LocalDate.parse(periodData.getStartDate());
-                        // Add 28 days to her last period start day
-                        long defaultRange = 28;
-                        int times = (int) (calculateDaysBetween(periodData.getStartDate(), date) / defaultRange + 1);
+                        int times = (int) (calculateDaysBetween(periodData.getStartDate(), date) / MONTHLY_PERIOD + 1);
                         // Calculated PredictedDate in the format "MMM dd yyyy"
-                        LocalDate predictedDate = startDate.plusDays(defaultRange * times);
+                        LocalDate predictedDate = startDate.plusDays(MONTHLY_PERIOD * times);
                         String predictedDateInStr = localDateToDateInStr(predictedDate);
-                        remainingDays = (int) calculateDaysBetween(date, predictedDateInStr) - 1;
-
+                        int remainingDays = (int) calculateDaysBetween(date, predictedDateInStr) - 1;
+                        this.pbPeriod.setMax((int) MONTHLY_PERIOD);
+                        this.pbPeriod.setProgress((int) MONTHLY_PERIOD - remainingDays);
+                    } else {
+                        this.pbPeriod.setMax((int) MONTHLY_PERIOD);
+                        this.pbPeriod.setProgress(0); // "No record"
                     }
-                    this.pbPeriod.setMax(periodRange);
-                    this.pbPeriod.setProgress(remainingDays);
                 }
             }
         });
@@ -128,7 +152,23 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
     }
 
     private void updatePBWorkout() {
-        // TODO update progress bar of workout
+        workoutDB.get().addOnCompleteListener(task -> {
+            HashMap tempMap = (HashMap) task.getResult().getValue();
+            try {
+                boolean oneFinished = (boolean) ((HashMap) tempMap.get("Activity_one")).get("goal_finished_status");
+                boolean twoFinished = (boolean) ((HashMap) tempMap.get("Activity_two")).get("goal_finished_status");
+                boolean threeFinished = (boolean) ((HashMap) tempMap.get("Activity_three")).get("goal_finished_status");
+                boolean fourFinished = (boolean) ((HashMap) tempMap.get("Activity_four")).get("goal_finished_status");
+                int count = 0;
+                if (oneFinished) count++;
+                if (twoFinished) count++;
+                if (threeFinished) count++;
+                if (fourFinished) count++;
+                this.pbWorkout.setProgress(25 * count);
+            } catch (Exception err) {
+                this.pbWorkout.setProgress(0);
+            }
+        });
     }
 
     private void initProgressBars() {
@@ -176,6 +216,10 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         super.onResume();
         // Set home selected when going back to this activity from other activities
         bottomNavigationView.setSelectedItemId(R.id.health_record_icon);
+        updatePBDiet();
+        updatePBWater();
+        updatePBPeriod();
+        updatePBWorkout();
     }
 
     @Override
@@ -186,6 +230,7 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
             super.onBackPressed();
         }
     }
+
     public void openPeriodActivity(View view) {
         Intent intent = new Intent(this, PeriodActivity.class);
         startActivity(intent);
@@ -219,9 +264,9 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int selectedId = item.getItemId();
             boolean isItemSelected = false;
-            if(selectedId == R.id.award_icon) {
+            if (selectedId == R.id.award_icon) {
                 startActivity(new Intent(getApplicationContext(), AwardActivity.class));
-                overridePendingTransition(0,0);
+                overridePendingTransition(0, 0);
                 isItemSelected = true;
             } else if (selectedId == R.id.health_record_icon) {
                 isItemSelected = true;
@@ -238,7 +283,7 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.nav_settings:
                 drawer.closeDrawers();
                 Intent i = new Intent(HealthRecordActivity.this, SettingsActivity.class);

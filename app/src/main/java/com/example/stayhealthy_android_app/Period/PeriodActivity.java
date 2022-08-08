@@ -70,7 +70,8 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     private final static String DATE_LONG_FORMAT = "MMM dd yyyy";
     private final static String DATE_SHORT_FORMAT = "yyyy-MM-dd";
     private final static String SELECT_DATE_KEY = "select_key";
-    private final static int DAY_TO_MILLISECONDS = 86400000; // that is: 24 * 60 * 60 * 1000
+    private final static long DAY_TO_MILLISECONDS = 86400000; // that is: 24 * 60 * 60 * 1000
+    public final static long MONTHLY_PERIOD = 28; // woman's normal monthly period
     private ActivityPeriodBinding binding;
     private DatabaseReference mDatabase;
     private BottomNavigationView bottomNavigationView;
@@ -616,11 +617,10 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                     PeriodData periodData = ds.getValue(PeriodData.class);
                     if (periodData != null && periodData.getHadFlow()) {
                         LocalDate startDate = LocalDate.parse(periodData.getStartDate());
-                        // Add 28 days to her last period start day
-                        long defaultRange = 28;
-                        int times = (int) (calculateDaysBetween(periodData.getStartDate(), date) / defaultRange + 1);
+                        // Add MONTHLY_PERIOD to her last period start day
+                        int times = (int) (calculateDaysBetween(periodData.getStartDate(), date) / MONTHLY_PERIOD + 1);
                         // Calculated PredictedDate in the format "MMM dd yyyy"
-                        String predictedDate = localDateToDateInStr(startDate.plusDays(defaultRange * times), DATE_LONG_FORMAT);
+                        String predictedDate = localDateToDateInStr(startDate.plusDays(MONTHLY_PERIOD * times), DATE_LONG_FORMAT);
                         // If the predicted date is on the same year as selected date, only display MM dd.
                         String prediction = "Your period is likely to start on: ";
                         if (Integer.parseInt(predictedDate.substring(predictedDate.length() - 4)) == selectedDate.getYear()) {
@@ -1081,7 +1081,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     // Get the date before and date after in milliseconds. `days` > 0 means days after today.
     // `days` < 0 means the days before today. `today` is in milliseconds format.
     private Long neighborDatesInMilliseconds(Long today, int days) {
-        return today + (long) days * DAY_TO_MILLISECONDS;
+        return today + days * DAY_TO_MILLISECONDS;
     }
 
     // Get the date before and date after in DATE_SHORT_FORMAT String . `days` > 0 means days after today.

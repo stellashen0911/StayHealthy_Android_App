@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import java.util.Objects;
 
 public class AwardData implements Comparable<AwardData> {
-    private String date;
+    private String date; // the award data update date
     private String name;
     private int times;
 

@@ -27,11 +27,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class WorkoutActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
-    private DatabaseReference myDataBase;
     private TextView dateInfoLabel;
     private TextView goal_calories_TX;
     private TextView completed_calories_TX;
@@ -85,6 +85,20 @@ public class WorkoutActivity extends AppCompatActivity {
         initDate();
         update_goal_progress_bar();
 
+        //initialize the values state
+        ActivityOneLabel = "";
+        ActivityTwoLabel = "";
+        ActivityThreeLabel = "";
+        ActivityFourLabel = "";
+        ActivityOneTime = "0";
+        ActivityTwoTime = "0";
+        ActivityThreeTime = "0";
+        ActivityFourTime = "0";
+        Activity_Calories_one = 0;
+        Activity_Calories_two = 0;
+        Activity_Calories_three = 0;
+        Activity_Calories_four = 0;
+
         //set up the edit workout button
         editWorkoutGoalBtn = findViewById(R.id.button_edit_goal);
         editWorkoutGoalBtn.setOnClickListener(new View.OnClickListener() {
@@ -124,8 +138,8 @@ public class WorkoutActivity extends AppCompatActivity {
             Activity_Calories_two = Integer.parseInt(bundle.getString("activity_calories_two"));
             Activity_Calories_three = Integer.parseInt(bundle.getString("activity_calories_three"));
             Activity_Calories_four = Integer.parseInt(bundle.getString("activity_calories_four"));
-            update_Goal_CardView();
             update_firebase_setup();
+            update_Goal_CardView();
         }
 
         activity_checkbox_one = (CheckBox) findViewById(R.id.workoutDetail_checkbox_01);
@@ -137,11 +151,16 @@ public class WorkoutActivity extends AppCompatActivity {
                     String completed_workout_calories = String.valueOf(completed_calories);
                     completed_calories_TX.setText(completed_workout_calories);
                     update_goal_progress_bar();
+                    Activity_Ref_one.child("goal_finished_status").setValue(true);
+                    //check whether all the activities are finished
+                    check_today_goal_complete();
                 } else {
                     completed_calories -= Activity_Calories_one;
                     String completed_workout_calories = String.valueOf(completed_calories);
                     completed_calories_TX.setText(completed_workout_calories);
                     update_goal_progress_bar();
+                    Activity_Ref_one.child("goal_finished_status").setValue(false);
+                    check_today_goal_complete();
                 }
             }
         });
@@ -155,11 +174,15 @@ public class WorkoutActivity extends AppCompatActivity {
                     String completed_workout_calories = String.valueOf(completed_calories);
                     completed_calories_TX.setText(completed_workout_calories);
                     update_goal_progress_bar();
+                    Activity_Ref_two.child("goal_finished_status").setValue(true);
+                    check_today_goal_complete();
                 } else {
                     completed_calories -= Activity_Calories_two;
                     String completed_workout_calories = String.valueOf(completed_calories);
                     completed_calories_TX.setText(completed_workout_calories);
                     update_goal_progress_bar();
+                    Activity_Ref_two.child("goal_finished_status").setValue(false);
+                    check_today_goal_complete();
                 }
             }
         });
@@ -173,11 +196,15 @@ public class WorkoutActivity extends AppCompatActivity {
                     String completed_workout_calories = String.valueOf(completed_calories);
                     completed_calories_TX.setText(completed_workout_calories);
                     update_goal_progress_bar();
+                    Activity_Ref_three.child("goal_finished_status").setValue(true);
+                    check_today_goal_complete();
                 } else {
                     completed_calories -= Activity_Calories_three;
                     String completed_workout_calories = String.valueOf(completed_calories);
                     completed_calories_TX.setText(completed_workout_calories);
                     update_goal_progress_bar();
+                    Activity_Ref_three.child("goal_finished_status").setValue(false);
+                    check_today_goal_complete();
                 }
             }
         });
@@ -191,11 +218,15 @@ public class WorkoutActivity extends AppCompatActivity {
                     String completed_workout_calories = String.valueOf(completed_calories);
                     completed_calories_TX.setText(completed_workout_calories);
                     update_goal_progress_bar();
+                    Activity_Ref_four.child("goal_finished_status").setValue(true);
+                    check_today_goal_complete();
                 } else {
                     completed_calories -= Activity_Calories_four;
                     String completed_workout_calories = String.valueOf(completed_calories);
                     completed_calories_TX.setText(completed_workout_calories);
                     update_goal_progress_bar();
+                    Activity_Ref_four.child("goal_finished_status").setValue(false);
+                    check_today_goal_complete();
                 }
             }
         });
@@ -235,7 +266,7 @@ public class WorkoutActivity extends AppCompatActivity {
         Activity_Ref_four = work_out_Ref.child(formattedDateString).child("Activity_four");
     }
 
-    private void update_firebase_data(int activity_number) {
+    private void update_firebase_data(int activity_number, String activity_time, String activity_label, int activity_cal_goal) {
         DatabaseReference current_activity;
         if (activity_number == 1) {
             current_activity = Activity_Ref_one;
@@ -249,19 +280,11 @@ public class WorkoutActivity extends AppCompatActivity {
             return;
         }
 
-        current_activity.get().addOnCompleteListener(task -> {
-            if (!task.isSuccessful()) {
-                return;
-            } else {
-                String calories_goal_data = task.getResult().getValue().toString();
-                if (calories_goal_data != null) {
-                    //to do:
-                } else {
-                    //to do:
-                }
-
-            }
-        });
+        String cal_update = String.valueOf(activity_cal_goal);
+        current_activity.child("activity_type").setValue(activity_label);
+        current_activity.child("goal_calories").setValue(cal_update);
+        current_activity.child("goal_time").setValue(activity_time);
+        current_activity.child("goal_finished_status").setValue(false);
     }
 
     private void update_Goal_CardView() {
@@ -297,6 +320,16 @@ public class WorkoutActivity extends AppCompatActivity {
         completed_calories = Integer.parseInt(completed_calories_TX.getText().toString());
         update_goal_progress_bar();
 
+        //update the firebase data
+        update_firebase_data(1, ActivityOneTime, ActivityOneLabel, Activity_Calories_one);
+        update_firebase_data(2, ActivityTwoTime, ActivityTwoLabel, Activity_Calories_two);
+        update_firebase_data(3, ActivityThreeTime, ActivityThreeLabel, Activity_Calories_three);
+        update_firebase_data(4, ActivityFourTime, ActivityFourLabel, Activity_Calories_four);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
+        String formattedDateString = selectedDate.format(formatter);
+        work_out_Ref.child(formattedDateString).child("today_total_calories_goal").setValue(TOTAL_WORKOUT_CALORIES);
+        work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(false);
     }
 
     private void updateCardViewNumber() {
@@ -326,6 +359,61 @@ public class WorkoutActivity extends AppCompatActivity {
             CV2.setVisibility(View.GONE);
             CV3.setVisibility(View.GONE);
             CV4.setVisibility(View.GONE);
+        }
+    }
+
+    private void check_today_goal_complete() {
+        int activity_numbers = Integer.parseInt(TOTAL_ACTIVITIES);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
+        String formattedDateString = selectedDate.format(formatter);
+        DatabaseReference current_date_reference = work_out_Ref.child(formattedDateString);
+
+        if (activity_numbers == 1) {
+            current_date_reference.get().addOnCompleteListener(task -> {
+                HashMap tempMap = (HashMap) task.getResult().getValue();
+                boolean activity_one_status = (boolean) ((HashMap)tempMap.get("Activity_one")).get("goal_finished_status");
+                if (activity_one_status) {
+                    work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(true);
+                } else {
+                    work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(false);
+                }
+            });
+        } else if (activity_numbers == 2) {
+            current_date_reference.get().addOnCompleteListener(task -> {
+                HashMap tempMap = (HashMap) task.getResult().getValue();
+                boolean activity_one_status = (boolean) ((HashMap)tempMap.get("Activity_one")).get("goal_finished_status");
+                boolean activity_two_status = (boolean) ((HashMap)tempMap.get("Activity_two")).get("goal_finished_status");
+                if (activity_one_status && activity_two_status) {
+                    work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(true);
+                } else {
+                    work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(false);
+                }
+            });
+        } else if (activity_numbers == 3) {
+            current_date_reference.get().addOnCompleteListener(task -> {
+                HashMap tempMap = (HashMap) task.getResult().getValue();
+                boolean activity_one_status = (boolean) ((HashMap) tempMap.get("Activity_one")).get("goal_finished_status");
+                boolean activity_two_status = (boolean) ((HashMap) tempMap.get("Activity_two")).get("goal_finished_status");
+                boolean activity_three_status = (boolean) ((HashMap) tempMap.get("Activity_three")).get("goal_finished_status");
+                if (activity_one_status && activity_two_status && activity_three_status) {
+                    work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(true);
+                } else {
+                    work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(false);
+                }
+            });
+        } else if (activity_numbers == 4) {
+            current_date_reference.get().addOnCompleteListener(task -> {
+                HashMap tempMap = (HashMap) task.getResult().getValue();
+                boolean activity_one_status = (boolean) ((HashMap) tempMap.get("Activity_one")).get("goal_finished_status");
+                boolean activity_two_status = (boolean) ((HashMap) tempMap.get("Activity_two")).get("goal_finished_status");
+                boolean activity_three_status = (boolean) ((HashMap) tempMap.get("Activity_three")).get("goal_finished_status");
+                boolean activity_four_status = (boolean) ((HashMap) tempMap.get("Activity_four")).get("goal_finished_status");
+                if (activity_one_status && activity_two_status && activity_three_status && activity_four_status) {
+                    work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(true);
+                } else {
+                    work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(false);
+                }
+            });
         }
     }
 

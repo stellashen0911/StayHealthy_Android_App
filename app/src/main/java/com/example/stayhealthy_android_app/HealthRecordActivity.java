@@ -68,9 +68,8 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         mDatabase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
 
         dieDB = mDatabase.child("diets").child(java.time.LocalDate.now().toString());
-        waterDB = mDatabase;
+        waterDB = mDatabase.child("water_intake").child(java.time.LocalDate.now().toString());
         periodDB = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("period");
-
 
         updatePBDiet();
         updatePBWater();
@@ -103,11 +102,15 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
     }
 
     private void updatePBWater() {
-        // TODO update progress bar of water
+        waterDB.get().addOnCompleteListener(task -> {
+            HashMap tempMap = (HashMap) task.getResult().getValue();
+            long taken = (long) tempMap.get("waterOz");
+            double v = 100 * (double) taken / 64;
+            this.pbWater.setProgress(v > 100 ? 100 : (int) v);
+        });
     }
 
     private void updatePBPeriod() {
-        // TODO update progress bar of period
         LocalDate today = LocalDate.now();
         String date = localDateToDateInStr(today);
         Query query = periodDB.orderByChild("flowAndDate").endAt("1-" + date).limitToLast(1);
@@ -139,6 +142,7 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
 
     private void updatePBWorkout() {
         // TODO update progress bar of workout
+        pbWorkout.setProgress(50);
     }
 
     private void initProgressBars() {

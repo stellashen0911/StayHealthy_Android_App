@@ -51,6 +51,7 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
     private final static String TAG = "MAwardActivity";
     private final static String DATE_SHORT_FORMAT = "yyyy-MM-dd";
     private static final String WATER_INTAKE_DB_NAME = "water_intake";
+    private static final String DIET_DB_NAME = "diets";
     private static final String AWARD_DB_NAME = "award";
     private static final List<String> AWARD_NAME = new ArrayList<>(Arrays.asList("Water Drink Goal 100%", "Diet Goal 100%", "Workout Goal 100%"));
     private static final List<Integer> TARGET = new ArrayList<>(Arrays.asList(3, 7, 30, 100, 365, 1000));
@@ -83,6 +84,9 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
         // Register to listen to the data change in water_intake attribute.
         DatabaseReference waterRef = mDatabase.child(WATER_INTAKE_DB_NAME).child(today);
         waterRef.addValueEventListener(waterListener);
+
+        // DatabaseReference dietRef = mDatabase.child(DIET_DB_NAME).child(today);
+        // dietRef.addValueEventListener();
 
         // Initialize and assign variable
         initWidgets();

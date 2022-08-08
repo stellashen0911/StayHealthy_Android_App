@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.example.stayhealthy_android_app.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -34,6 +36,8 @@ public class BreakfastActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_breakfast);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        assert user != null;
         myDataBase = FirebaseDatabase.getInstance().getReference("user").
                 child("test@gmail_com").child("diets").child("20220731").child("breakfast");
         initTextViews();

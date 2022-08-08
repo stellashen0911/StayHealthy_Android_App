@@ -2,6 +2,7 @@ package com.example.stayhealthy_android_app;
 
 import static com.example.stayhealthy_android_app.Period.PeriodActivity.MONTHLY_PERIOD;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -24,9 +25,11 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -41,6 +44,7 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
     private Toolbar toolbar;
     private NavigationView profile_nv;
     private DatabaseReference mDatabase;
+    private DatabaseReference staticDietDB;
     private DatabaseReference dieDB;
     private DatabaseReference waterDB;
     private DatabaseReference periodDB;
@@ -56,16 +60,16 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         setContentView(R.layout.activity_health_record);
 
         initProgressBars();
-
-        dieDB = FirebaseDatabase.getInstance().getReference("user").
+        staticDietDB = FirebaseDatabase.getInstance().getReference("user").
                 child("test@gmail_com").child("diets").child("20220731");
-
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         assert user != null;
-        waterDB = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+        mDatabase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
 
-        periodDB =  FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("period");
+        dieDB = mDatabase.child("diets").child(java.time.LocalDate.now().toString());
+        waterDB = mDatabase;
+        periodDB = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("period");
 
 
         updatePBDiet();
@@ -80,15 +84,21 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
     }
 
     private void updatePBDiet() {
-        dieDB.get().addOnCompleteListener(task -> {
+        staticDietDB.get().addOnCompleteListener(task -> {
             HashMap tempMap = (HashMap) task.getResult().getValue();
-            long netCal = (long) ((HashMap)tempMap.get("breakfast")).get("net") +
-                    (long) ((HashMap)tempMap.get("lunch")).get("net") +
-                    (long) ((HashMap)tempMap.get("dinner")).get("net") +
-                    (long) ((HashMap)tempMap.get("snack")).get("net");
+            long breakfastNet = (long) ((HashMap) tempMap.get("breakfast")).get("net");
+            long lunchNet = (long) ((HashMap) tempMap.get("lunch")).get("net");
+            long dinnerNet = (long) ((HashMap) tempMap.get("dinner")).get("net");
+            long snackNet = (long) ((HashMap) tempMap.get("snack")).get("net");
+            long netCal = breakfastNet + lunchNet + dinnerNet + snackNet;
             long targetCal = (long) tempMap.get("target");
             double v = 100 * (double) netCal / targetCal;
-            this.pbDiet.setProgress((int)v);
+            this.pbDiet.setProgress((int) v);
+            dieDB.child("breakfast").child("net").setValue(breakfastNet);
+            dieDB.child("lunch").child("net").setValue(lunchNet);
+            dieDB.child("dinner").child("net").setValue(dinnerNet);
+            dieDB.child("snack").child("net").setValue(snackNet);
+            dieDB.child("target").setValue(targetCal);
         });
     }
 
@@ -176,6 +186,10 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         super.onResume();
         // Set home selected when going back to this activity from other activities
         bottomNavigationView.setSelectedItemId(R.id.health_record_icon);
+        updatePBDiet();
+        updatePBWater();
+        updatePBPeriod();
+        updatePBWorkout();
     }
 
     @Override
@@ -186,6 +200,7 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
             super.onBackPressed();
         }
     }
+
     public void openPeriodActivity(View view) {
         Intent intent = new Intent(this, PeriodActivity.class);
         startActivity(intent);
@@ -219,9 +234,9 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int selectedId = item.getItemId();
             boolean isItemSelected = false;
-            if(selectedId == R.id.award_icon) {
+            if (selectedId == R.id.award_icon) {
                 startActivity(new Intent(getApplicationContext(), AwardActivity.class));
-                overridePendingTransition(0,0);
+                overridePendingTransition(0, 0);
                 isItemSelected = true;
             } else if (selectedId == R.id.health_record_icon) {
                 isItemSelected = true;
@@ -238,7 +253,7 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.nav_settings:
                 drawer.closeDrawers();
                 Intent i = new Intent(HealthRecordActivity.this, SettingsActivity.class);

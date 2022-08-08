@@ -53,6 +53,7 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
     private final static String DATE_SHORT_FORMAT = "yyyy-MM-dd";
     private static final String WATER_INTAKE_DB_NAME = "water_intake";
     private static final String DIET_DB_NAME = "diets";
+    private static final String WORKOUT_DB_NAME = "work-out";
     private static final String AWARD_DB_NAME = "award";
     private static final List<String> AWARD_NAME = new ArrayList<>(Arrays.asList("Water Drink Goal 100%", "Diet Goal 100%", "Workout Goal 100%"));
     private static final List<Integer> TARGET = new ArrayList<>(Arrays.asList(3, 7, 30, 100, 365, 1000));
@@ -74,6 +75,8 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
 
         // Get Today in string.
         today = localDateToDateInStr(LocalDate.now());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
+        String todayForWorkout = LocalDate.now().format(formatter);
 
         // Get the current user from firebase authentication.
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -88,6 +91,9 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
 
         DatabaseReference dietRef = mDatabase.child(DIET_DB_NAME).child(today);
         dietRef.addValueEventListener(dietListener);
+
+        DatabaseReference workoutRef = mDatabase.child(WORKOUT_DB_NAME).child(todayForWorkout);
+        workoutRef.addValueEventListener(workoutListener);
 
         // Initialize and assign variable
         initWidgets();
@@ -139,12 +145,32 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
             } catch (Exception err) {
                 Log.w(TAG, "Load diet database exception", err);
             }
-
         }
 
         @Override
         public void onCancelled(@NonNull DatabaseError error) {
             Log.w(TAG, "Load diet database cancelled", error.toException());
+        }
+    };
+
+    ValueEventListener workoutListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            HashMap tempMap = (HashMap) snapshot.getValue();
+            try {
+                boolean finished = (boolean)(tempMap.get("today_goal_finished_status"));
+                if (finished) {
+                    AwardData newData = new AwardData(today, AWARD_NAME.get(2), 1);
+                    syncAwardDataWithDatabase(newData);
+                }
+            } catch (Exception err) {
+                Log.w(TAG, "Load workout database exception", err);
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+            Log.w(TAG, "Load workout database cancelled", error.toException());
         }
     };
 

@@ -45,6 +45,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class AwardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -85,8 +86,8 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
         DatabaseReference waterRef = mDatabase.child(WATER_INTAKE_DB_NAME).child(today);
         waterRef.addValueEventListener(waterListener);
 
-        // DatabaseReference dietRef = mDatabase.child(DIET_DB_NAME).child(today);
-        // dietRef.addValueEventListener();
+        DatabaseReference dietRef = mDatabase.child(DIET_DB_NAME).child(today);
+        dietRef.addValueEventListener(dietListener);
 
         // Initialize and assign variable
         initWidgets();
@@ -117,6 +118,33 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
         @Override
         public void onCancelled(@NonNull DatabaseError error) {
             Log.w(TAG, "Load water database cancelled", error.toException());
+        }
+    };
+
+    ValueEventListener dietListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            HashMap tempMap = (HashMap) snapshot.getValue();
+            try {
+                long breakfastNet = (long) ((HashMap) tempMap.get("breakfast")).get("net");
+                long lunchNet = (long) ((HashMap) tempMap.get("lunch")).get("net");
+                long dinnerNet = (long) ((HashMap) tempMap.get("dinner")).get("net");
+                long snackNet = (long) ((HashMap) tempMap.get("snack")).get("net");
+                long netCal = breakfastNet + lunchNet + dinnerNet + snackNet;
+                long targetCal = (long) tempMap.get("target");
+                if (netCal <= targetCal) {
+                    AwardData newData = new AwardData(today, AWARD_NAME.get(1), 1);
+                    syncAwardDataWithDatabase(newData);
+                }
+            } catch (Exception err) {
+                Log.w(TAG, "Load diet database exception", err);
+            }
+
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+            Log.w(TAG, "Load diet database cancelled", error.toException());
         }
     };
 

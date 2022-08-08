@@ -48,6 +48,7 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
     private DatabaseReference dieDB;
     private DatabaseReference waterDB;
     private DatabaseReference periodDB;
+    private DatabaseReference workoutDB;
 
     private ProgressBar pbDiet;
     private ProgressBar pbWater;
@@ -69,7 +70,9 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
 
         dieDB = mDatabase.child("diets").child(java.time.LocalDate.now().toString());
         waterDB = mDatabase.child("water_intake").child(java.time.LocalDate.now().toString());
-        periodDB = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("period");
+        periodDB = mDatabase.child("period");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
+        workoutDB = mDatabase.child("work-out").child(LocalDate.now().format(formatter));
 
         updatePBDiet();
         updatePBWater();
@@ -84,29 +87,37 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
 
     private void updatePBDiet() {
         staticDietDB.get().addOnCompleteListener(task -> {
-            HashMap tempMap = (HashMap) task.getResult().getValue();
-            long breakfastNet = (long) ((HashMap) tempMap.get("breakfast")).get("net");
-            long lunchNet = (long) ((HashMap) tempMap.get("lunch")).get("net");
-            long dinnerNet = (long) ((HashMap) tempMap.get("dinner")).get("net");
-            long snackNet = (long) ((HashMap) tempMap.get("snack")).get("net");
-            long netCal = breakfastNet + lunchNet + dinnerNet + snackNet;
-            long targetCal = (long) tempMap.get("target");
-            double v = 100 * (double) netCal / targetCal;
-            this.pbDiet.setProgress((int) v);
-            dieDB.child("breakfast").child("net").setValue(breakfastNet);
-            dieDB.child("lunch").child("net").setValue(lunchNet);
-            dieDB.child("dinner").child("net").setValue(dinnerNet);
-            dieDB.child("snack").child("net").setValue(snackNet);
-            dieDB.child("target").setValue(targetCal);
+            try {
+                HashMap tempMap = (HashMap) task.getResult().getValue();
+                long breakfastNet = (long) ((HashMap) tempMap.get("breakfast")).get("net");
+                long lunchNet = (long) ((HashMap) tempMap.get("lunch")).get("net");
+                long dinnerNet = (long) ((HashMap) tempMap.get("dinner")).get("net");
+                long snackNet = (long) ((HashMap) tempMap.get("snack")).get("net");
+                long netCal = breakfastNet + lunchNet + dinnerNet + snackNet;
+                long targetCal = (long) tempMap.get("target");
+                double v = 100 * (double) netCal / targetCal;
+                this.pbDiet.setProgress((int) v);
+                dieDB.child("breakfast").child("net").setValue(breakfastNet);
+                dieDB.child("lunch").child("net").setValue(lunchNet);
+                dieDB.child("dinner").child("net").setValue(dinnerNet);
+                dieDB.child("snack").child("net").setValue(snackNet);
+                dieDB.child("target").setValue(targetCal);
+            } catch (Exception err) {
+                this.pbDiet.setProgress(0);
+            }
         });
     }
 
     private void updatePBWater() {
         waterDB.get().addOnCompleteListener(task -> {
-            HashMap tempMap = (HashMap) task.getResult().getValue();
-            long taken = (long) tempMap.get("waterOz");
-            double v = 100 * (double) taken / 64;
-            this.pbWater.setProgress(v > 100 ? 100 : (int) v);
+            try {
+                HashMap tempMap = (HashMap) task.getResult().getValue();
+                long taken = (long) tempMap.get("waterOz");
+                double v = 100 * (double) taken / 64;
+                this.pbWater.setProgress(v > 100 ? 100 : (int) v);
+            } catch (Exception err) {
+                this.pbWater.setProgress(0);
+            }
         });
     }
 
@@ -141,8 +152,23 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
     }
 
     private void updatePBWorkout() {
-        // TODO update progress bar of workout
-        pbWorkout.setProgress(50);
+        workoutDB.get().addOnCompleteListener(task -> {
+            HashMap tempMap = (HashMap) task.getResult().getValue();
+            try {
+                boolean oneFinished = (boolean) ((HashMap) tempMap.get("Activity_one")).get("goal_finished_status");
+                boolean twoFinished = (boolean) ((HashMap) tempMap.get("Activity_two")).get("goal_finished_status");
+                boolean threeFinished = (boolean) ((HashMap) tempMap.get("Activity_three")).get("goal_finished_status");
+                boolean fourFinished = (boolean) ((HashMap) tempMap.get("Activity_four")).get("goal_finished_status");
+                int count = 0;
+                if (oneFinished) count++;
+                if (twoFinished) count++;
+                if (threeFinished) count++;
+                if (fourFinished) count++;
+                this.pbWorkout.setProgress(25 * count);
+            } catch (Exception err) {
+                this.pbWorkout.setProgress(0);
+            }
+        });
     }
 
     private void initProgressBars() {

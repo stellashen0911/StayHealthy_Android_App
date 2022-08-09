@@ -85,9 +85,9 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
             List<String> timestamps = new ArrayList<>(tempMap.keySet() );
             timestamps.sort((a, b) -> {
                 if (Long.valueOf(a) - Long.valueOf(b) > 0) {
-                    return 1;
-                } else {
                     return -1;
+                } else {
+                    return 1;
                 }
             });
             for (int i = 0; i < timestamps.size(); i++) {
@@ -190,7 +190,6 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             Intent editPostIntent = new Intent(this,EditPostActivity.class);

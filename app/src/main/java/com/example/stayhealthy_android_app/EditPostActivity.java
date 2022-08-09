@@ -3,6 +3,7 @@ package com.example.stayhealthy_android_app;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,7 +47,8 @@ public class EditPostActivity  extends AppCompatActivity {
             onBackPressed();
         }
         currentImage= BitmapFactory.decodeByteArray(currentImageBytes, 0, currentImageBytes.length);
-        postImageView.setImageBitmap(currentImage);
+        Bitmap rotate =  RotateBitmap(currentImage, 90f);
+        postImageView.setImageBitmap(rotate);
         user = FirebaseAuth.getInstance().getCurrentUser();
         myDataBase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
         fStorage = FirebaseStorage.getInstance();
@@ -55,6 +57,11 @@ public class EditPostActivity  extends AppCompatActivity {
         cancelButton.setOnClickListener(v->onCancelClick());
     }
 
+    public static Bitmap RotateBitmap(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+    }
 
     public void postToFirebase() {
         long currentMillis = System.currentTimeMillis();
@@ -71,10 +78,8 @@ public class EditPostActivity  extends AppCompatActivity {
                                     Intent intent = new Intent(this, JourneyActivity.class);
                                     startActivity(intent);
                                 });
-
                     }));
                 });
-
         Intent intent = new Intent(this, JourneyActivity.class);
         startActivity(intent);
     }
@@ -83,6 +88,4 @@ public class EditPostActivity  extends AppCompatActivity {
         Intent intent = new Intent(this,JourneyActivity.class);
         startActivity(intent);
     }
-
-
 }

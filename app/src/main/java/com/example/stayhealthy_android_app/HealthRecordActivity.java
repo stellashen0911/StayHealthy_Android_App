@@ -68,6 +68,11 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         assert user != null;
         mDatabase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
 
+        mDatabase.child("notification_settings").child("Work-Out Notification").setValue(true);
+        mDatabase.child("notification_settings").child("Water Notification").setValue(true);
+        mDatabase.child("notification_settings").child("Diet Notification").setValue(true);
+        mDatabase.child("notification_settings").child("Period Notification").setValue(true);
+
         dieDB = mDatabase.child("diets").child(java.time.LocalDate.now().toString());
         waterDB = mDatabase.child("water_intake").child(java.time.LocalDate.now().toString());
         periodDB = mDatabase.child("period");

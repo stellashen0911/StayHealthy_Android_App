@@ -3,21 +3,29 @@
         <PreferenceCategory
             android:title="Notification Setting">
 
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="switch_preference_workout"
+                android:title="Work-Out Notification"
+                android:summary="Click to turn the Work-Out Notification OFF"/>
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="switch_preference_water"
+                android:title="Water Notification"
+                android:summary="Click to turn the Water Notification OFF"/>
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="switch_preference_diet"
+                android:title="Diet Notification"
+                android:summary="Click to turn the Diet Notification OFF"/>
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="switch_preference_period"
+                android:title="Period Notification"
+                android:summary="Click to turn the Period Notification OFF"/>
         </PreferenceCategory>
-
-        <PreferenceCategory
-            android:title="@string/test">
-
-            <Preference
-                android:title="@string/test">
-                <intent android:action="android.intent.action.VIEW" />
-            </Preference>
-
-        </PreferenceCategory>
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="switch_preference_1"
-            android:title="Work-Out Notification"
-            android:summary="Turn the Work-Out Notification on or off"/>
 
 </PreferenceScreen>

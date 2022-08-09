@@ -2,6 +2,7 @@ package com.example.stayhealthy_android_app.Journey;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,8 +32,15 @@ public class JourneyPostViewHolder  extends RecyclerView.ViewHolder  {
             StorageReference gsReference = fStorage.getReferenceFromUrl(post.getPostPhoto());
             gsReference.getBytes(FIVE_MEGABYTE).addOnSuccessListener((task) -> {
                 Bitmap currentImage = BitmapFactory.decodeByteArray(task, 0, task.length);
-                this.postImage.setImageBitmap(currentImage);
+                Bitmap rotated =  RotateBitmap(currentImage, 90f);
+                this.postImage.setImageBitmap(rotated);
             });
         }
+    }
+
+    public static Bitmap RotateBitmap(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 }

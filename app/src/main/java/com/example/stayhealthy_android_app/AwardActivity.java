@@ -158,7 +158,7 @@ public class AwardActivity<x> extends AppCompatActivity implements NavigationVie
                 long snackNet = (long) ((HashMap) tempMap.get("snack")).get("net");
                 long netCal = breakfastNet + lunchNet + dinnerNet + snackNet;
                 long targetCal = (long) tempMap.get("target");
-                if (netCal <= targetCal) {
+                if (netCal >= targetCal) {
                     AwardData newData = new AwardData(today, AWARD_NAME.get(1), 1);
                     syncAwardDataWithDatabase(newData);
                 }

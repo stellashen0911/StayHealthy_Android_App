@@ -5,6 +5,7 @@
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.2146282973621103" />
         <entry key="app/src/main/res/drawable/circle_progressbar.xml" value="0.339" />
+        <entry key="app/src/main/res/drawable/circle_progressbar_health_record.xml" value="0.34" />
         <entry key="app/src/main/res/drawable/circular_background.xml" value="0.117" />
         <entry key="app/src/main/res/drawable/ic_baseline_photo_camera_24.xml" value="0.118" />
         <entry key="app/src/main/res/drawable/ic_baseline_star_24.xml" value="0.118" />
@@ -24,14 +25,14 @@
         <entry key="app/src/main/res/layout/activity_dinner.xml" value="0.26197916666666665" />
         <entry key="app/src/main/res/layout/activity_edit_post.xml" value="0.3836050724637681" />
         <entry key="app/src/main/res/layout/activity_edit_workout_goal.xml" value="0.37585948999377267" />
-        <entry key="app/src/main/res/layout/activity_health_record.xml" value="0.4036458333333333" />
+        <entry key="app/src/main/res/layout/activity_health_record.xml" value="0.5" />
         <entry key="app/src/main/res/layout/activity_journey.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_lunch.xml" value="0.26197916666666665" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_notification.xml" value="0.3836050724637681" />
         <entry key="app/src/main/res/layout/activity_period.xml" value="0.4052757793764988" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.4036458333333333" />
-        <entry key="app/src/main/res/layout/activity_water.xml" value="0.4160552978515625" />
+        <entry key="app/src/main/res/layout/activity_water.xml" value="0.30985915492957744" />
         <entry key="app/src/main/res/layout/activity_workout.xml" value="0.38632246376811596" />
         <entry key="app/src/main/res/layout/app_bar_profile_page.xml" value="0.38632246376811596" />
         <entry key="app/src/main/res/layout/content_profile_page.xml" value="0.38632246376811596" />
@@ -51,7 +52,7 @@
         <entry key="app/src/main/res/menu/profile_page.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_award.xml" value="0.118" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_award_round.xml" value="0.118" />
-        <entry key="app/src/main/res/xml/setting_fragment.xml" value="0.23477783203124997" />
+        <entry key="app/src/main/res/xml/setting_fragment.xml" value="0.2171875" />
       </map>
     </option>
   </component>

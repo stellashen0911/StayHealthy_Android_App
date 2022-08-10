@@ -21,6 +21,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.stayhealthy_android_app.Award.AwardAdapter;
 import com.example.stayhealthy_android_app.Award.Model.AwardData;
@@ -342,6 +345,21 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
         View headerView = profile_nv.getHeaderView(0);
         Button LogOutBtn = (Button) headerView.findViewById(R.id.profile_logout_btn);
         Button ChangeAvartaButton = (Button) headerView.findViewById(R.id.update_profile_image_btn);
+        TextView userNameText = (TextView) headerView.findViewById(R.id.user_name_show);
+        ImageView user_image = (ImageView) headerView.findViewById(R.id.image_avatar);
+
+        // calling add value event listener method
+        // for getting the values from database.
+        DatabaseReference email_ref = mDatabase.child("email");
+
+        email_ref.get().addOnCompleteListener(task -> {
+            try {
+                String email = (String) task.getResult().getValue();
+                userNameText.setText(email);
+            } catch (Exception err) {
+                System.out.println("error retreive data from database");
+            }
+        });
 
         LogOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override

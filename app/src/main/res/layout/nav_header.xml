@@ -16,7 +16,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="30dp"
-            android:src="@mipmap/ic_launcher_round" />
+            android:src="@mipmap/ic_launcher_round"
+            android:id="@+id/image_avatar"
+            />
 
     </LinearLayout>
 
@@ -35,7 +37,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="test@gmail.com" />
+            android:text="test@gmail.com"
+            android:id="@+id/user_name_show"/>
     </LinearLayout>
 
     <LinearLayout

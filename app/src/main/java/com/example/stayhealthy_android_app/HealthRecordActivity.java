@@ -9,13 +9,22 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.stayhealthy_android_app.Diet.DietActivity;
 import com.example.stayhealthy_android_app.Period.Model.PeriodData;
@@ -34,6 +43,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 import java.util.HashMap;
 
 public class HealthRecordActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -88,7 +98,27 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         setBottomNavigationView();
         initProfileDrawer();
 
+        //set up the notification
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.set(Calendar.HOUR_OF_DAY, 10);
+//        calendar.set(Calendar.MINUTE, 30);
+//        calendar.set(Calendar.SECOND, 0);
+//        System.out.println("here 1");
+//        Intent intent1 = new Intent(HealthRecordActivity.this, AlarmReceiver.class);
+//        System.out.println("here 2");
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(HealthRecordActivity.this, 0 ,intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+//        System.out.println("here 3");
+//        AlarmManager alarmManager = (AlarmManager) HealthRecordActivity.this.getSystemService(HealthRecordActivity.this.ALARM_SERVICE);
+//        System.out.println("here 4");
+//        if (alarmManager != null) {
+//            System.out.println("here in side if statement");
+//            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+//        }
+//        System.out.println("here 5");
     }
+
+
+
 
     private void updatePBDiet() {
         staticDietDB.get().addOnCompleteListener(task -> {
@@ -200,6 +230,21 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         View headerView = profile_nv.getHeaderView(0);
         Button LogOutBtn = (Button) headerView.findViewById(R.id.profile_logout_btn);
         Button ChangeAvartaButton = (Button) headerView.findViewById(R.id.update_profile_image_btn);
+        TextView userNameText = (TextView) headerView.findViewById(R.id.user_name_show);
+        ImageView user_image = (ImageView) headerView.findViewById(R.id.image_avatar);
+
+        // calling add value event listener method
+        // for getting the values from database.
+        DatabaseReference email_ref = mDatabase.child("email");
+
+        email_ref.get().addOnCompleteListener(task -> {
+            try {
+                String email = (String) task.getResult().getValue();
+                userNameText.setText(email);
+            } catch (Exception err) {
+                System.out.println("error retreive data from database");
+            }
+        });
 
         LogOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override

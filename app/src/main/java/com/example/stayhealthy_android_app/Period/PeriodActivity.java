@@ -691,7 +691,6 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
                     cycleList.add(cycle);
                 }
                 cycleList.sort(Collections.reverseOrder());
-                Log.v(TAG, cycleList.toString());
                 setCycleHistoryRecyclerViewAdapter();
             }
         });

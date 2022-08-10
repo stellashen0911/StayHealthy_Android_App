@@ -23,6 +23,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -34,9 +35,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.stayhealthy_android_app.Award.Model.AwardData;
 import com.example.stayhealthy_android_app.Diet.DietActivity;
 import com.example.stayhealthy_android_app.Period.Model.PeriodData;
 import com.example.stayhealthy_android_app.Period.PeriodActivity;
+import com.example.stayhealthy_android_app.Water.WaterIntakeModel;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -109,16 +112,12 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         mDatabase.child("notification_settings").child("Diet Notification").setValue(true);
         mDatabase.child("notification_settings").child("Period Notification").setValue(true);
 
+
         dieDB = mDatabase.child("diets").child(java.time.LocalDate.now().toString());
         waterDB = mDatabase.child("water_intake").child(java.time.LocalDate.now().toString());
         periodDB = mDatabase.child("period");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
         workoutDB = mDatabase.child("work-out").child(LocalDate.now().format(formatter));
-
-        updatePBDiet();
-        updatePBWater();
-        updatePBPeriod();
-        updatePBWorkout();
 
         initWidgets();
         setBottomNavigationView();
@@ -146,9 +145,6 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
 //        System.out.println("here 5");
     }
 
-
-
-
     private void updatePBDiet() {
         staticDietDB.get().addOnCompleteListener(task -> {
             TextView dietProgressBarTV = findViewById(R.id.dietProgressBarTV);
@@ -162,7 +158,11 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
                 long netCal = breakfastNet + lunchNet + dinnerNet + snackNet;
                 long targetCal = (long) tempMap.get("target");
                 double v = 100 * (double) netCal / targetCal;
-                this.pbDiet.setProgress((int) v);
+                if (v == 0) {
+                    return;
+                }
+                pbDiet.setMin(0);
+                pbDiet.setProgress((int) v);
                 String percentInStr = ((int) v) + "%";
                 dietProgressBarTV.setText(percentInStr);
                 String goalStr = "Goal " + ((int) targetCal) + " Cal";
@@ -173,7 +173,6 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
                 dieDB.child("snack").child("net").setValue(snackNet);
                 dieDB.child("target").setValue(targetCal);
             } catch (Exception err) {
-                this.pbDiet.setProgress(0);
                 dietProgressBarTV.setText(R.string._0_percent_string);
                 dietDetailsTV.setText(R.string.goal_string);
             }
@@ -183,20 +182,19 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
     private void updatePBWater() {
         waterDB.get().addOnCompleteListener(task -> {
             TextView waterProgressBarTV = findViewById(R.id.waterProgressBarTV);
-            TextView waterDetailsTV = findViewById(R.id.waterDetailsTV);
-            try {
-                HashMap tempMap = (HashMap) task.getResult().getValue();
-                long taken = (long) tempMap.get("waterOz");
-                double v = 100 * (double) taken / DAILY_WATER_TARGET_OZ;
-                this.pbWater.setProgress(v > 100 ? 100 : (int) v);
-                String percentInStr = ((int) v) + "%";
+            WaterIntakeModel value = task.getResult().getValue(WaterIntakeModel.class);
+            if (value != null && value.getWaterOz() != 0) {
+                long waterOz = value.getWaterOz();
+                long percentage = 100 * waterOz / DAILY_WATER_TARGET_OZ;
+                final long finalPercentage = percentage > 100 ? 100 :percentage;
+                pbWater.setMin(0);
+                // Set water progress
+                pbWater.setProgress((int) finalPercentage);
+                Log.v(TAG, "not null" + pbWater.getProgress());
+                // Set water progress text
+                String percentInStr = (int) finalPercentage + "%";
                 waterProgressBarTV.setText(percentInStr);
-            } catch (Exception err) {
-                this.pbWater.setProgress(0);
-                waterProgressBarTV.setText(R.string._0_percent_string);
             }
-            String goal = "Goal " + DAILY_WATER_TARGET_OZ + " Oz";
-            waterDetailsTV.setText(goal);
         });
     }
 
@@ -221,6 +219,7 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
                         String predictedDateInStr = localDateToDateInStr(predictedDate, DATE_SHORT_FORMAT);
                         int remainingDays = (int) calculateDaysBetween(date, predictedDateInStr);
                         // Set progress bar
+                        pbPeriod.setMin(0);
                         pbPeriod.setMax((int) MONTHLY_PERIOD);
                         pbPeriod.setProgress((int) MONTHLY_PERIOD - remainingDays);
                         // Set progress bar text
@@ -230,15 +229,12 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
                         String prediction = "Likely to start on " + localDateToDateInStr(predictedDate, DATE_LONG_FORMAT);
                         periodDetailsTV.setText(prediction);
                     } else {
-                        pbPeriod.setMax((int) MONTHLY_PERIOD);
-                        pbPeriod.setProgress(0); // "No record"
                         periodProgressBarTV.setText(R.string.no_record_string);
                         periodDetailsTV.setText(R.string.likely_to_start_on_string);
                     }
                 }
             }
         });
-
     }
 
     private void updatePBWorkout() {
@@ -257,21 +253,42 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
                 if (threeFinished) count++;
                 if (fourFinished) count++;
                 int percent = 25 * count;
-                this.pbWorkout.setProgress(percent);
+                if (percent == 0) {
+                    return;
+                }
+                pbWorkout.setMin(0);
+                pbWorkout.setProgress(percent);
                 String percentInStr = percent + "%";
                 workoutProgressBarTV.setText(percentInStr);
             } catch (Exception err) {
-                this.pbWorkout.setProgress(0);
                 workoutProgressBarTV.setText(R.string._0_percent_string);
+                workoutDetailsTV.setText(R.string.goal_string);
             }
         });
     }
 
     private void initProgressBars() {
-        this.pbDiet = findViewById(R.id.dietProgressBar);
-        this.pbPeriod = findViewById(R.id.periodProgressBar);
-        this.pbWater = findViewById(R.id.waterProgressBar);
-        this.pbWorkout = findViewById(R.id.workoutProgressBar);
+        pbDiet = findViewById(R.id.dietProgressBar);
+        pbPeriod = findViewById(R.id.periodProgressBar);
+        pbWater = findViewById(R.id.waterProgressBar);
+        pbWorkout = findViewById(R.id.workoutProgressBar);
+    }
+
+    private void initProgressBarsValue() {
+        pbPeriod.setMin(-1);
+        pbPeriod.setProgress(-1);
+
+        pbDiet.setMin(-1);
+        pbDiet.setProgress(-1);
+
+        pbWater.setMin(-1);
+        pbWater.setProgress(-1);
+        TextView waterDetailsTV = findViewById(R.id.waterDetailsTV);
+        String goal = "Goal " + DAILY_WATER_TARGET_OZ + " Oz";
+        waterDetailsTV.setText(goal);
+
+        pbWorkout.setMin(-1);
+        pbWorkout.setProgress(-1);
     }
 
     private void initProfileDrawer() {
@@ -402,6 +419,9 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         super.onResume();
         // Set home selected when going back to this activity from other activities
         bottomNavigationView.setSelectedItemId(R.id.health_record_icon);
+
+        initProgressBarsValue();
+
         updatePBDiet();
         updatePBWater();
         updatePBPeriod();

@@ -63,11 +63,6 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
         addButton = findViewById(R.id.add_new_post);
         setContentView(R.layout.activity_journey);
 
-        // Initialize and assign variable
-        initWidgets();
-        setBottomNavigationView();
-        initProfileDrawer();
-
         fStorage = FirebaseStorage.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         storageReference = fStorage.getReference("users").child(user.getUid());
@@ -99,6 +94,11 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
                 postAdapter.notifyDataSetChanged();
             }
         });
+
+        // Initialize and assign variable
+        initWidgets();
+        setBottomNavigationView();
+        initProfileDrawer();
 
         setBottomNavigationView();
     }

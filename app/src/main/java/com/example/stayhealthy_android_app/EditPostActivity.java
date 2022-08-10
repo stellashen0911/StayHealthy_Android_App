@@ -34,6 +34,7 @@ public class EditPostActivity  extends AppCompatActivity {
     StorageReference storageReference;
     Bitmap currentImage;
     byte [] currentImageBytes;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

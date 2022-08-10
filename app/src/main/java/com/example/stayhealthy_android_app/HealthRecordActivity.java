@@ -11,11 +11,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,6 +41,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -64,6 +68,11 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
     private ProgressBar pbWater;
     private ProgressBar pbPeriod;
     private ProgressBar pbWorkout;
+
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    FirebaseStorage fStorage;
+    FirebaseUser user;
+    StorageReference storageReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -232,6 +241,9 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         Button ChangeAvartaButton = (Button) headerView.findViewById(R.id.update_profile_image_btn);
         TextView userNameText = (TextView) headerView.findViewById(R.id.user_name_show);
         ImageView user_image = (ImageView) headerView.findViewById(R.id.image_avatar);
+        fStorage = FirebaseStorage.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        storageReference = fStorage.getReference("users").child(user.getUid());
 
         // calling add value event listener method
         // for getting the values from database.
@@ -256,9 +268,19 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         ChangeAvartaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //to do:
+                onAddPicturePressed(v);
             }
         });
+    }
+
+    public void onAddPicturePressed(View view) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        } catch (ActivityNotFoundException e) {
+            // simply return to the last activity.
+            onBackPressed();
+        }
     }
 
     @Override

@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -13,8 +14,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.Log;
@@ -42,6 +49,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.DateFormatSymbols;
 import java.time.LocalDate;
@@ -51,7 +60,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class AwardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class AwardActivity<x> extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private final static String TAG = "MAwardActivity";
     private final static String DATE_SHORT_FORMAT = "yyyy-MM-dd";
     private static final String WATER_INTAKE_DB_NAME = "water_intake";
@@ -70,6 +79,14 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
     private RecyclerView notReceivedAwardRV;
     private List<AwardDisplay> receivedAwardDisplayList;
     private List<AwardDisplay> notReceivedAwardDisplayList;
+
+    //new to add
+    static final int REQUEST_IMAGE_CAPTURE = 100;
+    private static final int CAMERA_REQUEST = 1888;
+    FirebaseStorage fStorage;
+    FirebaseUser user;
+    StorageReference storageReference;
+    ImageView user_image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -346,7 +363,10 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
         Button LogOutBtn = (Button) headerView.findViewById(R.id.profile_logout_btn);
         Button ChangeAvartaButton = (Button) headerView.findViewById(R.id.update_profile_image_btn);
         TextView userNameText = (TextView) headerView.findViewById(R.id.user_name_show);
-        ImageView user_image = (ImageView) headerView.findViewById(R.id.image_avatar);
+        user_image = (ImageView) headerView.findViewById(R.id.image_avatar);
+        fStorage = FirebaseStorage.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        storageReference = fStorage.getReference("users").child(user.getUid());
 
         // calling add value event listener method
         // for getting the values from database.
@@ -371,10 +391,31 @@ public class AwardActivity extends AppCompatActivity implements NavigationView.O
         ChangeAvartaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //to do:
+                onAddPicturePressed(v);
             }
         });
     }
+    //new to add
+    public void onAddPicturePressed(View view) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        } catch (ActivityNotFoundException e) {
+            // simply return to the last activity.
+            onBackPressed();
+        }
+    }
+
+    //new to add
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            user_image.setImageBitmap(photo);
+        }
+    }
+
 
     private void initWidgets() {
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);

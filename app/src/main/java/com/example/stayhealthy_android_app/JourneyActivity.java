@@ -67,6 +67,7 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
         initWidgets();
         setBottomNavigationView();
         initProfileDrawer();
+
         fStorage = FirebaseStorage.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         storageReference = fStorage.getReference("users").child(user.getUid());
@@ -98,6 +99,7 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
                 postAdapter.notifyDataSetChanged();
             }
         });
+
         setBottomNavigationView();
     }
 

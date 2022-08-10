@@ -1,5 +1,6 @@
 package com.example.stayhealthy_android_app;
 
+import static com.example.stayhealthy_android_app.EditPostActivity.RotateBitmap;
 import static com.example.stayhealthy_android_app.Water.WaterIntakeModel.DAILY_WATER_TARGET_OZ;
 
 import androidx.annotation.NonNull;
@@ -16,10 +17,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.transition.AutoTransition;
@@ -35,7 +39,10 @@ import android.widget.Toast;
 import com.example.stayhealthy_android_app.Award.AwardAdapter;
 import com.example.stayhealthy_android_app.Award.Model.AwardData;
 import com.example.stayhealthy_android_app.Award.Model.AwardDisplay;
+import com.example.stayhealthy_android_app.Journey.JourneyPost;
 import com.example.stayhealthy_android_app.Water.WaterIntakeModel;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -50,8 +57,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -59,6 +70,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class AwardActivity<x> extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private final static String TAG = "MAwardActivity";
@@ -82,11 +94,15 @@ public class AwardActivity<x> extends AppCompatActivity implements NavigationVie
 
     //new to add
     static final int REQUEST_IMAGE_CAPTURE = 100;
-    private static final int CAMERA_REQUEST = 1888;
-    FirebaseStorage fStorage;
     FirebaseUser user;
-    StorageReference storageReference;
     ImageView user_image;
+    // Uri indicates, where the image will be picked from
+    private Uri filePath;
+    // instance for firebase storage and StorageReference
+    FirebaseStorage storage;
+    StorageReference storage_reference;
+    byte [] currentImageBytes;
+    final long FIVE_MEGABYTE = 1024 * 1024 * 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -364,12 +380,14 @@ public class AwardActivity<x> extends AppCompatActivity implements NavigationVie
         Button ChangeAvartaButton = (Button) headerView.findViewById(R.id.update_profile_image_btn);
         TextView userNameText = (TextView) headerView.findViewById(R.id.user_name_show);
         user_image = (ImageView) headerView.findViewById(R.id.image_avatar);
-        fStorage = FirebaseStorage.getInstance();
+        storage = FirebaseStorage.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
-        storageReference = fStorage.getReference("users").child(user.getUid());
+        storage_reference = storage.getReference("users").child(user.getUid());
+
 
         // calling add value event listener method
         // for getting the values from database.
+
         DatabaseReference email_ref = mDatabase.child("email");
 
         email_ref.get().addOnCompleteListener(task -> {
@@ -388,6 +406,7 @@ public class AwardActivity<x> extends AppCompatActivity implements NavigationVie
             }
         });
 
+        update_image_from_database();
         ChangeAvartaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -395,6 +414,37 @@ public class AwardActivity<x> extends AppCompatActivity implements NavigationVie
             }
         });
     }
+
+    //new to add
+    public void update_image_from_database() {
+        //if the firebase already has an image for the profile, use the existing one
+        System.out.println("here is update image from data base 1");
+        mDatabase.child("profile_image").get().addOnCompleteListener((task) -> {
+            String tempStr = (String) task.getResult().getValue();
+            System.out.println("here is update image from data base 2");
+            System.out.println("uri string from data base is " + tempStr);
+            if (tempStr == null ) {
+                tempStr = "";
+            }
+            System.out.println("here is update image from data base 3");
+            if (!tempStr.equals("")) {
+                //update the image
+                System.out.println("here is update image from data base 4");
+                StorageReference profileReference = storage.getReferenceFromUrl(tempStr);
+                profileReference.getBytes(FIVE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        System.out.println("here is update image from data base 5");
+                        Bitmap currentImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        Bitmap rotate =  RotateBitmap(currentImage, 90f);
+                        user_image.setImageBitmap(rotate);
+                    }
+                });
+            }
+            System.out.println("here is update image from data base 6");
+        });
+    }
+
     //new to add
     public void onAddPicturePressed(View view) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -411,11 +461,30 @@ public class AwardActivity<x> extends AppCompatActivity implements NavigationVie
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            filePath = data.getData();
             Bitmap photo = (Bitmap) data.getExtras().get("data");
-            user_image.setImageBitmap(photo);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+            currentImageBytes = byteArray;
+            Bitmap currentImage = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+            Bitmap rotate =  RotateBitmap(currentImage, 90f);
+            user_image.setImageBitmap(rotate);
+            upload_image_to_cloud();
         }
     }
 
+    public void upload_image_to_cloud() {
+        long currentMillis = System.currentTimeMillis();
+        final StorageReference fileRef = storage_reference.child("profile_avatar")
+                .child(String.valueOf(currentMillis));
+        fileRef.putBytes(currentImageBytes).addOnSuccessListener((task)-> {
+            fileRef.getDownloadUrl().addOnSuccessListener((uriTask -> {
+                String uriImage = uriTask.toString();
+                mDatabase.child("profile_image").setValue(uriImage);
+            }));
+        });
+    }
 
     private void initWidgets() {
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);

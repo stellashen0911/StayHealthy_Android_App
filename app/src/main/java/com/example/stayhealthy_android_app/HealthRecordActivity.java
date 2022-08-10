@@ -1,5 +1,6 @@
 package com.example.stayhealthy_android_app;
 
+import static com.example.stayhealthy_android_app.EditPostActivity.RotateBitmap;
 import static com.example.stayhealthy_android_app.Period.PeriodActivity.MONTHLY_PERIOD;
 import static com.example.stayhealthy_android_app.Water.WaterIntakeModel.DAILY_WATER_TARGET_OZ;
 
@@ -10,6 +11,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
@@ -17,6 +19,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -32,6 +37,7 @@ import android.widget.Toast;
 import com.example.stayhealthy_android_app.Diet.DietActivity;
 import com.example.stayhealthy_android_app.Period.Model.PeriodData;
 import com.example.stayhealthy_android_app.Period.PeriodActivity;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,6 +51,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -72,10 +79,17 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
     private ProgressBar pbPeriod;
     private ProgressBar pbWorkout;
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    FirebaseStorage fStorage;
+    //new to add
+    static final int REQUEST_IMAGE_CAPTURE = 100;
     FirebaseUser user;
-    StorageReference storageReference;
+    ImageView user_image;
+    // Uri indicates, where the image will be picked from
+    private Uri filePath;
+    // instance for firebase storage and StorageReference
+    FirebaseStorage storage;
+    StorageReference storage_reference;
+    byte [] currentImageBytes;
+    final long FIVE_MEGABYTE = 1024 * 1024 * 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -278,10 +292,10 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         Button LogOutBtn = (Button) headerView.findViewById(R.id.profile_logout_btn);
         Button ChangeAvartaButton = (Button) headerView.findViewById(R.id.update_profile_image_btn);
         TextView userNameText = (TextView) headerView.findViewById(R.id.user_name_show);
-        ImageView user_image = (ImageView) headerView.findViewById(R.id.image_avatar);
-        fStorage = FirebaseStorage.getInstance();
+        user_image = (ImageView) headerView.findViewById(R.id.image_avatar);
+        storage = FirebaseStorage.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
-        storageReference = fStorage.getReference("users").child(user.getUid());
+        storage_reference = storage.getReference("users").child(user.getUid());
 
         // calling add value event listener method
         // for getting the values from database.
@@ -303,6 +317,7 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
             }
         });
 
+        update_image_from_database();
         ChangeAvartaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -311,6 +326,37 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         });
     }
 
+    //new to add
+    public void update_image_from_database() {
+        //if the firebase already has an image for the profile, use the existing one
+        System.out.println("here is update image from data base 1");
+        mDatabase.child("profile_image").get().addOnCompleteListener((task) -> {
+            String tempStr = (String) task.getResult().getValue();
+            System.out.println("here is update image from data base 2");
+            System.out.println("uri string from data base is " + tempStr);
+            if (tempStr == null ) {
+                tempStr = "";
+            }
+            System.out.println("here is update image from data base 3");
+            if (!tempStr.equals("")) {
+                //update the image
+                System.out.println("here is update image from data base 4");
+                StorageReference profileReference = storage.getReferenceFromUrl(tempStr);
+                profileReference.getBytes(FIVE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        System.out.println("here is update image from data base 5");
+                        Bitmap currentImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        Bitmap rotate =  RotateBitmap(currentImage, 90f);
+                        user_image.setImageBitmap(rotate);
+                    }
+                });
+            }
+            System.out.println("here is update image from data base 6");
+        });
+    }
+
+    //new to add
     public void onAddPicturePressed(View view) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
@@ -319,6 +365,36 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
             // simply return to the last activity.
             onBackPressed();
         }
+    }
+
+    //new to add
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            filePath = data.getData();
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+            currentImageBytes = byteArray;
+            Bitmap currentImage = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+            Bitmap rotate =  RotateBitmap(currentImage, 90f);
+            user_image.setImageBitmap(rotate);
+            upload_image_to_cloud();
+        }
+    }
+
+    public void upload_image_to_cloud() {
+        long currentMillis = System.currentTimeMillis();
+        final StorageReference fileRef = storage_reference.child("profile_avatar")
+                .child(String.valueOf(currentMillis));
+        fileRef.putBytes(currentImageBytes).addOnSuccessListener((task)-> {
+            fileRef.getDownloadUrl().addOnSuccessListener((uriTask -> {
+                String uriImage = uriTask.toString();
+                mDatabase.child("profile_image").setValue(uriImage);
+            }));
+        });
     }
 
     @Override

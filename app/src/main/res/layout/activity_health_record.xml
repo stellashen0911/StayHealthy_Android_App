@@ -36,238 +36,381 @@
                 android:layout_height="match_parent" />
 
         </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:paddingTop="20dp"
-            android:text="@string/health_record_string"
-            android:textSize="50sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/button_view"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
+            android:layout_height="match_parent"
+            android:layout_marginTop="54dp"
+            android:layout_marginBottom="54dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/title">
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="20dp"
-                android:background="@drawable/m_customer_border_drawable"
-                android:onClick="openPeriodActivity"
-                android:orientation="horizontal">
-
-                <ProgressBar
-                    android:id="@+id/progressBarPeriod"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imageView2"
-                    app:layout_constraintStart_toEndOf="@+id/textView2"
-                    app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/dataTV"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="@string/period_string"
-                    android:textAlignment="center"
-                    android:textSize="36sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginStart="@dimen/horizontal_margin"
+                    android:layout_marginEnd="@dimen/horizontal_margin"
+                    android:layout_marginTop="@dimen/vertical_margin"
+                    android:text="@string/date_string"
+                    android:textColor="@color/black"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/welcomeTV"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:contentDescription="@string/add_period_string"
-                    android:src="@drawable/ic_sharp_add_24"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="20dp"
-                android:background="@drawable/m_customer_border_drawable"
-                android:onClick="openWaterActivity"
-                android:orientation="horizontal">
-
-                <ProgressBar
-                    android:id="@+id/progressBarWater"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imageView4"
-                    app:layout_constraintStart_toEndOf="@+id/textView3"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/welcomeTV"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="@string/water_string"
-                    android:textAlignment="center"
-                    android:textSize="36sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:padding="@dimen/horizontal_margin"
+                    android:text="@string/hi"
+                    android:textAppearance="?attr/textAppearanceHeadline5"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/dataTV"/>
 
-                <ImageView
-                    android:id="@+id/imageView4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:contentDescription="@string/add_water_string"
-                    android:src="@drawable/ic_sharp_add_24"
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/firstRowCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/welcomeTV"
+                    app:layout_constraintBottom_toTopOf="@id/secondRowCard">
+
+    <!--                Card Period-->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/periodCV"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/horizontal_margin"
+                        android:layout_marginEnd="@dimen/card_padding"
+                        android:layout_marginTop="@dimen/card_padding"
+                        android:layout_marginBottom="@dimen/horizontal_margin"
+                        android:onClick="openPeriodActivity"
+                        android:clickable="true"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="8dp">
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:id="@+id/periodTitleTV"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:padding="@dimen/card_padding"
+                                android:text="@string/period_string"
+                                android:textAppearance="?attr/textAppearanceHeadline6" />
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <ProgressBar
+                                    android:id="@+id/periodProgressBar"
+                                    style="?android:attr/progressBarStyleHorizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    app:layout_constraintDimensionRatio="H,1:1"
+                                    android:indeterminateOnly="false"
+                                    android:progressDrawable="@drawable/circle_progressbar_health_record"
+                                    tools:progress="27"
+                                    tools:max="28"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                                <TextView
+                                    android:id="@+id/periodProgressBarTV"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/no_record_string"
+                                    android:textColor="@color/design_default_color_primary"
+                                    android:textStyle="bold"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="@id/periodProgressBar"
+                                    app:layout_constraintBottom_toBottomOf="@id/periodProgressBar"/>
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <TextView
+                                android:id="@+id/periodDetailsTV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:padding="@dimen/card_padding"
+                                android:layout_gravity="center"
+                                android:text="@string/likely_to_start_on_string"
+                                android:textAppearance="?attr/textAppearanceBody2"
+                                android:textSize="13sp"/>
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+    <!--                Water Card-->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/waterCV"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/card_padding"
+                        android:layout_marginEnd="@dimen/horizontal_margin"
+                        android:layout_marginTop="@dimen/card_padding"
+                        android:layout_marginBottom="@dimen/horizontal_margin"
+                        android:onClick="openWaterActivity"
+                        android:clickable="true"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="8dp">
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:id="@+id/waterTitleTV"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:padding="@dimen/card_padding"
+                                android:text="@string/water_string"
+                                android:textAppearance="?attr/textAppearanceHeadline6" />
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <ProgressBar
+                                    android:id="@+id/waterProgressBar"
+                                    style="?android:attr/progressBarStyleHorizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    app:layout_constraintDimensionRatio="H,1:1"
+                                    android:indeterminateOnly="false"
+                                    android:progressDrawable="@drawable/circle_progressbar_health_record"
+                                    tools:progress="70"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                                <TextView
+                                    android:id="@+id/waterProgressBarTV"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/_0_percent_string"
+                                    android:textColor="@color/design_default_color_primary"
+                                    android:textStyle="bold"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="@id/waterProgressBar"
+                                    app:layout_constraintBottom_toBottomOf="@id/waterProgressBar"/>
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <TextView
+                                android:id="@+id/waterDetailsTV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:padding="@dimen/card_padding"
+                                android:layout_gravity="center"
+                                android:text="@string/goal_string"
+                                android:textAppearance="?attr/textAppearanceBody2" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/secondRowCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="20dp"
-                android:background="@drawable/m_customer_border_drawable"
-                android:onClick="openDietActivity"
-                android:orientation="horizontal">
-
-                <ProgressBar
-                    android:id="@+id/progressBarDiet"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imageView5"
-                    app:layout_constraintStart_toEndOf="@+id/textView4"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="@string/diet_string"
-                    android:textAlignment="center"
-                    android:textSize="36sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/firstRowCard">
 
-                <ImageView
-                    android:id="@+id/imageView5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:contentDescription="@string/add_diet_string"
-                    android:src="@drawable/ic_sharp_add_24"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+<!--                    Diet Card-->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/dietCV"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/horizontal_margin"
+                        android:layout_marginEnd="@dimen/card_padding"
+                        android:layout_marginTop="@dimen/card_padding"
+                        android:layout_marginBottom="@dimen/horizontal_margin"
+                        android:onClick="openDietActivity"
+                        android:clickable="true"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="8dp">
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical" >
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/m_customer_border_drawable"
-                android:onClick="openWorkoutActivity"
-                android:orientation="horizontal">
+                            <TextView
+                                android:id="@+id/dietTitleTV"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:padding="@dimen/card_padding"
+                                android:text="@string/diet_string"
+                                android:textAppearance="?attr/textAppearanceHeadline6" />
 
-                <ProgressBar
-                    android:id="@+id/progressBarWorkout"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imageView6"
-                    app:layout_constraintStart_toEndOf="@+id/textView18"
-                    app:layout_constraintTop_toTopOf="parent" />
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/textView18"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="@string/workout_string"
-                    android:textAlignment="center"
-                    android:textSize="36sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                                <ProgressBar
+                                    android:id="@+id/dietProgressBar"
+                                    style="?android:attr/progressBarStyleHorizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    app:layout_constraintDimensionRatio="H,1:1"
+                                    android:indeterminateOnly="false"
+                                    android:progressDrawable="@drawable/circle_progressbar_health_record"
+                                    tools:progress="70"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"/>
 
-                <ImageView
-                    android:id="@+id/imageView6"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:contentDescription="@string/add_workout_string"
-                    android:src="@drawable/ic_sharp_add_24"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                                <TextView
+                                    android:id="@+id/dietProgressBarTV"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/_0_percent_string"
+                                    android:textColor="@color/design_default_color_primary"
+                                    android:textStyle="bold"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="@id/dietProgressBar"
+                                    app:layout_constraintBottom_toBottomOf="@id/dietProgressBar"/>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+                            <TextView
+                                android:id="@+id/dietDetailsTV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:padding="@dimen/card_padding"
+                                android:layout_gravity="center"
+                                android:text="@string/goal_string"
+                                android:textAppearance="?attr/textAppearanceBody2" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+<!--                    Workout Card-->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/workoutCV"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/card_padding"
+                        android:layout_marginEnd="@dimen/horizontal_margin"
+                        android:layout_marginTop="@dimen/card_padding"
+                        android:layout_marginBottom="@dimen/horizontal_margin"
+                        android:onClick="openWorkoutActivity"
+                        android:clickable="true"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="8dp">
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:id="@+id/workoutTitleTV"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:padding="@dimen/card_padding"
+                                android:text="@string/workout_string"
+                                android:textAppearance="?attr/textAppearanceHeadline6" />
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <ProgressBar
+                                    android:id="@+id/workoutProgressBar"
+                                    style="?android:attr/progressBarStyleHorizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    app:layout_constraintDimensionRatio="H,1:1"
+                                    android:indeterminateOnly="false"
+                                    android:progressDrawable="@drawable/circle_progressbar_health_record"
+                                    tools:progress="70"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                                <TextView
+                                    android:id="@+id/workoutProgressBarTV"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/_0_percent_string"
+                                    android:textColor="@color/design_default_color_primary"
+                                    android:textStyle="bold"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="@id/workoutProgressBar"
+                                    app:layout_constraintBottom_toBottomOf="@id/workoutProgressBar"/>
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <TextView
+                                android:id="@+id/workoutDetailsTV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:padding="@dimen/card_padding"
+                                android:layout_gravity="center"
+                                android:text="@string/goal_string"
+                                android:textAppearance="?attr/textAppearanceBody2" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_navigation_view"
@@ -280,12 +423,14 @@
             app:menu="@menu/bottom_nav_menu" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view_health_record"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/profile_menu" />
+        app:menu="@menu/profile_menu"
+        android:visibility="gone"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>

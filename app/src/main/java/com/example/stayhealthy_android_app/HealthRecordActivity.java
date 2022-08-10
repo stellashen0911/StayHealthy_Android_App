@@ -177,10 +177,10 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
     }
 
     private void initProgressBars() {
-        this.pbDiet = findViewById(R.id.progressBarDiet);
-        this.pbPeriod = findViewById(R.id.progressBarPeriod);
-        this.pbWater = findViewById(R.id.progressBarWater);
-        this.pbWorkout = findViewById(R.id.progressBarWorkout);
+        this.pbDiet = findViewById(R.id.dietProgressBar);
+        this.pbPeriod = findViewById(R.id.periodProgressBar);
+        this.pbWater = findViewById(R.id.waterProgressBar);
+        this.pbWorkout = findViewById(R.id.workoutProgressBar);
     }
 
     private void initProfileDrawer() {

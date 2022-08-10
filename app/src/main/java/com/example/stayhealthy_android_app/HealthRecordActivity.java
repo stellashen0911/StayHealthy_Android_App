@@ -1,8 +1,8 @@
 package com.example.stayhealthy_android_app;
 
 import static com.example.stayhealthy_android_app.Period.PeriodActivity.MONTHLY_PERIOD;
+import static com.example.stayhealthy_android_app.Water.WaterIntakeModel.DAILY_WATER_TARGET_OZ;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.stayhealthy_android_app.Diet.DietActivity;
 import com.example.stayhealthy_android_app.Period.Model.PeriodData;
@@ -25,11 +26,9 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -38,7 +37,9 @@ import java.util.HashMap;
 
 public class HealthRecordActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private final static String TAG = "MHealthRecordActivity";
+    private final static String DATE_FULL_FORMAT = "EEEE, MMMM d, yyyy";
     private final static String DATE_SHORT_FORMAT = "yyyy-MM-dd";
+    private final static String DATE_LONG_FORMAT = "MMM dd";
     private BottomNavigationView bottomNavigationView;
     private DrawerLayout drawer;
     private Toolbar toolbar;
@@ -88,10 +89,14 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         setBottomNavigationView();
         initProfileDrawer();
 
+        // Set date and welcome user text
+        setDateAndWelcomeUserTextView();
     }
 
     private void updatePBDiet() {
         staticDietDB.get().addOnCompleteListener(task -> {
+            TextView dietProgressBarTV = findViewById(R.id.dietProgressBarTV);
+            TextView dietDetailsTV = findViewById(R.id.dietDetailsTV);
             try {
                 HashMap tempMap = (HashMap) task.getResult().getValue();
                 long breakfastNet = (long) ((HashMap) tempMap.get("breakfast")).get("net");
@@ -102,6 +107,10 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
                 long targetCal = (long) tempMap.get("target");
                 double v = 100 * (double) netCal / targetCal;
                 this.pbDiet.setProgress((int) v);
+                String percentInStr = ((int) v) + "%";
+                dietProgressBarTV.setText(percentInStr);
+                String goalStr = "Goal " + ((int) targetCal) + " Cal";
+                dietDetailsTV.setText(goalStr);
                 dieDB.child("breakfast").child("net").setValue(breakfastNet);
                 dieDB.child("lunch").child("net").setValue(lunchNet);
                 dieDB.child("dinner").child("net").setValue(dinnerNet);
@@ -109,32 +118,43 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
                 dieDB.child("target").setValue(targetCal);
             } catch (Exception err) {
                 this.pbDiet.setProgress(0);
+                dietProgressBarTV.setText(R.string._0_percent_string);
+                dietDetailsTV.setText(R.string.goal_string);
             }
         });
     }
 
     private void updatePBWater() {
         waterDB.get().addOnCompleteListener(task -> {
+            TextView waterProgressBarTV = findViewById(R.id.waterProgressBarTV);
+            TextView waterDetailsTV = findViewById(R.id.waterDetailsTV);
             try {
                 HashMap tempMap = (HashMap) task.getResult().getValue();
                 long taken = (long) tempMap.get("waterOz");
-                double v = 100 * (double) taken / 64;
+                double v = 100 * (double) taken / DAILY_WATER_TARGET_OZ;
                 this.pbWater.setProgress(v > 100 ? 100 : (int) v);
+                String percentInStr = ((int) v) + "%";
+                waterProgressBarTV.setText(percentInStr);
             } catch (Exception err) {
                 this.pbWater.setProgress(0);
+                waterProgressBarTV.setText(R.string._0_percent_string);
             }
+            String goal = "Goal " + DAILY_WATER_TARGET_OZ + " Oz";
+            waterDetailsTV.setText(goal);
         });
     }
 
     private void updatePBPeriod() {
         LocalDate today = LocalDate.now();
-        String date = localDateToDateInStr(today);
+        String date = localDateToDateInStr(today, DATE_SHORT_FORMAT);
         Query query = periodDB.orderByChild("flowAndDate").endAt("1-" + date).limitToLast(1);
 
         query.get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 Log.v("", "Error getting data", task.getException());
             } else {
+                TextView periodProgressBarTV = findViewById(R.id.periodProgressBarTV);
+                TextView periodDetailsTV = findViewById(R.id.periodDetailsTV);
                 for (DataSnapshot ds : task.getResult().getChildren()) {
                     PeriodData periodData = ds.getValue(PeriodData.class);
                     if (periodData != null && periodData.getHadFlow()) {
@@ -142,13 +162,22 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
                         int times = (int) (calculateDaysBetween(periodData.getStartDate(), date) / MONTHLY_PERIOD + 1);
                         // Calculated PredictedDate in the format "MMM dd yyyy"
                         LocalDate predictedDate = startDate.plusDays(MONTHLY_PERIOD * times);
-                        String predictedDateInStr = localDateToDateInStr(predictedDate);
-                        int remainingDays = (int) calculateDaysBetween(date, predictedDateInStr) - 1;
-                        this.pbPeriod.setMax((int) MONTHLY_PERIOD);
-                        this.pbPeriod.setProgress((int) MONTHLY_PERIOD - remainingDays);
+                        String predictedDateInStr = localDateToDateInStr(predictedDate, DATE_SHORT_FORMAT);
+                        int remainingDays = (int) calculateDaysBetween(date, predictedDateInStr);
+                        // Set progress bar
+                        pbPeriod.setMax((int) MONTHLY_PERIOD);
+                        pbPeriod.setProgress((int) MONTHLY_PERIOD - remainingDays);
+                        // Set progress bar text
+                        String remainingDaysInStr = remainingDays + " Days";
+                        periodProgressBarTV.setText(remainingDaysInStr);
+                        // Set period details
+                        String prediction = "Likely to start on " + localDateToDateInStr(predictedDate, DATE_LONG_FORMAT);
+                        periodDetailsTV.setText(prediction);
                     } else {
-                        this.pbPeriod.setMax((int) MONTHLY_PERIOD);
-                        this.pbPeriod.setProgress(0); // "No record"
+                        pbPeriod.setMax((int) MONTHLY_PERIOD);
+                        pbPeriod.setProgress(0); // "No record"
+                        periodProgressBarTV.setText(R.string.no_record_string);
+                        periodDetailsTV.setText(R.string.likely_to_start_on_string);
                     }
                 }
             }
@@ -158,6 +187,8 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
 
     private void updatePBWorkout() {
         workoutDB.get().addOnCompleteListener(task -> {
+            TextView workoutProgressBarTV = findViewById(R.id.workoutProgressBarTV);
+            TextView workoutDetailsTV = findViewById(R.id.workoutDetailsTV);
             HashMap tempMap = (HashMap) task.getResult().getValue();
             try {
                 boolean oneFinished = (boolean) ((HashMap) tempMap.get("Activity_one")).get("goal_finished_status");
@@ -169,9 +200,13 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
                 if (twoFinished) count++;
                 if (threeFinished) count++;
                 if (fourFinished) count++;
-                this.pbWorkout.setProgress(25 * count);
+                int percent = 25 * count;
+                this.pbWorkout.setProgress(percent);
+                String percentInStr = percent + "%";
+                workoutProgressBarTV.setText(percentInStr);
             } catch (Exception err) {
                 this.pbWorkout.setProgress(0);
+                workoutProgressBarTV.setText(R.string._0_percent_string);
             }
         });
     }
@@ -312,9 +347,29 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
         return true;
     }
 
+    private void setDateAndWelcomeUserTextView() {
+        // Display Today in string.
+        String today = localDateToDateInStr(LocalDate.now(), DATE_FULL_FORMAT);
+        TextView todayTV = findViewById(R.id.todayTV);
+        todayTV.setText(today);
+
+        // Display welcome user
+        TextView welcomeTV = findViewById(R.id.welcomeTV);
+        DatabaseReference emailRef = mDatabase.child("email");
+        emailRef.get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.v(TAG, "Error getting data", task.getException());
+            } else {
+                String email = task.getResult().getValue(String.class);
+                String welcome = "Hi, " + email;
+                 welcomeTV.setText(welcome);
+            }
+        });
+    }
+
     // Convert LocalDate to date in specified string format.
-    private String localDateToDateInStr(LocalDate date) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_SHORT_FORMAT);
+    private String localDateToDateInStr(LocalDate date, String dateFormat) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dateFormat);
         return date.format(dateTimeFormatter);
     }
 

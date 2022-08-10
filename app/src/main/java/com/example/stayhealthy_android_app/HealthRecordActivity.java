@@ -329,30 +329,23 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
     //new to add
     public void update_image_from_database() {
         //if the firebase already has an image for the profile, use the existing one
-        System.out.println("here is update image from data base 1");
         mDatabase.child("profile_image").get().addOnCompleteListener((task) -> {
             String tempStr = (String) task.getResult().getValue();
-            System.out.println("here is update image from data base 2");
-            System.out.println("uri string from data base is " + tempStr);
             if (tempStr == null ) {
                 tempStr = "";
             }
-            System.out.println("here is update image from data base 3");
             if (!tempStr.equals("")) {
                 //update the image
-                System.out.println("here is update image from data base 4");
                 StorageReference profileReference = storage.getReferenceFromUrl(tempStr);
                 profileReference.getBytes(FIVE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                     @Override
                     public void onSuccess(byte[] bytes) {
-                        System.out.println("here is update image from data base 5");
                         Bitmap currentImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         Bitmap rotate =  RotateBitmap(currentImage, 90f);
                         user_image.setImageBitmap(rotate);
                     }
                 });
             }
-            System.out.println("here is update image from data base 6");
         });
     }
 

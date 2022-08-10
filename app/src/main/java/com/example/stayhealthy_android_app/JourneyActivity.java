@@ -1,5 +1,7 @@
 package com.example.stayhealthy_android_app;
 
+import static com.example.stayhealthy_android_app.EditPostActivity.RotateBitmap;
+
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -8,11 +10,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.MenuItem;
@@ -23,6 +28,7 @@ import android.widget.TextView;
 
 import com.example.stayhealthy_android_app.Journey.JourneyPost;
 import com.example.stayhealthy_android_app.Journey.JourneyPostAdapter;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -55,6 +61,17 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
     private DatabaseReference myDataBase;
     FirebaseStorage fStorage;
     StorageReference storageReference;
+
+    //new to add
+    static final int REQUEST_IMAGE = 100;
+    ImageView user_image;
+    // Uri indicates, where the image will be picked from
+    private Uri filePath;
+    // instance for firebase storage and StorageReference
+    FirebaseStorage storage;
+    StorageReference storage_reference;
+    byte [] currentImageBytes;
+    final long FIVE_MEGABYTE = 1024 * 1024 * 5;
 
 
     @Override
@@ -142,7 +159,10 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
         Button LogOutBtn = (Button) headerView.findViewById(R.id.profile_logout_btn);
         Button ChangeAvartaButton = (Button) headerView.findViewById(R.id.update_profile_image_btn);
         TextView userNameText = (TextView) headerView.findViewById(R.id.user_name_show);
-        ImageView user_image = (ImageView) headerView.findViewById(R.id.image_avatar);
+        user_image = (ImageView) headerView.findViewById(R.id.image_avatar);
+        storage = FirebaseStorage.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        storage_reference = storage.getReference("users").child(user.getUid());
 
         // calling add value event listener method
         // for getting the values from database.
@@ -164,13 +184,63 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
             }
         });
 
+        update_image_from_database();
         ChangeAvartaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //to do:
+                onAddPicturePressed_profile(v);
             }
         });
     }
+
+    //new to add
+    public void update_image_from_database() {
+        //if the firebase already has an image for the profile, use the existing one
+        myDataBase.child("profile_image").get().addOnCompleteListener((task) -> {
+            String tempStr = (String) task.getResult().getValue();
+            if (tempStr == null ) {
+                tempStr = "";
+            }
+            if (!tempStr.equals("")) {
+                //update the image
+                StorageReference profileReference = storage.getReferenceFromUrl(tempStr);
+                profileReference.getBytes(FIVE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Bitmap currentImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        Bitmap rotate =  RotateBitmap(currentImage, 90f);
+                        user_image.setImageBitmap(rotate);
+                    }
+                });
+            }
+        });
+    }
+
+    //new to add
+    public void onAddPicturePressed_profile(View view) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE);
+        } catch (ActivityNotFoundException e) {
+            // simply return to the last activity.
+            onBackPressed();
+        }
+    }
+
+    public void upload_image_to_cloud() {
+        long currentMillis = System.currentTimeMillis();
+        final StorageReference fileRef = storage_reference.child("profile_avatar")
+                .child(String.valueOf(currentMillis));
+        fileRef.putBytes(currentImageBytes).addOnSuccessListener((task)-> {
+            fileRef.getDownloadUrl().addOnSuccessListener((uriTask -> {
+                String uriImage = uriTask.toString();
+                myDataBase.child("profile_image").setValue(uriImage);
+            }));
+        });
+    }
+
+
+
     private void setBottomNavigationView() {
         // Set Home selected
         bottomNavigationView.setSelectedItemId(R.id.journey_icon);
@@ -216,6 +286,18 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
             byte[] byteArray = stream.toByteArray();
             editPostIntent.putExtra("image",byteArray);
             startActivity(editPostIntent);
+        }
+        else if (requestCode == REQUEST_IMAGE && resultCode == Activity.RESULT_OK) {
+            filePath = data.getData();
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+            currentImageBytes = byteArray;
+            Bitmap currentImage = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+            Bitmap rotate =  RotateBitmap(currentImage, 90f);
+            user_image.setImageBitmap(rotate);
+            upload_image_to_cloud();
         }
     }
 

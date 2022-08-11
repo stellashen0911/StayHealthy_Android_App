@@ -118,6 +118,10 @@ public class WorkoutActivity extends AppCompatActivity {
         CV2 = (CardView) findViewById(R.id.workoutDataCV_02);
         CV3 = (CardView) findViewById(R.id.workoutDataCV_03);
         CV4 = (CardView) findViewById(R.id.workoutDataCV_04);
+        CV1.setVisibility(View.GONE);
+        CV2.setVisibility(View.GONE);
+        CV3.setVisibility(View.GONE);
+        CV4.setVisibility(View.GONE);
 
         //Get the bundle
         Bundle bundle = getIntent().getExtras();

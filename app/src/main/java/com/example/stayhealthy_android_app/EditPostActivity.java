@@ -21,8 +21,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
-public class EditPostActivity  extends AppCompatActivity {
+public class EditPostActivity extends AppCompatActivity {
 
     ImageView postImageView;
     EditText postEditText;
@@ -33,29 +36,30 @@ public class EditPostActivity  extends AppCompatActivity {
     FirebaseStorage fStorage;
     StorageReference storageReference;
     Bitmap currentImage;
-    byte [] currentImageBytes;
+    byte[] currentImageBytes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_post);
-        postImageView =  findViewById(R.id.post_image);
+        postImageView = findViewById(R.id.post_image);
         postEditText = findViewById(R.id.post_text);
         postButton = findViewById(R.id.post_button);
         cancelButton = findViewById(R.id.cancel);
         currentImageBytes = getIntent().getByteArrayExtra("image");
-        if(currentImageBytes == null ) {
+        if (currentImageBytes == null) {
             onBackPressed();
         }
-        currentImage= BitmapFactory.decodeByteArray(currentImageBytes, 0, currentImageBytes.length);
-        Bitmap rotate =  RotateBitmap(currentImage, 90f);
+        currentImage = BitmapFactory.decodeByteArray(currentImageBytes, 0, currentImageBytes.length);
+        Bitmap rotate = RotateBitmap(currentImage, 90f);
         postImageView.setImageBitmap(rotate);
         user = FirebaseAuth.getInstance().getCurrentUser();
         myDataBase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
         fStorage = FirebaseStorage.getInstance();
-        storageReference = fStorage.getReference("users").child(user.getUid());;
-        postButton.setOnClickListener(v->postToFirebase());
-        cancelButton.setOnClickListener(v->onCancelClick());
+        storageReference = fStorage.getReference("users").child(user.getUid());
+        ;
+        postButton.setOnClickListener(v -> postToFirebase());
+        cancelButton.setOnClickListener(v -> onCancelClick());
     }
 
     public static Bitmap RotateBitmap(Bitmap source, float angle) {
@@ -69,24 +73,31 @@ public class EditPostActivity  extends AppCompatActivity {
         String postText = postEditText.getText().toString();
         final StorageReference fileRef = storageReference.child("posts")
                 .child(String.valueOf(currentMillis));
-                fileRef.putBytes(currentImageBytes).addOnSuccessListener((task)-> {
-                    fileRef.getDownloadUrl().addOnSuccessListener((uriTask -> {
-                       String uriImage =   uriTask.toString();
-                        JourneyPost postModel = new JourneyPost(uriImage,postText);
-                        myDataBase.child("posts")
-                                .child(String.valueOf(currentMillis))
-                                .setValue(postModel).addOnSuccessListener((taskdb) -> {
-                                    Intent intent = new Intent(this, JourneyActivity.class);
-                                    startActivity(intent);
-                                });
-                    }));
-                });
+        fileRef.putBytes(currentImageBytes).addOnSuccessListener((task) -> {
+            fileRef.getDownloadUrl().addOnSuccessListener((uriTask -> {
+                String uriImage = uriTask.toString();
+                Date date = new Date(currentMillis);
+                JourneyPost postModel = new JourneyPost(uriImage, postText, convertDateToDateStr(date));
+                myDataBase.child("posts")
+                        .child(String.valueOf(currentMillis))
+                        .setValue(postModel).addOnSuccessListener((taskdb) -> {
+                            Intent intent = new Intent(this, JourneyActivity.class);
+                            startActivity(intent);
+                        });
+            }));
+        });
         Intent intent = new Intent(this, JourneyActivity.class);
         startActivity(intent);
     }
 
     public void onCancelClick() {
-        Intent intent = new Intent(this,JourneyActivity.class);
+        Intent intent = new Intent(this, JourneyActivity.class);
         startActivity(intent);
+    }
+
+    // Convert date to date in string
+    private String convertDateToDateStr(Date date) {
+        SimpleDateFormat format = new SimpleDateFormat(/*dateFormat=*/"yyyy-MM-dd", Locale.US);
+        return format.format(date);
     }
 }

@@ -40,10 +40,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class JourneyActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private BottomNavigationView bottomNavigationView;
@@ -107,16 +110,15 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
             for (int i = 0; i < timestamps.size(); i++) {
                 String postStr = tempMap.get(timestamps.get(i)).get("postStr");
                 String post_photo = tempMap.get(timestamps.get(i)).get("postPhoto");
-                posts.add(new JourneyPost(post_photo,postStr));
+                Date currentDate = new Date(Long.valueOf(timestamps.get(i)));
+                posts.add(new JourneyPost(post_photo,postStr,convertDateToDateStr(currentDate)));
                 postAdapter.notifyDataSetChanged();
             }
         });
-
         // Initialize and assign variable
         initWidgets();
         setBottomNavigationView();
         initProfileDrawer();
-
         setBottomNavigationView();
     }
 
@@ -239,8 +241,6 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
         });
     }
 
-
-
     private void setBottomNavigationView() {
         // Set Home selected
         bottomNavigationView.setSelectedItemId(R.id.journey_icon);
@@ -325,5 +325,11 @@ public class JourneyActivity extends AppCompatActivity implements NavigationView
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    // Convert date to date in string
+    private String convertDateToDateStr(Date date) {
+        SimpleDateFormat format = new SimpleDateFormat(/*dateFormat=*/"yyyy-MM-dd", Locale.US);
+        return format.format(date);
     }
 }

@@ -17,6 +17,7 @@ import com.google.firebase.storage.StorageReference;
 public class JourneyPostViewHolder  extends RecyclerView.ViewHolder  {
     private ImageView postImage;
     private TextView postTextView;
+    private TextView dateTextView;
     FirebaseStorage fStorage;
     final long FIVE_MEGABYTE = 1024 * 1024*5;
     public JourneyPostViewHolder(@NonNull View itemView,  FirebaseStorage fStorage) {
@@ -24,10 +25,12 @@ public class JourneyPostViewHolder  extends RecyclerView.ViewHolder  {
         this.fStorage = fStorage;
         postTextView = itemView.findViewById(R.id.post_text);
         postImage = itemView.findViewById(R.id.imageViewPost);
+        dateTextView =itemView.findViewById(R.id.post_date);
     }
 
     public void bindJourneyPost(JourneyPost post) {
         postTextView.setText(post.getPostStr());
+        dateTextView.setText(post.getDateStr());
         if (post.getPostPhoto() != null && !post.getPostPhoto().isEmpty()) {
             StorageReference gsReference = fStorage.getReferenceFromUrl(post.getPostPhoto());
             gsReference.getBytes(FIVE_MEGABYTE).addOnSuccessListener((task) -> {

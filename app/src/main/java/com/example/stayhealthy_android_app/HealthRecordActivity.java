@@ -221,7 +221,7 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
                         // Set progress bar
                         pbPeriod.setMin(0);
                         pbPeriod.setMax((int) MONTHLY_PERIOD);
-                        pbPeriod.setProgress((int) MONTHLY_PERIOD - remainingDays);
+                        pbPeriod.setProgress(remainingDays);
                         // Set progress bar text
                         String remainingDaysInStr = remainingDays + " Days";
                         periodProgressBarTV.setText(remainingDaysInStr);

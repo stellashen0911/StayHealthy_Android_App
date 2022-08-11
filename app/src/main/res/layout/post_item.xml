@@ -23,6 +23,15 @@
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:scaleType="fitCenter" />
+        <TextView
+            android:id="@+id/post_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:text="0000-00-00"
+            android:layout_marginTop="5dp"
+            android:gravity="right"/>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.appcompat.widget.LinearLayoutCompat>

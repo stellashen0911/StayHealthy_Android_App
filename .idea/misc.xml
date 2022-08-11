@@ -52,6 +52,8 @@
         <entry key="app/src/main/res/menu/profile_page.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_award.xml" value="0.118" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_award_round.xml" value="0.118" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_logo_round.xml" value="0.118" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.118" />
         <entry key="app/src/main/res/xml/setting_fragment.xml" value="0.2171875" />
       </map>
     </option>

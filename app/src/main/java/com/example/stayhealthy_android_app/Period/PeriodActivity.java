@@ -37,6 +37,9 @@ import com.example.stayhealthy_android_app.databinding.ActivityPeriodBinding;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.DateValidatorPointBackward;
+import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
@@ -193,6 +196,9 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
     // addPeriodDateBTN onClickListener. A datePicker shown when clicked. User can choose a date or
     // a range of dates through this picker.
     public void addPeriodDate(View view) {
+        long endDate = LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        CalendarConstraints.Builder constraintBuilder = new CalendarConstraints.Builder().setEnd(endDate)
+                .setValidator(DateValidatorPointBackward.now());
         // Set default selection range as 2 days ago to today. StartDate is 4 days ago before the
         // end date.
         int daysAgo = -4;
@@ -201,6 +207,7 @@ public class PeriodActivity extends AppCompatActivity implements CalendarAdapter
         final MaterialDatePicker<Pair<Long, Long>> materialDatePicker = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText("Select Period Range")
                 .setSelection(new Pair<>(defaultStartDateInMilliseconds, defaultEndDateInMilliseconds))
+                .setCalendarConstraints(constraintBuilder.build())
                 .build();
         materialDatePicker.show(getSupportFragmentManager(), "PeriodDateRangePicker");
 

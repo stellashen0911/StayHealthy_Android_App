@@ -445,6 +445,7 @@ public class AwardActivity<x> extends AppCompatActivity implements NavigationVie
         });
     }
 
+
     //new to add
     public void onAddPicturePressed(View view) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

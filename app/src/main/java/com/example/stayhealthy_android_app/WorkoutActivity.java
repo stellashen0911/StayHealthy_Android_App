@@ -118,10 +118,7 @@ public class WorkoutActivity extends AppCompatActivity {
         CV2 = (CardView) findViewById(R.id.workoutDataCV_02);
         CV3 = (CardView) findViewById(R.id.workoutDataCV_03);
         CV4 = (CardView) findViewById(R.id.workoutDataCV_04);
-        CV1.setVisibility(View.GONE);
-        CV2.setVisibility(View.GONE);
-        CV3.setVisibility(View.GONE);
-        CV4.setVisibility(View.GONE);
+        default_workout_goal();
 
         //Get the bundle
         Bundle bundle = getIntent().getExtras();
@@ -234,6 +231,45 @@ public class WorkoutActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void default_workout_goal() {
+        CV3.setVisibility(View.GONE);
+        CV4.setVisibility(View.GONE);
+        TOTAL_WORKOUT_CALORIES = "514";
+        TOTAL_ACTIVITIES = "2";
+        ActivityOneLabel = "Swimming";
+        ActivityTwoLabel = "HIIT";
+        Activity_Calories_one = 286;
+        Activity_Calories_two = 228;
+        ActivityOneTime = "40 min";
+        ActivityTwoTime = "20 min";
+        goal_calories_TX = findViewById(R.id.CaloriesGoal);
+        completed_calories_TX = findViewById(R.id.GoalFinishedNumber);
+        goal_calories_TX.setText(TOTAL_WORKOUT_CALORIES);
+        completed_calories_TX.setText("0");
+        goal_calories = Integer.parseInt(goal_calories_TX.getText().toString());
+        completed_calories = Integer.parseInt(completed_calories_TX.getText().toString());
+        // Get the current user from firebase authentication.
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        // Set up the firebase Database reference.
+        assert user != null;
+        mDatabase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+        // Initialize the selected date as today.
+        selectedDate = LocalDate.now();
+        update_goal_progress_bar();
+        work_out_Ref = mDatabase.child("work-out");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
+        String formattedDateString = selectedDate.format(formatter);
+        Activity_Ref_one = work_out_Ref.child(formattedDateString).child("Activity_one");
+        Activity_Ref_two = work_out_Ref.child(formattedDateString).child("Activity_two");
+        Activity_Ref_one.child("activity_type").setValue(ActivityOneLabel);
+        Activity_Ref_two.child("activity_type").setValue(ActivityTwoLabel);
+        Activity_Ref_one.child("goal_calories").setValue(String.valueOf(Activity_Calories_one));
+        Activity_Ref_two.child("goal_calories").setValue(String.valueOf(Activity_Calories_two));
+        Activity_Ref_one.child("goal_time").setValue(ActivityOneTime);
+        Activity_Ref_two.child("goal_time").setValue(ActivityTwoTime);
     }
 
     public void openEditGoalActivity() {

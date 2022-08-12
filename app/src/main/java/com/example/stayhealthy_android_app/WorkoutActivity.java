@@ -233,40 +233,40 @@ public class WorkoutActivity extends AppCompatActivity {
             }
         });
 
-        workoutDB.get().addOnCompleteListener(task -> {
-            HashMap tempMap = (HashMap) task.getResult().getValue();
-            try {
-                updated_goal_boolean = (boolean) tempMap.get("Goal_updated");
-                if (updated_goal_boolean == true) {
-                    System.out.println("updated start");
-                    pull_data_from_database();
-                } else {
-                    default_workout_goal();
-                }
-            } catch (Exception err) {
-                default_workout_goal();
-            }
-        });
+//        workoutDB.get().addOnCompleteListener(task -> {
+//            HashMap tempMap = (HashMap) task.getResult().getValue();
+//            try {
+//                updated_goal_boolean = (boolean) tempMap.get("Goal_updated");
+//                if (updated_goal_boolean == true) {
+//                    System.out.println("updated start");
+//                    pull_data_from_database();
+//                } else {
+//                    default_workout_goal();
+//                }
+//            } catch (Exception err) {
+//                default_workout_goal();
+//            }
+//        });
 
-//        if (bundle != null) {
-//            //Extract the data…
-//            TOTAL_WORKOUT_CALORIES = bundle.getString("calories");
-//            TOTAL_ACTIVITIES = bundle.getString("activities");
-//            ActivityOneLabel = bundle.getString("activity_one");
-//            ActivityTwoLabel = bundle.getString("activity_two");
-//            ActivityThreeLabel = bundle.getString("activity_three");
-//            ActivityFourLabel = bundle.getString("activity_four");
-//            ActivityOneTime = bundle.getString("activity_time_one");
-//            ActivityTwoTime = bundle.getString("activity_time_two");
-//            ActivityThreeTime = bundle.getString("activity_time_three");
-//            ActivityFourTime = bundle.getString("activity_time_four");
-//            Activity_Calories_one = Integer.parseInt(bundle.getString("activity_calories_one"));
-//            Activity_Calories_two = Integer.parseInt(bundle.getString("activity_calories_two"));
-//            Activity_Calories_three = Integer.parseInt(bundle.getString("activity_calories_three"));
-//            Activity_Calories_four = Integer.parseInt(bundle.getString("activity_calories_four"));
-//            update_firebase_setup();
-//            update_Goal_CardView();
-//        }
+        if (bundle != null) {
+            //Extract the data…
+            TOTAL_WORKOUT_CALORIES = bundle.getString("calories");
+            TOTAL_ACTIVITIES = bundle.getString("activities");
+            ActivityOneLabel = bundle.getString("activity_one");
+            ActivityTwoLabel = bundle.getString("activity_two");
+            ActivityThreeLabel = bundle.getString("activity_three");
+            ActivityFourLabel = bundle.getString("activity_four");
+            ActivityOneTime = bundle.getString("activity_time_one");
+            ActivityTwoTime = bundle.getString("activity_time_two");
+            ActivityThreeTime = bundle.getString("activity_time_three");
+            ActivityFourTime = bundle.getString("activity_time_four");
+            Activity_Calories_one = Integer.parseInt(bundle.getString("activity_calories_one"));
+            Activity_Calories_two = Integer.parseInt(bundle.getString("activity_calories_two"));
+            Activity_Calories_three = Integer.parseInt(bundle.getString("activity_calories_three"));
+            Activity_Calories_four = Integer.parseInt(bundle.getString("activity_calories_four"));
+            update_firebase_setup();
+            update_Goal_CardView();
+        }
     }
 
     public void pull_data_from_database() {

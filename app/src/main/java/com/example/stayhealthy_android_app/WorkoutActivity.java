@@ -91,7 +91,8 @@ public class WorkoutActivity extends AppCompatActivity {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
         String formattedDateString = selectedDate.format(formatter);
         workoutDB = mDatabase.child("work-out").child(formattedDateString);
-
+        TOTAL_ACTIVITIES = "2";
+        TOTAL_WORKOUT_CALORIES = "514";
 
         //setup the bottom nav bar
         initWidgets();
@@ -248,6 +249,8 @@ public class WorkoutActivity extends AppCompatActivity {
 //            }
 //        });
 
+        default_workout_goal();
+
         if (bundle != null) {
             //Extract the data…
             TOTAL_WORKOUT_CALORIES = bundle.getString("calories");
@@ -264,9 +267,12 @@ public class WorkoutActivity extends AppCompatActivity {
             Activity_Calories_two = Integer.parseInt(bundle.getString("activity_calories_two"));
             Activity_Calories_three = Integer.parseInt(bundle.getString("activity_calories_three"));
             Activity_Calories_four = Integer.parseInt(bundle.getString("activity_calories_four"));
+            goal_calories_TX.setText(TOTAL_WORKOUT_CALORIES);
+            updateCardViewNumber();
             update_firebase_setup();
             update_Goal_CardView();
         }
+
     }
 
     public void pull_data_from_database() {
@@ -371,8 +377,6 @@ public class WorkoutActivity extends AppCompatActivity {
     public void default_workout_goal() {
         CV3.setVisibility(View.GONE);
         CV4.setVisibility(View.GONE);
-        TOTAL_WORKOUT_CALORIES = "514";
-        TOTAL_ACTIVITIES = "2";
         ActivityOneLabel = "Swimming";
         ActivityTwoLabel = "HIIT";
         Activity_Calories_one = 286;

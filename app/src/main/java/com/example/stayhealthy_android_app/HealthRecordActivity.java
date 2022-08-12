@@ -243,22 +243,31 @@ public class HealthRecordActivity extends AppCompatActivity implements Navigatio
             TextView workoutDetailsTV = findViewById(R.id.workoutDetailsTV);
             HashMap tempMap = (HashMap) task.getResult().getValue();
             try {
+                String oneCal = (String) ((HashMap) tempMap.get("Activity_one")).get("goal_calories");
+                String twoCal = (String) ((HashMap) tempMap.get("Activity_two")).get("goal_calories");
+                String threeCal = (String) ((HashMap) tempMap.get("Activity_three")).get("goal_calories");
+                String fourCal = (String) ((HashMap) tempMap.get("Activity_four")).get("goal_calories");
                 boolean oneFinished = (boolean) ((HashMap) tempMap.get("Activity_one")).get("goal_finished_status");
                 boolean twoFinished = (boolean) ((HashMap) tempMap.get("Activity_two")).get("goal_finished_status");
                 boolean threeFinished = (boolean) ((HashMap) tempMap.get("Activity_three")).get("goal_finished_status");
                 boolean fourFinished = (boolean) ((HashMap) tempMap.get("Activity_four")).get("goal_finished_status");
-                int count = 0;
-                if (oneFinished) count++;
-                if (twoFinished) count++;
-                if (threeFinished) count++;
-                if (fourFinished) count++;
-                int percent = 25 * count;
-                if (percent == 0) {
+                String total_goal_cal_str = (String) (tempMap.get("today_total_calories_goal"));
+                double total_goal_cal = (double) Double.parseDouble(total_goal_cal_str);
+                int total_cal = 0;
+                if (oneFinished) total_cal += Integer.parseInt(oneCal);
+                if (twoFinished) total_cal += Integer.parseInt(twoCal);
+                if (threeFinished) total_cal += Integer.parseInt(threeCal);
+                if (fourFinished) total_cal += Integer.parseInt(fourCal);
+                double progress = (double) ((double) total_cal / (double) total_goal_cal);
+                int int_progress = (int) (progress * 100);
+                if (int_progress == 0) {
                     return;
                 }
                 pbWorkout.setMin(0);
-                pbWorkout.setProgress(percent);
-                String percentInStr = percent + "%";
+                pbWorkout.setProgress(int_progress);
+                String percentInStr = int_progress + "%";
+                String goalStr = "Goal " + total_goal_cal_str + " Cal";
+                workoutDetailsTV.setText(goalStr);
                 workoutProgressBarTV.setText(percentInStr);
             } catch (Exception err) {
                 workoutProgressBarTV.setText(R.string._0_percent_string);

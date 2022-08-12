@@ -32,8 +32,11 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
     private int totalCalories;
     private int totalTime;
     private Toolbar toolbar;
-    private DatabaseReference myDataBase;
+    private DatabaseReference mDatabase;
     private Button updateBtn;
+    private DatabaseReference myDataBase;
+    private DatabaseReference workoutDB;
+    private LocalDate selectedDate;
     private Spinner workout_numbers_selection;
     private Spinner workout_activity_choose_1;
     private Spinner workout_time_choose_1;
@@ -71,6 +74,19 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
         initWidgets();
         setBottomNavigationView();
 
+        // Get the current user from firebase authentication.
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        // Set up the firebase Database reference.
+        assert user != null;
+
+        mDatabase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+        // Initialize the selected date as today.
+        selectedDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
+        String formattedDateString = selectedDate.format(formatter);
+        workoutDB = mDatabase.child("work-out").child(formattedDateString);
+
         //set up the date for today
         initDate();
         goal_calories_TX = findViewById(R.id.textView_show_workout_calories);
@@ -82,8 +98,6 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Edit Workout Goals for Today");
 
-        //set up the firebase
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         myDataBase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
 
 
@@ -465,6 +479,27 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
         bundle.putString("activity_calories_two", activity_calories_two);
         bundle.putString("activity_calories_three", activity_calories_three);
 
+        //set update on firebase
+        workoutDB.child("Goal_updated").setValue(true);
+        workoutDB.child("Activity_one").child("activity_type").setValue(activity_one_label);
+        workoutDB.child("Activity_one").child("goal_time").setValue(activity_time_Label_one);
+        workoutDB.child("Activity_one").child("goal_calories").setValue(activity_calories_one);
+        workoutDB.child("Activity_one").child("goal_finished_status").setValue(false);
+
+        workoutDB.child("Activity_two").child("activity_type").setValue(activity_two_label);
+        workoutDB.child("Activity_two").child("goal_time").setValue(activity_time_Label_two);
+        workoutDB.child("Activity_two").child("goal_calories").setValue(activity_calories_two);
+        workoutDB.child("Activity_two").child("goal_finished_status").setValue(false);
+
+        workoutDB.child("Activity_three").child("activity_type").setValue(activity_three_label);
+        workoutDB.child("Activity_three").child("goal_time").setValue(activity_time_Label_three);
+        workoutDB.child("Activity_three").child("goal_calories").setValue(activity_calories_three);
+        workoutDB.child("Activity_three").child("goal_finished_status").setValue(false);
+
+        workoutDB.child("Activity_four").child("activity_type").setValue(activity_four_label);
+        workoutDB.child("Activity_four").child("goal_time").setValue(activity_time_Label_four);
+        workoutDB.child("Activity_four").child("goal_calories").setValue(activity_calories_four);
+        workoutDB.child("Activity_four").child("goal_finished_status").setValue(false);
 
         //Add the bundle to the intent
         i.putExtras(bundle);
@@ -481,6 +516,12 @@ public class EditWorkoutGoalActivity extends AppCompatActivity {
     }
 
     private void updateCardViewNumber() {
+        selectedDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
+        String formattedDateString = selectedDate.format(formatter);
+        DatabaseReference work_out_Ref = mDatabase.child("work-out");
+        String TOTAL_ACTIVITIES = String.valueOf(totalNumberOfWorkout);
+        work_out_Ref.child(formattedDateString).child("total_activity_number").setValue(TOTAL_ACTIVITIES);
             if (totalNumberOfWorkout == 1) {
                 CV1.setVisibility(View.VISIBLE);
                 CV2.setVisibility(View.GONE);

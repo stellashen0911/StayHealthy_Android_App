@@ -70,12 +70,28 @@ public class WorkoutActivity extends AppCompatActivity {
     private CheckBox activity_checkbox_two;
     private CheckBox activity_checkbox_three;
     private CheckBox activity_checkbox_four;
+    private DatabaseReference workoutDB;
+    private Boolean updated_goal_boolean;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workout);
+
+        // Get the current user from firebase authentication.
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        // Set up the firebase Database reference.
+        assert user != null;
+
+        mDatabase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+        // Initialize the selected date as today.
+        selectedDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
+        String formattedDateString = selectedDate.format(formatter);
+        workoutDB = mDatabase.child("work-out").child(formattedDateString);
+
 
         //setup the bottom nav bar
         initWidgets();
@@ -112,36 +128,21 @@ public class WorkoutActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Work Out Records");
+        goal_calories_TX = findViewById(R.id.CaloriesGoal);
+        completed_calories_TX = findViewById(R.id.GoalFinishedNumber);
 
         //set up the card view of detailed workout
         CV1 = (CardView) findViewById(R.id.workoutDataCV_01);
         CV2 = (CardView) findViewById(R.id.workoutDataCV_02);
         CV3 = (CardView) findViewById(R.id.workoutDataCV_03);
         CV4 = (CardView) findViewById(R.id.workoutDataCV_04);
-        default_workout_goal();
+        Activity_Ref_one = workoutDB.child("Activity_one");
+        Activity_Ref_two = workoutDB.child("Activity_two");
+        Activity_Ref_three = workoutDB.child("Activity_three");
+        Activity_Ref_four = workoutDB.child("Activity_four");
 
         //Get the bundle
         Bundle bundle = getIntent().getExtras();
-
-        if (bundle != null) {
-            //Extract the data…
-            TOTAL_WORKOUT_CALORIES = bundle.getString("calories");
-            TOTAL_ACTIVITIES = bundle.getString("activities");
-            ActivityOneLabel = bundle.getString("activity_one");
-            ActivityTwoLabel = bundle.getString("activity_two");
-            ActivityThreeLabel = bundle.getString("activity_three");
-            ActivityFourLabel = bundle.getString("activity_four");
-            ActivityOneTime = bundle.getString("activity_time_one");
-            ActivityTwoTime = bundle.getString("activity_time_two");
-            ActivityThreeTime = bundle.getString("activity_time_three");
-            ActivityFourTime = bundle.getString("activity_time_four");
-            Activity_Calories_one = Integer.parseInt(bundle.getString("activity_calories_one"));
-            Activity_Calories_two = Integer.parseInt(bundle.getString("activity_calories_two"));
-            Activity_Calories_three = Integer.parseInt(bundle.getString("activity_calories_three"));
-            Activity_Calories_four = Integer.parseInt(bundle.getString("activity_calories_four"));
-            update_firebase_setup();
-            update_Goal_CardView();
-        }
 
         activity_checkbox_one = (CheckBox) findViewById(R.id.workoutDetail_checkbox_01);
         activity_checkbox_one.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -218,9 +219,9 @@ public class WorkoutActivity extends AppCompatActivity {
                     completed_calories += Activity_Calories_four;
                     String completed_workout_calories = String.valueOf(completed_calories);
                     completed_calories_TX.setText(completed_workout_calories);
-                    update_goal_progress_bar();
                     Activity_Ref_four.child("goal_finished_status").setValue(true);
                     check_today_goal_complete();
+                    update_goal_progress_bar();
                 } else {
                     completed_calories -= Activity_Calories_four;
                     String completed_workout_calories = String.valueOf(completed_calories);
@@ -231,6 +232,140 @@ public class WorkoutActivity extends AppCompatActivity {
                 }
             }
         });
+
+        workoutDB.get().addOnCompleteListener(task -> {
+            HashMap tempMap = (HashMap) task.getResult().getValue();
+            try {
+                updated_goal_boolean = (boolean) tempMap.get("Goal_updated");
+                if (updated_goal_boolean == true) {
+                    System.out.println("updated start");
+                    pull_data_from_database();
+                } else {
+                    default_workout_goal();
+                }
+            } catch (Exception err) {
+                default_workout_goal();
+            }
+        });
+
+//        if (bundle != null) {
+//            //Extract the data…
+//            TOTAL_WORKOUT_CALORIES = bundle.getString("calories");
+//            TOTAL_ACTIVITIES = bundle.getString("activities");
+//            ActivityOneLabel = bundle.getString("activity_one");
+//            ActivityTwoLabel = bundle.getString("activity_two");
+//            ActivityThreeLabel = bundle.getString("activity_three");
+//            ActivityFourLabel = bundle.getString("activity_four");
+//            ActivityOneTime = bundle.getString("activity_time_one");
+//            ActivityTwoTime = bundle.getString("activity_time_two");
+//            ActivityThreeTime = bundle.getString("activity_time_three");
+//            ActivityFourTime = bundle.getString("activity_time_four");
+//            Activity_Calories_one = Integer.parseInt(bundle.getString("activity_calories_one"));
+//            Activity_Calories_two = Integer.parseInt(bundle.getString("activity_calories_two"));
+//            Activity_Calories_three = Integer.parseInt(bundle.getString("activity_calories_three"));
+//            Activity_Calories_four = Integer.parseInt(bundle.getString("activity_calories_four"));
+//            update_firebase_setup();
+//            update_Goal_CardView();
+//        }
+    }
+
+    public void pull_data_from_database() {
+        System.out.println("updated check box");
+        workoutDB.get().addOnCompleteListener(task -> {
+            HashMap tempMap = (HashMap) task.getResult().getValue();
+            TOTAL_ACTIVITIES = (String) tempMap.get("total_activity_number");
+            int activity_number = Integer.parseInt(TOTAL_ACTIVITIES);
+
+            String oneCal = (String) ((HashMap) tempMap.get("Activity_one")).get("goal_calories");
+            String twoCal = (String) ((HashMap) tempMap.get("Activity_two")).get("goal_calories");
+            ActivityOneLabel = (String) ((HashMap) tempMap.get("Activity_one")).get("activity_type");
+            ActivityTwoLabel = (String) ((HashMap) tempMap.get("Activity_two")).get("activity_type");
+            ActivityOneTime = (String) ((HashMap) tempMap.get("Activity_one")).get("goal_time");
+            ActivityTwoTime = (String) ((HashMap) tempMap.get("Activity_two")).get("goal_time");
+            Activity_Calories_two = Integer.parseInt(twoCal);
+            Activity_Calories_one = Integer.parseInt(oneCal);
+            String threeCal = "";
+            boolean threeFinished = false;
+            String fourCal = "";
+            boolean fourFinished = false;
+            boolean oneFinished = (boolean) ((HashMap) tempMap.get("Activity_one")).get("goal_finished_status");
+            boolean twoFinished = (boolean) ((HashMap) tempMap.get("Activity_two")).get("goal_finished_status");
+            if (activity_number == 3) {
+                System.out.println("here 3");
+
+                threeFinished = (boolean) ((HashMap) tempMap.get("Activity_three")).get("goal_finished_status");
+                if (threeFinished) activity_checkbox_three.setChecked(true);
+                threeCal = (String) ((HashMap) tempMap.get("Activity_three")).get("goal_calories");
+                Activity_Calories_three = Integer.parseInt(threeCal);
+                ActivityThreeLabel = (String) ((HashMap) tempMap.get("Activity_three")).get("activity_type");
+                ActivityThreeTime = (String) ((HashMap) tempMap.get("Activity_three")).get("goal_time");
+                TextView workout_Activity_three = findViewById(R.id.workoutDetail_title_03);
+                workout_Activity_three.setText(ActivityThreeLabel);
+                TextView workout_Activity_Time_three = findViewById(R.id.workoutDetail_min_03);
+                workout_Activity_Time_three.setText(ActivityThreeTime);
+            }else if (activity_number == 4) {
+                System.out.println("here 4");
+                threeFinished = (boolean) ((HashMap) tempMap.get("Activity_three")).get("goal_finished_status");
+                 fourFinished = (boolean) ((HashMap) tempMap.get("Activity_four")).get("goal_finished_status");
+                System.out.println(" 4 - 1");
+                if (threeFinished) activity_checkbox_three.setChecked(true);
+                if (fourFinished) activity_checkbox_four.setChecked(true);
+                System.out.println(" 4 - 2");
+                threeCal = (String) ((HashMap) tempMap.get("Activity_three")).get("goal_calories");
+                fourCal = (String) ((HashMap) tempMap.get("Activity_four")).get("goal_calories");
+                System.out.println(" 4 - 3");
+                ActivityThreeLabel = (String) ((HashMap) tempMap.get("Activity_three")).get("activity_type");
+                ActivityFourLabel = (String) ((HashMap) tempMap.get("Activity_four")).get("activity_type");
+                Activity_Calories_four = Integer.parseInt(fourCal);
+                Activity_Calories_three = Integer.parseInt(threeCal);
+                System.out.println(" 4 - 4");
+                ActivityThreeTime = (String) ((HashMap) tempMap.get("Activity_three")).get("goal_time");
+                ActivityFourTime = (String) ((HashMap) tempMap.get("Activity_four")).get("goal_time");
+                System.out.println(" 4 - 5");
+                TextView workout_Activity_three = findViewById(R.id.workoutDetail_title_03);
+                workout_Activity_three.setText(ActivityThreeLabel);
+                TextView workout_Activity_four = findViewById(R.id.workoutDetail_title_04);
+                workout_Activity_four.setText(ActivityFourLabel);
+                TextView workout_Activity_Time_three = findViewById(R.id.workoutDetail_min_03);
+                workout_Activity_Time_three.setText(ActivityThreeTime);
+                TextView workout_Activity_Time_four = findViewById(R.id.workoutDetail_min_04);
+                workout_Activity_Time_four.setText(ActivityFourTime);
+            }
+            System.out.println("here 5");
+
+            if (oneFinished) activity_checkbox_one.setChecked(true);
+            if (twoFinished) activity_checkbox_two.setChecked(true);
+            String total_goal_cal_str = (String) (tempMap.get("today_total_calories_goal"));
+            double total_goal_cal = (double) Double.parseDouble(total_goal_cal_str);
+            int total_cal = 0;
+            if (oneFinished) total_cal += Integer.parseInt(oneCal);
+            if (twoFinished) total_cal += Integer.parseInt(twoCal);
+            if (threeFinished) total_cal += Integer.parseInt(threeCal);
+            if (fourFinished) total_cal += Integer.parseInt(fourCal);
+            goal_calories_TX.setText(total_goal_cal_str);
+            completed_calories_TX.setText(String.valueOf(total_cal));
+            double progress = (double) ((double) total_cal / (double) total_goal_cal);
+            int int_progress = (int) (progress * 100);
+            if (int_progress == 0) {
+                return;
+            }
+            //set up the card view activity label
+            TextView workout_Activity_one = findViewById(R.id.workoutDetail_title_01);
+            workout_Activity_one.setText(ActivityOneLabel);
+            TextView workout_Activity_two = findViewById(R.id.workoutDetail_title_02);
+            workout_Activity_two.setText(ActivityTwoLabel);
+            //set up the card view activity time
+            TextView workout_Activity_Time_one = findViewById(R.id.workoutDetail_min_01);
+            workout_Activity_Time_one.setText(ActivityOneTime);
+            TextView workout_Activity_Time_two = findViewById(R.id.workoutDetail_min_02);
+            workout_Activity_Time_two.setText(ActivityTwoTime);
+            completed_calories = total_cal;
+            goal_calories = Integer.parseInt(total_goal_cal_str);
+            System.out.println("here 6");
+            update_goal_progress_bar();
+            System.out.println("here 7");
+        });
+        System.out.println("updated check finished");
     }
 
     public void default_workout_goal() {
@@ -250,26 +385,33 @@ public class WorkoutActivity extends AppCompatActivity {
         completed_calories_TX.setText("0");
         goal_calories = Integer.parseInt(goal_calories_TX.getText().toString());
         completed_calories = Integer.parseInt(completed_calories_TX.getText().toString());
-        // Get the current user from firebase authentication.
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        // Set up the firebase Database reference.
-        assert user != null;
-        mDatabase = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-        // Initialize the selected date as today.
-        selectedDate = LocalDate.now();
         update_goal_progress_bar();
         work_out_Ref = mDatabase.child("work-out");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
         String formattedDateString = selectedDate.format(formatter);
+        work_out_Ref.child(formattedDateString).child("total_activity_number").setValue(TOTAL_ACTIVITIES);
         Activity_Ref_one = work_out_Ref.child(formattedDateString).child("Activity_one");
         Activity_Ref_two = work_out_Ref.child(formattedDateString).child("Activity_two");
+        Activity_Ref_three = work_out_Ref.child(formattedDateString).child("Activity_three");
+        Activity_Ref_four = work_out_Ref.child(formattedDateString).child("Activity_four");
         Activity_Ref_one.child("activity_type").setValue(ActivityOneLabel);
         Activity_Ref_two.child("activity_type").setValue(ActivityTwoLabel);
         Activity_Ref_one.child("goal_calories").setValue(String.valueOf(Activity_Calories_one));
         Activity_Ref_two.child("goal_calories").setValue(String.valueOf(Activity_Calories_two));
         Activity_Ref_one.child("goal_time").setValue(ActivityOneTime);
         Activity_Ref_two.child("goal_time").setValue(ActivityTwoTime);
+        Activity_Ref_four.child("goal_finished_status").setValue(false);
+        Activity_Ref_three.child("goal_finished_status").setValue(false);
+        Activity_Ref_one.child("goal_finished_status").setValue(false);
+        Activity_Ref_two.child("goal_finished_status").setValue(false);
+        //update the total
+        goal_calories_TX.setText(TOTAL_WORKOUT_CALORIES);
+        completed_calories_TX.setText("0");
+        goal_calories = Integer.parseInt(goal_calories_TX.getText().toString());
+        completed_calories = Integer.parseInt(completed_calories_TX.getText().toString());
+        update_goal_progress_bar();
+        updateCardViewNumber();
+        workoutDB.child("Goal_updated").setValue(false);
     }
 
     public void openEditGoalActivity() {
@@ -351,15 +493,6 @@ public class WorkoutActivity extends AppCompatActivity {
         workout_Activity_Time_four.setText(ActivityFourTime);
 
 
-        //update the total
-        goal_calories_TX = findViewById(R.id.CaloriesGoal);
-        completed_calories_TX = findViewById(R.id.GoalFinishedNumber);
-        goal_calories_TX.setText(TOTAL_WORKOUT_CALORIES);
-        completed_calories_TX.setText("0");
-        goal_calories = Integer.parseInt(goal_calories_TX.getText().toString());
-        completed_calories = Integer.parseInt(completed_calories_TX.getText().toString());
-        update_goal_progress_bar();
-
         //update the firebase data
         update_firebase_data(1, ActivityOneTime, ActivityOneLabel, Activity_Calories_one);
         update_firebase_data(2, ActivityTwoTime, ActivityTwoLabel, Activity_Calories_two);
@@ -404,57 +537,55 @@ public class WorkoutActivity extends AppCompatActivity {
 
     private void check_today_goal_complete() {
         int activity_numbers = Integer.parseInt(TOTAL_ACTIVITIES);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL dd yyyy");
-        String formattedDateString = selectedDate.format(formatter);
-        DatabaseReference current_date_reference = work_out_Ref.child(formattedDateString);
-
+        System.out.println(activity_numbers);
         if (activity_numbers == 1) {
-            current_date_reference.get().addOnCompleteListener(task -> {
+            workoutDB.get().addOnCompleteListener(task -> {
                 HashMap tempMap = (HashMap) task.getResult().getValue();
                 boolean activity_one_status = (boolean) ((HashMap)tempMap.get("Activity_one")).get("goal_finished_status");
                 if (activity_one_status) {
-                    work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(true);
+                    workoutDB.child("today_goal_finished_status").setValue(true);
                 } else {
-                    work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(false);
+                    workoutDB.child("today_goal_finished_status").setValue(false);
                 }
             });
         } else if (activity_numbers == 2) {
-            current_date_reference.get().addOnCompleteListener(task -> {
+            workoutDB.get().addOnCompleteListener(task -> {
                 HashMap tempMap = (HashMap) task.getResult().getValue();
                 boolean activity_one_status = (boolean) ((HashMap)tempMap.get("Activity_one")).get("goal_finished_status");
                 boolean activity_two_status = (boolean) ((HashMap)tempMap.get("Activity_two")).get("goal_finished_status");
                 if (activity_one_status && activity_two_status) {
-                    work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(true);
+                    workoutDB.child("today_goal_finished_status").setValue(true);
                 } else {
-                    work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(false);
+                    workoutDB.child("today_goal_finished_status").setValue(false);
                 }
             });
         } else if (activity_numbers == 3) {
-            current_date_reference.get().addOnCompleteListener(task -> {
+            workoutDB.get().addOnCompleteListener(task -> {
                 HashMap tempMap = (HashMap) task.getResult().getValue();
                 boolean activity_one_status = (boolean) ((HashMap) tempMap.get("Activity_one")).get("goal_finished_status");
                 boolean activity_two_status = (boolean) ((HashMap) tempMap.get("Activity_two")).get("goal_finished_status");
                 boolean activity_three_status = (boolean) ((HashMap) tempMap.get("Activity_three")).get("goal_finished_status");
                 if (activity_one_status && activity_two_status && activity_three_status) {
-                    work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(true);
+                    workoutDB.child("today_goal_finished_status").setValue(true);
                 } else {
-                    work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(false);
+                    workoutDB.child("today_goal_finished_status").setValue(false);
                 }
             });
         } else if (activity_numbers == 4) {
-            current_date_reference.get().addOnCompleteListener(task -> {
+            workoutDB.get().addOnCompleteListener(task -> {
                 HashMap tempMap = (HashMap) task.getResult().getValue();
                 boolean activity_one_status = (boolean) ((HashMap) tempMap.get("Activity_one")).get("goal_finished_status");
                 boolean activity_two_status = (boolean) ((HashMap) tempMap.get("Activity_two")).get("goal_finished_status");
                 boolean activity_three_status = (boolean) ((HashMap) tempMap.get("Activity_three")).get("goal_finished_status");
                 boolean activity_four_status = (boolean) ((HashMap) tempMap.get("Activity_four")).get("goal_finished_status");
                 if (activity_one_status && activity_two_status && activity_three_status && activity_four_status) {
-                    work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(true);
+                    workoutDB.child("today_goal_finished_status").setValue(true);
                 } else {
-                    work_out_Ref.child(formattedDateString).child("today_goal_finished_status").setValue(false);
+                    workoutDB.child("today_goal_finished_status").setValue(false);
                 }
             });
         }
+        update_goal_progress_bar();
     }
 
     private void update_goal_progress_bar() {
